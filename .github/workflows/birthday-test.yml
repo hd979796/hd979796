@@ -1,0 +1,67 @@
+# 생일 축하 문자 자동 발송 테스트 - 매일 08:00(한국시간)
+#
+# 알리고는 등록된 IP에서만 발송을 허용하므로, GitHub 서버가 아닌
+# 이 저장소에 연결한 사무실 PC(self-hosted runner, 라벨: aligo)에서 실행된다.
+# PC가 08:00에 꺼져 있으면 켜질 때까지 대기했다가 실행된다(21시 이후면 발송 안 함).
+#
+# 필요한 GitHub Secrets
+#   ALIGO_API_KEY, ALIGO_USER_ID, ALIGO_SENDER
+#   TEST_RECIPIENTS  예) 홍길동:01012345678,김철수:01098765432
+
+name: 생일문자 자동발송 테스트
+
+on:
+  schedule:
+    - cron: "0 23 * * *"   # UTC 23:00 = 한국시간 08:00
+  workflow_dispatch:
+    inputs:
+      test_mode:
+        description: "Y = 알리고 테스트모드(문자 안 나감) / N = 실제 발송"
+        required: true
+        default: "Y"
+        type: choice
+        options: ["Y", "N"]
+
+concurrency:
+  group: birthday-sms
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  send:
+    runs-on: [self-hosted, windows, aligo]
+    timeout-minutes: 10
+    env:
+      PYTHONUTF8: "1"
+      MASK_LOGS: "Y"
+      ALIGO_API_KEY: ${{ secrets.ALIGO_API_KEY }}
+      ALIGO_USER_ID: ${{ secrets.ALIGO_USER_ID }}
+      ALIGO_SENDER: ${{ secrets.ALIGO_SENDER }}
+      TEST_RECIPIENTS: ${{ secrets.TEST_RECIPIENTS }}
+      # 매일 예약 실행은 실제 발송, 수동 실행은 선택값
+      ALIGO_TEST_MODE: ${{ github.event_name == 'schedule' && 'N' || inputs.test_mode }}
+    defaults:
+      run:
+        shell: cmd
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Python 준비
+        run: |
+          chcp 65001 >nul
+          set "PY=%LOCALAPPDATA%\Programs\Python\Python312\python.exe"
+          if not exist "%PY%" set "PY=python"
+          "%PY%" -m pip install --quiet --disable-pip-version-check -r requirements.txt
+          echo PY=%PY%>> "%GITHUB_ENV%"
+
+      - name: 알리고 연결 확인
+        run: |
+          chcp 65001 >nul
+          "%PY%" birthday_sms.py --check
+
+      - name: 생일 문자 발송
+        run: |
+          chcp 65001 >nul
+          "%PY%" birthday_sms.py --test

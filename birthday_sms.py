@@ -271,6 +271,35 @@ def check_api():
 
 # ---------- 메인 ----------
 
+def parse_recipients(text):
+    out = []
+    for item in re.split(r"[,;\n]+", text):
+        if ":" in item:
+            name, phone = item.split(":", 1)
+            if name.strip():
+                out.append({"name": name.strip(), "birth": None, "phone": phone.strip(),
+                            "consent": None, "optout": None})
+    return out
+
+
+def masked():
+    return env_yes("MASK_LOGS", "N")
+
+
+def show_name(name):
+    """공개 로그(GitHub Actions)에서는 이름 가운데를 가림: 최현민 → 최*민"""
+    if not masked() or len(name) < 2:
+        return name
+    return name[0] + "*" * max(1, len(name) - 2) + (name[-1] if len(name) > 2 else "")
+
+
+def show_phone(phone):
+    """공개 로그에서는 가운데 번호를 가림: 01085141945 → 010-****-1945"""
+    if not masked():
+        return phone
+    return f"{phone[:3]}-****-{phone[-4:]}"
+
+
 def render(template, customer):
     return template.replace("{이름}", customer["name"]).strip()
 
@@ -294,20 +323,29 @@ def main():
     require_consent = env_yes("REQUIRE_MARKETING_CONSENT") and not args.test
     dry = args.dry_run
 
-    if args.test:
-        customer_file = BASE / env("TEST_CUSTOMER_FILE", "../생일축하 문자 발송 테스트 문서.xlsx")
-        log.info("[발송 테스트] 명단 전원 대상: %s", customer_file.name)
-    else:
-        customer_file = BASE / env("CUSTOMER_FILE", "data/customers.xlsx")
-    if not customer_file.exists():
-        log.error("고객 명단 파일이 없습니다: %s", customer_file)
-        log.error("make_customer_list.bat 을 실행해 명단을 먼저 만드세요.")
-        return 2
-
     template_file = BASE / "message_template.txt"
     template = template_file.read_text(encoding="utf-8")
 
-    customers, has_consent_col = load_customers(customer_file)
+    recipients_env = env("TEST_RECIPIENTS")
+    if args.test and recipients_env:
+        # GitHub Actions 등: "이름:번호,이름:번호" 형식의 명단 (GitHub Secrets에 보관)
+        customers = parse_recipients(recipients_env)
+        has_consent_col = False
+        log.info("[발송 테스트] TEST_RECIPIENTS 명단 %d명 전원 대상", len(customers))
+        if not customers:
+            log.error("TEST_RECIPIENTS 형식 오류. 예: 홍길동:01012345678,김철수:01098765432")
+            return 2
+    else:
+        if args.test:
+            customer_file = BASE / env("TEST_CUSTOMER_FILE", "../생일축하 문자 발송 테스트 문서.xlsx")
+            log.info("[발송 테스트] 명단 전원 대상: %s", customer_file.name)
+        else:
+            customer_file = BASE / env("CUSTOMER_FILE", "data/customers.xlsx")
+        if not customer_file.exists():
+            log.error("고객 명단 파일이 없습니다: %s", customer_file)
+            log.error("make_customer_list.bat 을 실행해 명단을 먼저 만드세요.")
+            return 2
+        customers, has_consent_col = load_customers(customer_file)
     if require_consent and not has_consent_col:
         log.warning("명단에 '마케팅동의만료' 열이 없어 동의 확인을 건너뜁니다.")
 
@@ -330,17 +368,17 @@ def main():
     mode = "미리보기" if dry else ("테스트모드" if test_mode else "실제 발송")
     log.info("===== %s 생일 고객: 발송 %d명, 제외 %d명 [%s] =====", today, len(targets), len(skipped), mode)
     for name, reason in skipped:
-        log.info("  제외: %s (%s)", name, reason)
+        log.info("  제외: %s (%s)", show_name(name), reason)
 
     if dry:
         for c in targets:
-            log.info("  대상: %s %s", c["name"], c["phone"])
+            log.info("  대상: %s %s", show_name(c["name"]), show_phone(c["phone"]))
         if targets:
-            log.info("--- 문자 예시 ---\n%s", render(template, targets[0]))
+            log.info("--- 문자 예시 ---\n%s", render(template, {**targets[0], "name": show_name(targets[0]["name"])}))
         return 0
 
     if not targets:
-        return 0
+        return 2 if args.test else 0  # 테스트인데 대상이 없으면 오류로 표시
 
     _, _, _, missing = aligo_auth()
     if missing:
@@ -350,13 +388,13 @@ def main():
     now = dt.datetime.now()
     if not args.date and not (SEND_START_HOUR <= now.hour < SEND_END_HOUR):
         log.warning("지금은 %d시입니다. 08~21시 사이에만 발송합니다.", now.hour)
-        return 0
+        return 3 if args.test else 0
 
     sent = set() if args.test else already_sent(today.isoformat())
     ok_cnt = fail_cnt = 0
     for c in targets:
         if c["phone"] in sent:
-            log.info("  건너뜀(오늘 이미 발송): %s", c["name"])
+            log.info("  건너뜀(오늘 이미 발송): %s", show_name(c["name"]))
             continue
         message = render(template, c)
         try:
@@ -372,10 +410,10 @@ def main():
         })
         if ok:
             ok_cnt += 1
-            log.info("  발송 성공: %s %s", c["name"], c["phone"])
+            log.info("  발송 성공: %s %s", show_name(c["name"]), show_phone(c["phone"]))
         else:
             fail_cnt += 1
-            log.error("  발송 실패: %s %s - %s", c["name"], c["phone"], detail)
+            log.error("  발송 실패: %s %s - %s", show_name(c["name"]), show_phone(c["phone"]), detail)
 
     log.info("완료: 성공 %d건, 실패 %d건", ok_cnt, fail_cnt)
     return 1 if fail_cnt else 0

@@ -59,6 +59,25 @@
 - 21시~08시에는 발송하지 않음 (PC가 꺼져 있었다면 켜진 뒤 실행)
 - 문자 90바이트(한글 약 45자) 초과 시 장문(LMS)으로 발송
 
+## GitHub Actions 매일 자동 발송 테스트 (08:00)
+
+`.github/workflows/birthday-test.yml`이 매일 한국시간 08:00에 `TEST_RECIPIENTS` 명단 전원에게 문자를 보냅니다.
+
+- 알리고는 **등록된 IP에서만** 발송을 허용하므로, GitHub 서버가 아니라 **사무실 PC에 설치한 self-hosted runner**(라벨 `aligo`)에서 실행됩니다.
+  PC가 08:00에 꺼져 있으면 켜질 때 실행되고, 21시가 넘었으면 발송하지 않습니다.
+- 저장소 Settings → Secrets and variables → Actions 에 등록할 값
+
+  | 이름 | 값 |
+  |---|---|
+  | `ALIGO_API_KEY` | 알리고 API 키 |
+  | `ALIGO_USER_ID` | 알리고 아이디 |
+  | `ALIGO_SENDER` | 발신번호 |
+  | `TEST_RECIPIENTS` | `홍길동:01012345678,김철수:01098765432` |
+- Actions 실행 기록에는 이름·번호가 가려져서(`최*민 010-****-1945`) 표시됩니다.
+- 수동 실행: Actions 탭 → "생일문자 자동발송 테스트" → Run workflow (Y = 테스트모드, N = 실제 발송)
+- 발송 실패 시 워크플로가 실패로 표시되고 GitHub가 메일로 알려줍니다.
+- 저장소에 60일간 변경이 없으면 GitHub가 예약 실행을 자동으로 멈춥니다(Actions 탭에서 다시 켜기).
+
 ## 직접 실행
 
 ```
