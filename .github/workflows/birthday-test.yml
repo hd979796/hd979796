@@ -1,8 +1,8 @@
-# 생일 축하 문자 자동 발송 테스트 - 매일 08:00(한국시간)
+# 생일 축하 문자 자동 발송 테스트 - 매일 10:00(한국시간)
 #
 # 알리고는 등록된 IP에서만 발송을 허용하므로, GitHub 서버가 아닌
 # 이 저장소에 연결한 사무실 PC(self-hosted runner, 라벨: aligo)에서 실행된다.
-# PC가 08:00에 꺼져 있으면 켜질 때까지 대기했다가 실행된다(21시 이후면 발송 안 함).
+# PC가 10:00에 꺼져 있으면 켜질 때까지 대기했다가 실행된다(21시 이후면 발송 안 함).
 #
 # 필요한 GitHub Secrets
 #   ALIGO_API_KEY, ALIGO_USER_ID, ALIGO_SENDER
@@ -12,7 +12,7 @@ name: 생일문자 자동발송 테스트
 
 on:
   schedule:
-    - cron: "0 23 * * *"   # UTC 23:00 = 한국시간 08:00
+    - cron: "0 1 * * *"    # UTC 01:00 = 한국시간 10:00
   workflow_dispatch:
     inputs:
       test_mode:

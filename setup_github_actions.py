@@ -1,4 +1,4 @@
-"""GitHub Actions 매일 08:00 자동발송 테스트 설정 (한 번만 실행)
+"""GitHub Actions 매일 10:00 자동발송 테스트 설정 (한 번만 실행)
 
 1. 소스 커밋 + GitHub 업로드
 2. GitHub Secrets 등록 (.env의 알리고 정보 + 테스트 명단 엑셀의 수신자)
@@ -67,7 +67,7 @@ if leaked:
     fail(f"개인정보/비밀 파일이 업로드 대상에 포함됨: {leaked}")
 if staged:
     run(["git", "commit", "-q", "-m",
-         "GitHub Actions 매일 08:00 자동발송 테스트 (self-hosted runner), 로그 개인정보 가림\n\n"
+         "생일문자 자동발송 설정 업데이트\n\n"
          "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"])
 run(["git", "push", "-q", "origin", "main"])
 print("업로드 OK:", run(["git", "log", "--oneline", "-1"]).stdout.strip())
@@ -189,6 +189,6 @@ if result.returncode != 0:
 print(f"""
 ==================================================
  설정 완료 - 모든 검증 통과
- 매일 08:00(한국시간) 테스트 명단 {len(recips)}명에게 자동 발송됩니다.
+ 매일 10:00(한국시간) 테스트 명단 {len(recips)}명에게 자동 발송됩니다.
  실행 기록: https://github.com/{REPO}/actions
 ==================================================""")
