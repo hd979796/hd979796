@@ -11,6 +11,7 @@
 | `data/customers.xlsx` | 발송용 고객 명단 (GitHub에 올라가지 않음) |
 | `make_customer_list.bat` | 영업포탈 보유고객리스트 → `data/customers.xlsx` 생성 |
 | `check_aligo.bat` | 알리고 API 키 연결 확인 + 잔여 건수 조회 |
+| `test_send.bat` | 발송 테스트: `TEST_CUSTOMER_FILE` 명단 전원에게 생일과 관계없이 발송 |
 | `run_daily.bat` | 생일 문자 발송 실행 (예약 작업이 매일 실행) |
 | `install_schedule.bat` | 매일 10:00 자동 실행 등록 (Windows 작업 스케줄러) |
 | `uninstall_schedule.bat` | 자동 실행 해제 |
@@ -35,8 +36,10 @@
    ```
 4. `check_aligo.bat` 실행 → "알리고 연결 성공"이 나오면 OK
 5. `make_customer_list.bat` 실행 → `data/customers.xlsx`의 **휴대폰 열 채우기**
-6. 테스트모드로 하루 돌려보고 `logs/birthday_sms.log` 확인 후, `.env`에서 `ALIGO_TEST_MODE=N`으로 바꾸면 실제 발송
-7. `install_schedule.bat` 더블클릭 → 매일 10:00 자동 실행
+6. `test_send.bat`으로 테스트 명단(`생일축하 문자 발송 테스트 문서.xlsx`)에 발송해 보기
+   - `ALIGO_TEST_MODE=Y`면 알리고가 접수만 하고 실제 문자는 오지 않음 → 휴대폰으로 받아보려면 `N`
+7. 테스트모드로 하루 돌려보고 `logs/birthday_sms.log` 확인 후, `.env`에서 `ALIGO_TEST_MODE=N`으로 바꾸면 실제 발송
+8. `install_schedule.bat` 더블클릭 → 매일 10:00 자동 실행
 
 ## 고객 명단 (`data/customers.xlsx`)
 

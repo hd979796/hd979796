@@ -5,6 +5,7 @@
   python birthday_sms.py --dry-run    발송하지 않고 대상자만 확인
   python birthday_sms.py --date 2026-11-05 --dry-run   특정 날짜 기준으로 확인
   python birthday_sms.py --check      알리고 API 키 확인 + 잔여 건수 조회
+  python birthday_sms.py --test       테스트 명단 전원에게 발송 테스트
 """
 import argparse
 import csv
@@ -12,7 +13,9 @@ import datetime as dt
 import logging
 import os
 import re
+import shutil
 import sys
+import tempfile
 from pathlib import Path
 
 import requests
@@ -141,8 +144,23 @@ def find_col(headers, candidates):
     return None
 
 
+def open_workbook(path):
+    """엑셀에서 파일을 열어 둔 상태(잠김)여도 읽을 수 있게 임시 복사본을 사용."""
+    try:
+        return load_workbook(path, read_only=True, data_only=True)
+    except PermissionError:
+        tmp = Path(tempfile.gettempdir()) / f"birthday_sms_{Path(path).name}"
+        if os.name == "nt":  # Windows 복사 API는 엑셀이 잠근 파일도 복사 가능
+            import ctypes
+            if not ctypes.windll.kernel32.CopyFileW(str(Path(path).resolve()), str(tmp), False):
+                raise
+        else:
+            shutil.copyfile(path, tmp)
+        return load_workbook(tmp, read_only=True, data_only=True)
+
+
 def load_customers(path):
-    wb = load_workbook(path, read_only=True, data_only=True)
+    wb = open_workbook(path)
     ws = wb.worksheets[0]
     rows = ws.iter_rows(values_only=True)
     headers = [str(h).strip() if h is not None else "" for h in next(rows)]
@@ -262,6 +280,8 @@ def main():
     p.add_argument("--date", help="기준 날짜 (YYYY-MM-DD), 기본값: 오늘")
     p.add_argument("--dry-run", action="store_true", help="발송하지 않고 대상자만 출력")
     p.add_argument("--check", action="store_true", help="알리고 API 연결 확인")
+    p.add_argument("--test", action="store_true",
+                   help="발송 테스트: TEST_CUSTOMER_FILE 명단 전원에게 생일·동의와 관계없이 발송")
     args = p.parse_args()
 
     setup_logging()
@@ -271,10 +291,14 @@ def main():
 
     today = dt.date.fromisoformat(args.date) if args.date else dt.date.today()
     test_mode = env_yes("ALIGO_TEST_MODE")
-    require_consent = env_yes("REQUIRE_MARKETING_CONSENT")
+    require_consent = env_yes("REQUIRE_MARKETING_CONSENT") and not args.test
     dry = args.dry_run
 
-    customer_file = BASE / env("CUSTOMER_FILE", "data/customers.xlsx")
+    if args.test:
+        customer_file = BASE / env("TEST_CUSTOMER_FILE", "../생일축하 문자 발송 테스트 문서.xlsx")
+        log.info("[발송 테스트] 명단 전원 대상: %s", customer_file.name)
+    else:
+        customer_file = BASE / env("CUSTOMER_FILE", "data/customers.xlsx")
     if not customer_file.exists():
         log.error("고객 명단 파일이 없습니다: %s", customer_file)
         log.error("make_customer_list.bat 을 실행해 명단을 먼저 만드세요.")
@@ -289,9 +313,10 @@ def main():
 
     targets, skipped = [], []
     for c in customers:
-        md = parse_birth(c["birth"])
-        if not md or not is_birthday(md, today):
-            continue
+        if not args.test:
+            md = parse_birth(c["birth"])
+            if not md or not is_birthday(md, today):
+                continue
         phone = normalize_phone(c["phone"])
         if not phone:
             skipped.append((c["name"], "휴대폰 번호 없음/오류"))
@@ -327,7 +352,7 @@ def main():
         log.warning("지금은 %d시입니다. 08~21시 사이에만 발송합니다.", now.hour)
         return 0
 
-    sent = already_sent(today.isoformat())
+    sent = set() if args.test else already_sent(today.isoformat())
     ok_cnt = fail_cnt = 0
     for c in targets:
         if c["phone"] in sent:
