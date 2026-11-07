@@ -50,6 +50,39 @@ nav a{flex:none;text-decoration:none;color:var(--mute);font-weight:600;font-size
 nav a[aria-current="page"]{color:var(--fg);border-bottom-color:var(--accent)}
 nav a .n{font-family:var(--f-mono);font-size:11px;background:var(--line2);color:var(--mute);border-radius:999px;padding:0 6px}
 nav a .n.hot{background:var(--warn-soft);color:var(--warn)}
+nav .g{flex:none;align-self:center;font-size:10.5px;font-weight:700;letter-spacing:.08em;color:var(--dim);padding:0 2px 0 12px;margin-left:6px;border-left:1px solid var(--line);white-space:nowrap}
+nav .g:first-child{border-left:0;padding-left:0;margin-left:0}
+.l-일반{background:var(--info-soft);color:var(--info)} .l-자동차{background:var(--line2);color:var(--mute)}
+.tsec{font-size:12px;font-weight:700;color:var(--dim);letter-spacing:.06em;margin:2px 0 -6px;display:flex;align-items:baseline;gap:8px}
+.tsec em{font-style:normal;font-weight:500;letter-spacing:0}
+.tiles.t2{grid-template-columns:repeat(2,1fr)}
+.chk{width:16px;height:16px;accent-color:var(--accent);margin:0;vertical-align:middle}
+.sender{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:6px}
+.sender label{font-size:11.5px;color:var(--mute);display:flex;flex-direction:column;gap:2px}
+.sender .in{width:100%}
+.pbar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:10px}
+.pbar .note{margin-left:auto}
+#print-area{display:none}
+@media print{
+  body.printing>*:not(#print-area){display:none!important}
+  body.printing{padding:0!important;background:#fff!important;color:#000!important}
+  body.printing #print-area{display:block!important}
+  #print-area .wb{box-sizing:border-box;width:100%;height:148.5mm;padding:10mm 12mm;border-bottom:1px dashed #888;page-break-inside:avoid;font-size:12pt;color:#000;font-family:var(--f-body)}
+  #print-area .wb:nth-child(2n){border-bottom:0;page-break-after:always}
+  #print-area .wb h1{font-size:13pt;margin:0 0 4mm;display:flex;justify-content:space-between;font-weight:700}
+  #print-area .wb h1 small{font-weight:500;font-size:9pt;color:#444}
+  #print-area .wb table{width:100%;border-collapse:collapse;font-size:12pt}
+  #print-area .wb th{width:22mm;text-align:left;border:1px solid #000;padding:2.5mm 3mm;background:#eee;font-size:10pt;vertical-align:top;white-space:nowrap}
+  #print-area .wb td{border:1px solid #000;padding:2.5mm 3mm;vertical-align:top;word-break:break-all}
+  #print-area .wb td.big{font-size:16pt;font-weight:700}
+  #print-area .wb .ft{font-size:9pt;color:#444;margin-top:3mm;display:flex;justify-content:space-between}
+  #print-area .sheet-lbl{display:grid;box-sizing:border-box;width:210mm;height:297mm;page-break-after:always;overflow:hidden}
+  #print-area .lbl{box-sizing:border-box;padding:3mm 4mm;overflow:hidden;font-size:10.5pt;line-height:1.35;color:#000;font-family:var(--f-body);display:flex;flex-direction:column;justify-content:center}
+  #print-area .lbl b{font-size:12.5pt}
+  #print-area .lbl .z{font-size:9pt;color:#333}
+  #print-area .lbl.s .z,#print-area .lbl.s{font-size:9pt}
+  @page{size:A4 portrait;margin:0}
+}
 h2{font-size:15px;font-weight:700;margin:0 0 10px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
 h2 em{font-style:normal;font-weight:500;font-size:12px;color:var(--dim)}
 .view{display:flex;flex-direction:column;gap:16px}
@@ -174,7 +207,13 @@ tr.over td:first-child{box-shadow:inset 3px 0 var(--bad)}
   </div>
   <nav id="nav">
     <a href="#home" data-v="home">현황</a>
-    <a href="#cases" data-v="cases">갱신·신규 명단 <span class="n" id="n-cases"></span></a>
+    <span class="g">자동차</span>
+    <a href="#cases" data-v="cases">자동차 명단 <span class="n" id="n-cases"></span></a>
+    <span class="g">일반</span>
+    <a href="#gen" data-v="gen">일반보험 명단 <span class="n" id="n-gen"></span></a>
+    <span class="g">발송</span>
+    <a href="#ship" data-v="ship">선물·우편 발송 <span class="n" id="n-ship"></span></a>
+    <span class="g">공통</span>
     <a href="#pay" data-v="pay">카드결제 <span class="n" id="n-pay"></span></a>
     <a href="#requests" data-v="requests">요청함 <span class="n" id="n-req"></span></a>
     <a href="#customers" data-v="customers">고객</a>
@@ -188,11 +227,24 @@ tr.over td:first-child{box-shadow:inset 3px 0 var(--bad)}
 
 <section class="view" id="v-home">
   <div class="row"><label class="note">만기월 <select class="in" id="month"></select></label><span class="note" id="db-note">데이터 연결 중</span></div>
+  <div class="tsec">자동차 <em>갱신·신규</em></div>
   <div class="tiles">
     <button class="tile" style="--tc:var(--info)" data-go="cases:신규"><span>신규 진행</span><b id="t-new">0</b><small id="t-new-s"></small></button>
     <button class="tile" style="--tc:var(--warn)" data-go="cases:진행"><span>갱신 진행</span><b id="t-run">0</b><small id="t-run-s"></small></button>
     <button class="tile" style="--tc:var(--good)" data-go="cases:갱신완료"><span>갱신 완료</span><b id="t-done">0</b><small id="t-done-s"></small></button>
     <button class="tile" style="--tc:var(--bad)" data-go="cases:미갱신"><span>미갱신</span><b id="t-miss">0</b><small id="t-miss-s"></small></button>
+  </div>
+  <div class="tsec">일반보험 <em>기타전문인배상 · 하이기업종합플러스 · 승강기 · 생산물배상 등</em></div>
+  <div class="tiles">
+    <button class="tile" style="--tc:var(--info)" data-go="gen:이달"><span>이달 만기</span><b id="g-month">0</b><small id="g-month-s"></small></button>
+    <button class="tile" style="--tc:var(--warn)" data-go="gen:임박"><span>임박 · 10일 이내</span><b id="g-soon">0</b><small id="g-soon-s"></small></button>
+    <button class="tile" style="--tc:var(--bad)" data-go="gen:경과"><span>만기 지남 · 미진행</span><b id="g-over">0</b><small id="g-over-s"></small></button>
+    <button class="tile" style="--tc:var(--good)" data-go="gen:갱신완료"><span>갱신 완료</span><b id="g-done">0</b><small id="g-done-s"></small></button>
+  </div>
+  <div class="tsec">발송 <em>갱신 완료 고객 · 40만원 이상은 로젠택배 선물, 미만은 우편</em></div>
+  <div class="tiles t2">
+    <button class="tile" style="--tc:var(--accent)" data-go="ship:gift"><span>감사 선물 · 송장 대기</span><b id="s-gift">0</b><small id="s-gift-s"></small></button>
+    <button class="tile" style="--tc:var(--mute)" data-go="ship:mail"><span>우편 발송 · 라벨 대기</span><b id="s-mail">0</b><small id="s-mail-s"></small></button>
   </div>
   <div class="grid2">
     <div class="card">
@@ -229,23 +281,95 @@ tr.over td:first-child{box-shadow:inset 3px 0 var(--bad)}
 
 <section class="view" id="v-cases" hidden>
   <div class="card">
-    <h2>갱신·신규 명단 <em id="cases-count"></em></h2>
+    <h2>자동차 갱신·신규 명단 <em id="cases-count"></em></h2>
     <div class="filters">
       <input class="in" id="q" type="search" placeholder="고객명 · 차량번호 · 차명 검색" aria-label="검색">
       <div class="row" id="sf">
-        <button class="fchip" data-s="" aria-pressed="true">전체</button><button class="fchip" data-s="신규">신규</button><button class="fchip" data-s="진행">갱신 진행</button><button class="fchip" data-s="갱신완료">갱신 완료</button><button class="fchip" data-s="미갱신">미갱신</button><button class="fchip" data-s="선물">선물 대상</button>
+        <button class="fchip" data-s="" aria-pressed="true">전체</button><button class="fchip" data-s="신규">신규</button><button class="fchip" data-s="진행">갱신 진행</button><button class="fchip" data-s="임박">임박 10일</button><button class="fchip" data-s="갱신완료">갱신 완료</button><button class="fchip" data-s="미갱신">미갱신</button><button class="fchip" data-s="선물">선물 대상</button>
       </div>
       <button class="btn pri" id="add-case" type="button">+ 건 추가</button>
       <button class="btn" id="import-open" type="button">만기명세 붙여넣기</button>
     </div>
     <div class="tw"><table id="ct"><thead><tr><th>만기일</th><th>고객명</th><th>차량</th><th>상품</th><th>구분</th><th>상태</th><th style="text-align:right">작년</th><th style="text-align:right">갱신</th><th>결제</th><th>처리</th></tr></thead><tbody id="cb"></tbody></table></div>
-    <p class="note" style="margin-top:8px">고객명을 누르면 상세를 고칩니다. 상태는 표에서 바로 바꿀 수 있습니다. 만기 7일 이내는 노란 줄, 만기가 지났는데 완료가 아니면 빨간 줄.</p>
+    <p class="note" style="margin-top:8px">고객명을 누르면 상세를 고칩니다. 상태는 표에서 바로 바꿀 수 있습니다. 만기 10일 이내는 노란 줄, 만기가 지났는데 완료가 아니면 빨간 줄. 갱신 완료 건의 선물·우편 발송은 「선물·우편 발송」 탭에서 합니다.</p>
   </div>
   <div class="card" id="import-card" hidden>
     <h2>만기명세 붙여넣기 <em>포탈 만기명세 표를 드래그 복사해서 붙여넣으면 자동으로 나눕니다</em></h2>
     <textarea class="in" id="import-in" rows="6" placeholder="46	자점	12가3456	캠핑카	2026-12-01	홍길동(800101-1...	Hicar업무용	M2025 A000000-0...	M0260 0000000-000	"></textarea>
     <div class="row" style="margin-top:8px"><button class="btn" id="import-parse" type="button">미리보기</button><button class="btn pri" id="import-save" type="button" disabled>저장</button><span class="note" id="import-note"></span></div>
     <div class="tw" id="import-prev" hidden><table><thead><tr><th>만기일</th><th>고객명</th><th>차량</th><th>차명</th><th>상품</th><th>자/타점</th><th>전계약</th><th>가설계</th><th>갱신계약</th><th>상태</th></tr></thead><tbody id="import-body"></tbody></table></div>
+  </div>
+</section>
+
+<section class="view" id="v-gen" hidden>
+  <div class="card">
+    <h2>일반보험 만기·갱신 명단 <em id="gen-count"></em></h2>
+    <div class="filters">
+      <input class="in" id="gq" type="search" placeholder="계약자 · 업체명 · 증권번호 · 상품 검색" aria-label="검색">
+      <div class="row" id="gf">
+        <button class="fchip" data-g="" aria-pressed="true">전체</button><button class="fchip" data-g="이달">이달 만기</button><button class="fchip" data-g="진행">갱신 진행</button><button class="fchip" data-g="임박">임박 10일</button><button class="fchip" data-g="경과">만기 지남·미진행</button><button class="fchip" data-g="갱신완료">갱신 완료</button><button class="fchip" data-g="미갱신">미갱신</button>
+      </div>
+      <button class="btn pri" id="add-gen" type="button">+ 건 추가</button>
+      <button class="btn" id="gimport-open" type="button">만기리스트 붙여넣기</button>
+    </div>
+    <div class="row" id="gp" style="margin-top:8px"><span class="note">상품</span><button class="fchip" data-gp="" aria-pressed="true">전체</button><button class="fchip" data-gp="전문인">기타전문인배상</button><button class="fchip" data-gp="기업종합">하이기업종합플러스</button><button class="fchip" data-gp="승강기">승강기배상</button><button class="fchip" data-gp="생산물">생산물배상</button><button class="fchip" data-gp="화재">화재</button><button class="fchip" data-gp="기타">그 외</button></div>
+    <div class="tw"><table id="gt"><thead><tr><th>만기일</th><th>계약자·업체</th><th>상품</th><th>증권번호</th><th>상태</th><th style="text-align:right">작년</th><th style="text-align:right">갱신</th><th>안내</th><th>결제</th><th>처리</th></tr></thead><tbody id="gb"></tbody></table></div>
+    <p class="note" style="margin-top:8px">「임박 10일」은 안내가 끝났어도 만기가 10일 안으로 다가온 건, 「만기 지남·미진행」은 만기가 지났는데 갱신 완료·미갱신으로 정리되지 않은 건입니다. 매월 만기리스트를 붙여넣어 올리고, 상태는 표에서 바로 바꿉니다.</p>
+  </div>
+  <div class="card" id="gimport-card" hidden>
+    <h2>일반보험 만기리스트 붙여넣기 <em>포탈 만기 조회 표를 드래그 복사해서 붙여넣으면 만기일·계약자·상품·증권번호·보험료를 찾아 나눕니다</em></h2>
+    <textarea class="in" id="gimport-in" rows="6" placeholder="2026-12-15	(주)우당탕탕	하이기업종합플러스	F2025A0000000	1,250,000"></textarea>
+    <div class="row" style="margin-top:8px"><button class="btn" id="gimport-parse" type="button">미리보기</button><button class="btn pri" id="gimport-save" type="button" disabled>저장</button><span class="note" id="gimport-note"></span></div>
+    <div class="tw" id="gimport-prev" hidden><table><thead><tr><th>만기일</th><th>계약자</th><th>상품</th><th>증권번호</th><th>작년 보험료</th><th>상태</th></tr></thead><tbody id="gimport-body"></tbody></table></div>
+  </div>
+</section>
+
+<section class="view" id="v-ship" hidden>
+  <div class="card">
+    <h2>선물·우편 발송 <em id="ship-count"></em></h2>
+    <div class="filters">
+      <input class="in" id="shq" type="search" placeholder="고객명 · 주소 검색" aria-label="검색">
+      <div class="row" id="shf"><button class="fchip" data-sh="wait" aria-pressed="true">발송 대기</button><button class="fchip" data-sh="done">발송 완료</button><button class="fchip" data-sh="all">전체</button></div>
+      <label class="note" style="display:flex;gap:4px;align-items:center"><input type="checkbox" id="ship-month" class="chk"> 현황의 만기월만</label>
+      <button class="btn" id="ship-fill" type="button" title="주소가 비어 있는 갱신 완료 고객을 보유고객 명부에서 찾아 채웁니다">명부에서 주소 채우기</button>
+      <button class="btn" id="sender-open" type="button">보내는 분 설정</button>
+    </div>
+    <div id="sender-card" hidden style="margin-top:10px;border-top:1px dashed var(--line);padding-top:10px">
+      <div class="sender">
+        <label>보내는 분(상호)<input class="in" id="sd-name" maxlength="30" placeholder="박문철보험대리점"></label>
+        <label>전화<input class="in" id="sd-phone" maxlength="20" placeholder="031-000-0000"></label>
+        <label>우편번호<input class="in" id="sd-zip" maxlength="7" placeholder="11000"></label>
+        <label style="grid-column:span 2">주소<input class="in" id="sd-addr" maxlength="120" placeholder="경기 의정부시 …"></label>
+        <label>선물 품목<input class="in" id="sd-item" maxlength="30" placeholder="감사 선물(신세계상품권)"></label>
+        <label>배송 메시지<input class="in" id="sd-msg" maxlength="60" placeholder="자동차보험 갱신 감사 선물입니다"></label>
+      </div>
+      <div class="row" style="margin-top:8px"><button class="btn pri sm" id="sender-save" type="button">저장</button><span class="note">송장과 라벨의 보내는 분에 찍힙니다. 모든 기기에서 같이 씁니다.</span></div>
+    </div>
+  </div>
+  <div class="card">
+    <h2>감사 선물 · 로젠택배 송장 <em>갱신 보험료 40만원 이상</em></h2>
+    <div class="tw"><table id="gift-t"><thead><tr><th><input type="checkbox" class="chk" id="gift-all" aria-label="전체 선택"></th><th>갱신일</th><th>고객명</th><th>구분</th><th>연락처</th><th>배송 주소</th><th style="text-align:right">보험료</th><th>송장</th><th>처리</th></tr></thead><tbody id="gift-b"></tbody></table></div>
+    <div class="pbar">
+      <button class="btn pri" id="gift-print-all" type="button">모두 출력</button>
+      <button class="btn" id="gift-print-sel" type="button">선택 출력</button>
+      <button class="btn" id="gift-csv" type="button" title="로젠 기업고객 일괄등록에 올릴 수 있는 CSV">로젠 일괄등록 CSV</button>
+      <button class="btn" id="gift-done" type="button">선택 → 송장 완료 표시</button>
+      <label class="note" style="display:flex;gap:4px;align-items:center"><input type="checkbox" id="gift-auto" class="chk" checked> 출력하면 완료로 표시</label>
+      <span class="note">송장 전표는 A4 한 장에 2건씩 나옵니다. 「송장」 버튼은 한 건, 「모두 출력」은 대기 건 전부를 한 번에 인쇄합니다.</span>
+    </div>
+  </div>
+  <div class="card">
+    <h2>우편 발송 · 주소 라벨 <em>갱신 보험료 40만원 미만</em></h2>
+    <div class="tw"><table id="mail-t"><thead><tr><th><input type="checkbox" class="chk" id="mail-all" aria-label="전체 선택"></th><th>갱신일</th><th>고객명</th><th>구분</th><th>우편번호</th><th>주소</th><th style="text-align:right">보험료</th><th>라벨</th><th>처리</th></tr></thead><tbody id="mail-b"></tbody></table></div>
+    <div class="pbar">
+      <select class="in" id="lbl-fmt" aria-label="라벨지 규격"><option value="3108">폼텍 3108 · 2×8 (99.1×33.9)</option><option value="3107">폼텍 3107 · 2×7 (99.1×38.1)</option><option value="3100">폼텍 3100 · 3×7 (63.5×38.1)</option></select>
+      <label class="note" style="display:flex;gap:4px;align-items:center">시작 칸 <input class="in" id="lbl-skip" type="number" min="0" max="23" value="0" style="width:64px" aria-label="건너뛸 칸 수"></label>
+      <button class="btn pri" id="mail-print-all" type="button">모두 출력</button>
+      <button class="btn" id="mail-print-sel" type="button">선택 출력</button>
+      <button class="btn" id="mail-done" type="button">선택 → 발송 완료 표시</button>
+      <label class="note" style="display:flex;gap:4px;align-items:center"><input type="checkbox" id="mail-auto" class="chk" checked> 출력하면 완료로 표시</label>
+      <span class="note">쓰다 남은 라벨지는 「시작 칸」에 이미 쓴 칸 수를 넣으면 그만큼 건너뜁니다.</span>
+    </div>
   </div>
 </section>
 
@@ -346,6 +470,7 @@ tr.over td:first-child{box-shadow:inset 3px 0 var(--bad)}
 
 <div class="dw" id="dw" hidden><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="dw-title" id="dw-sheet"></div></div>
 <div class="toast" id="toast" role="status"></div>
+<div id="print-area" aria-hidden="true"></div>
 <div class="dw" id="login" hidden><div class="sheet" style="width:min(380px,100%);justify-content:center" role="dialog" aria-modal="true" aria-labelledby="login-h">
   <h3 id="login-h">업무포탈 로그인</h3>
   <p class="note">대표님·실장님만 씁니다. 비밀번호는 Apps Script의 PASSCODE 속성과 같아야 합니다.</p>
@@ -359,8 +484,11 @@ tr.over td:first-child{box-shadow:inset 3px 0 var(--bad)}
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const STATUS=["미착수","설계완료","안내완료","갱신완료","미갱신","보류"];
 const KINDS={"갱신설계":"갱신설계","안내준비":"안내 멘트·청약서 이미지","카드결제":"카드결제 화면 준비","증권출력":"증권 발행·출력","송장출력":"로젠택배 송장 출력"};
-const GIFT_MIN=400000;
-let db=null, sampleFn=null, cases=[], reqs=[], tpls=[], notes=[], portal=null;
+const GIFT_MIN=400000; const SOON_DAYS=10;
+const GEN_PRODUCTS=["기타전문인배상책임","하이기업종합플러스","승강기배상책임","생산물배상책임","화재보험","영업배상책임","기타"];
+const GEN_KEYS={"전문인":/전문인/,"기업종합":/기업종합|기업플러스/,"승강기":/승강기/,"생산물":/생산물/,"화재":/화재/};
+let db=null, sampleFn=null, cases=[], reqs=[], tpls=[], notes=[], portal=null, sender={};
+let gFilter="", gpFilter="", shFilter="wait";
 let calls=[], archive=[], todos=[], profiles={}, custRows=[], custLoaded=false;
 let who="대표", view="home", sFilter="", rFilter="open", curTpl=null, curNote=null, curCust="", twFilter="", crFilter="";
 const today=()=>new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);
@@ -374,12 +502,14 @@ try{who=localStorage.getItem("who")||"대표"}catch(e){}
 $$("#who button").forEach(b=>{b.setAttribute("aria-pressed",String(b.dataset.w===who));b.onclick=()=>{who=b.dataset.w;$$("#who button").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));try{localStorage.setItem("who",who)}catch(e){}}});
 
 /* ---- routing ---- */
-const VIEWS=["home","cases","pay","requests","customers","calls","templates","study"];
+const VIEWS=["home","cases","gen","ship","pay","requests","customers","calls","templates","study"];
 function go(){let h=location.hash.replace("#","");let arg="";if(h.includes(":")){[h,arg]=h.split(":")}if(!VIEWS.includes(h))h="home";view=h;
   VIEWS.forEach(v=>{$("#v-"+v).hidden=v!==h});$$("#nav a").forEach(a=>a.toggleAttribute("aria-current",a.dataset.v===h)&&a.setAttribute("aria-current","page"));$$("#nav a").forEach(a=>{if(a.dataset.v!==h)a.removeAttribute("aria-current")});
   if(h==="cases"&&arg){sFilter=decodeURIComponent(arg);$$("#sf .fchip").forEach(c=>c.setAttribute("aria-pressed",String(c.dataset.s===sFilter)))}
+  if(h==="gen"&&arg){gFilter=decodeURIComponent(arg);$$("#gf .fchip").forEach(c=>c.setAttribute("aria-pressed",String(c.dataset.g===gFilter)))}
+  if(h==="ship"&&arg){const el=document.getElementById(arg==="mail"?"mail-t":"gift-t");if(el)setTimeout(()=>el.scrollIntoView({block:"start"}),60)}
   if(h==="customers"&&arg){curCust=decodeURIComponent(arg);$("#cust-q").value=curCust}
-  if(h==="customers")loadCustomers();
+  if(h==="customers"||h==="ship")loadCustomers();
   render()}
 window.addEventListener("hashchange",go);
 $$(".tile").forEach(t=>t.onclick=()=>{location.hash=t.dataset.go});
@@ -389,9 +519,16 @@ function monthOpts(){const sel=$("#month");const cur=sel.value;const set=new Set
 $("#month").onchange=render;
 
 /* ---- derived ---- */
+const lineOf=c=>c.line==="일반"?"일반":"자동차";
+const isCar=c=>lineOf(c)==="자동차", isGen=c=>lineOf(c)==="일반";
 const isRun=c=>c.kind!=="신규"&&["미착수","설계완료","안내완료","보류"].includes(c.status);
 const isOver=c=>c.due&&c.due<today()&&!["갱신완료","미갱신"].includes(c.status);
-const isDue=c=>{if(!c.due||c.status==="갱신완료")return false;const d=(new Date(c.due)-new Date(today()))/864e5;return d>=0&&d<=7};
+const daysLeft=c=>c.due?Math.round((new Date(c.due)-new Date(today()))/864e5):NaN;
+const isDue=c=>{if(!c.due||c.status==="갱신완료")return false;const d=daysLeft(c);return d>=0&&d<=7};
+const isSoon=c=>{if(!c.due||["갱신완료","미갱신"].includes(c.status))return false;const d=daysLeft(c);return d>=0&&d<=SOON_DAYS};
+const isGift=c=>c.status==="갱신완료"&&Number(c.premium||0)>=GIFT_MIN;
+const isMail=c=>c.status==="갱신완료"&&Number(c.premium||0)>0&&Number(c.premium||0)<GIFT_MIN;
+const prodKey=p=>{for(const k in GEN_KEYS)if(GEN_KEYS[k].test(p||""))return k;return "기타"};
 const giftOK=c=>Number(c.premium||0)>=GIFT_MIN&&c.status==="갱신완료";
 function inMonth(c){const m=$("#month").value;return !m||(c.due||"").startsWith(m)}
 
@@ -407,8 +544,10 @@ function callsOf(name){const n=norm(name);if(!n)return[];return allCalls().filte
 async function loadCustomers(){if(custLoaded||!db)return;custLoaded=true;try{const m=await db.doc("customers/meta").get();if(!m.exists){$("#cust-meta").textContent="명부 없음";return}const parts=m.data().parts||[];const docs=await Promise.all(parts.map(p=>db.doc("customers/"+p).get()));custRows=[];docs.forEach(d=>{if(!d.exists)return;const{keys,rows}=d.data();rows.forEach(r=>{const o={};keys.forEach((k,i)=>o[k]=r[i]);custRows.push(o)})});$("#cust-meta").textContent=`보유고객 ${custRows.length.toLocaleString("ko-KR")}명 · ${m.data().updatedAt||""}`;renderCust()}catch(e){custLoaded=false;$("#cust-meta").textContent="명부를 불러오지 못했습니다"}}
 
 /* ---- render ---- */
-function render(){renderHome();renderCases();renderPay();renderReqs();renderTpls();renderNotes();renderCust();renderCalls();renderTodos();renderNav()}
-function renderNav(){const open=reqs.filter(r=>r.status==="new"||r.status==="working").length;const n=$("#n-req");n.textContent=open||"";n.classList.toggle("hot",open>0);$("#n-cases").textContent=cases.filter(c=>inMonth(c)&&c.status!=="갱신완료"&&c.status!=="미갱신").length||"";$("#n-pay").textContent=cases.filter(c=>c.payDay&&!c.paidAt).length||"";const ot=todos.filter(t=>!t.done).length;const nt=$("#n-todo");nt.textContent=ot||"";nt.classList.toggle("hot",ot>0)}
+function render(){renderHome();renderCases();renderGen();renderShip();renderPay();renderReqs();renderTpls();renderNotes();renderCust();renderCalls();renderTodos();renderNav()}
+function renderNav(){const open=reqs.filter(r=>r.status==="new"||r.status==="working").length;const n=$("#n-req");n.textContent=open||"";n.classList.toggle("hot",open>0);$("#n-cases").textContent=cases.filter(c=>isCar(c)&&inMonth(c)&&c.status!=="갱신완료"&&c.status!=="미갱신").length||"";
+  const gHot=cases.filter(c=>isGen(c)&&(isSoon(c)||isOver(c))).length;const ng=$("#n-gen");ng.textContent=(gHot||cases.filter(c=>isGen(c)&&inMonth(c)&&c.status!=="갱신완료"&&c.status!=="미갱신").length)||"";ng.classList.toggle("hot",gHot>0);
+  const sh=cases.filter(c=>(isGift(c)&&!c.waybillAt)||(isMail(c)&&!c.mailedAt)).length;const ns=$("#n-ship");ns.textContent=sh||"";ns.classList.toggle("hot",sh>0);$("#n-pay").textContent=cases.filter(c=>c.payDay&&!c.paidAt).length||"";const ot=todos.filter(t=>!t.done).length;const nt=$("#n-todo");nt.textContent=ot||"";nt.classList.toggle("hot",ot>0)}
 function renderCust(){if(view!=="customers")return;const q=($("#cust-q").value||"").trim();const nq=norm(q);const ents=new Map();
   const add=(name,src,extra)=>{if(!name)return;const k=name.trim();if(!ents.has(k))ents.set(k,{name:k,dir:[],calls:0,cases:0,last:""});const e=ents.get(k);if(src==="dir")e.dir.push(extra);if(src==="case")e.cases++;if(src==="call"){e.calls++;if(extra>e.last)e.last=extra}};
   if(nq){custRows.forEach(r=>{if(norm(r.name).includes(nq)||norm(r.addr).includes(nq)||norm(r.job).includes(nq))add(r.name,"dir",r)});
@@ -445,32 +584,113 @@ function renderTodos(){const open=todos.filter(t=>!t.done);$("#todo-n").textCont
   if(view==="calls")$("#todo-list").innerHTML=list.map(li).join("")||'<li class="empty" style="display:block">할 일이 없습니다</li>';
   const home=open.sort((a,b)=>(b.order||0)-(a.order||0)).slice(0,6);$("#home-todo-n").textContent=`미완료 ${open.length}건`;$("#home-todo").innerHTML=home.map(li).join("")||'<li class="empty" style="display:block">할 일이 없습니다</li>';
   const rc=allCalls().filter(c=>!isPersonal(c)).slice(0,5);$("#home-calls").innerHTML=rc.map(c=>`<li><span class="chip room-${c.room||"park"}">${c.room==="hwang"?"실장":"대표"}</span><span><span class="t">${esc(c.who||"상대 미상")}</span> <span class="d">${esc((c.summary||"").slice(0,70))}</span></span><span class="w">${ago(c.at)}</span></li>`).join("")||'<li class="empty" style="display:block">아직 통화 기록이 없습니다</li>'}
-function renderHome(){const cs=cases.filter(inMonth);
+function renderHome(){const cs=cases.filter(c=>isCar(c)&&inMonth(c));
   const nw=cs.filter(c=>c.kind==="신규"&&c.status!=="갱신완료"),run=cs.filter(isRun),done=cs.filter(c=>c.status==="갱신완료"),miss=cs.filter(c=>c.status==="미갱신"||isOver(c));
+  const gs=cases.filter(isGen),gm=gs.filter(inMonth);
+  $("#g-month").textContent=gm.length;$("#g-month-s").textContent=`미착수 ${gm.filter(c=>c.status==="미착수").length} · 안내 ${gm.filter(c=>c.status==="안내완료").length} · 완료 ${gm.filter(c=>c.status==="갱신완료").length}`;
+  const gsoon=gs.filter(isSoon),gover=gs.filter(isOver);
+  $("#g-soon").textContent=gsoon.length;$("#g-soon-s").textContent=gsoon.length?`안내 완료 ${gsoon.filter(c=>c.status==="안내완료").length} · 안내 전 ${gsoon.filter(c=>c.status!=="안내완료").length}`:"만기 10일 이내 건 없음";
+  $("#g-over").textContent=gover.length;$("#g-over-s").textContent=gover.length?"갱신 완료·미갱신으로 정리 필요":"정리할 건 없음";
+  const gdone=gm.filter(c=>c.status==="갱신완료");$("#g-done").textContent=gdone.length;$("#g-done-s").textContent=`선물 대상 ${gdone.filter(isGift).length}건`;
+  const gift=cases.filter(c=>isGift(c)&&!c.waybillAt),mail=cases.filter(c=>isMail(c)&&!c.mailedAt);
+  $("#s-gift").textContent=gift.length;$("#s-gift-s").textContent=`주소 없음 ${gift.filter(c=>!c.address).length}건 · 송장 완료 ${cases.filter(c=>isGift(c)&&c.waybillAt).length}건`;
+  $("#s-mail").textContent=mail.length;$("#s-mail-s").textContent=`주소 없음 ${mail.filter(c=>!c.address).length}건 · 발송 완료 ${cases.filter(c=>isMail(c)&&c.mailedAt).length}건`;
   $("#t-new").textContent=nw.length;$("#t-new-s").textContent=nw.filter(c=>c.status==="설계완료").length+"건 설계 완료";
   $("#t-run").textContent=run.length;$("#t-run-s").textContent=`미착수 ${run.filter(c=>c.status==="미착수").length} · 설계 ${run.filter(c=>c.status==="설계완료").length} · 안내 ${run.filter(c=>c.status==="안내완료").length}`;
   $("#t-done").textContent=done.length;$("#t-done-s").textContent=`선물 대상 ${done.filter(giftOK).length}건 · 송장 완료 ${done.filter(c=>c.waybillAt).length}건`;
   $("#t-miss").textContent=miss.length;$("#t-miss-s").textContent=`만기 지남 ${cs.filter(isOver).length}건 포함`;
   const due=cases.filter(isDue).sort((a,b)=>a.due.localeCompare(b.due));
-  $("#due-list").innerHTML=due.length?due.map(c=>`<li><span class="w">${fmtD(c.due)}</span><span><span class="t">${esc(c.name)}</span> <span class="d">${esc(c.car)} · ${esc(c.product||"")}</span></span><span class="chip s-${c.status}">${c.status}</span></li>`).join(""):'<li class="empty" style="display:block">7일 이내 만기 건이 없습니다</li>';
+  $("#due-list").innerHTML=due.length?due.map(c=>`<li><span class="w">${fmtD(c.due)}</span><span><span class="chip l-${lineOf(c)}">${lineOf(c)}</span> <span class="t">${esc(c.name)}</span> <span class="d">${esc(isGen(c)?(c.prevNo||""):c.car)} · ${esc(c.product||"")}</span></span><span class="chip s-${c.status}">${c.status}</span></li>`).join(""):'<li class="empty" style="display:block">7일 이내 만기 건이 없습니다</li>';
   const open=reqs.filter(r=>r.status==="new"||r.status==="working").slice(0,6);
   $("#home-req").innerHTML=open.length?open.map(r=>`<li><span class="chip r-${r.status}">${r.status==="new"?"대기":"진행"}</span><span><span class="t">${esc(r.name)}</span> <span class="d">${esc(r.kind)}</span></span><span class="w">${ago(r.createdAt)}</span></li>`).join(""):'<li class="empty" style="display:block">대기 중인 요청이 없습니다</li>';
   if(portal){const r=portal.renewal||{},k=portal.contracts||{};$("#k1").textContent=(r.targetCount??"—")+"건";$("#k2").textContent=(r.renewedCount??"—")+"건";$("#k3").textContent=(r.renewRate??"—")+"%";$("#k4").textContent=`${k.car?.count??0}·${k.gen?.count??0}·${k.long?.count??0}건`;$("#kpi-when").textContent=(portal.month||"")+" · "+(portal.updatedAt||"")}}
-function filtered(){const q=($("#q").value||"").trim().toLowerCase();return cases.filter(c=>{if(!inMonth(c))return false;
+function filtered(){const q=($("#q").value||"").trim().toLowerCase();return cases.filter(c=>{if(!isCar(c))return false;if(sFilter==="임박"?!isSoon(c):!inMonth(c))return false;
   if(sFilter==="신규"&&c.kind!=="신규")return false;if(sFilter==="진행"&&!isRun(c))return false;if(sFilter==="갱신완료"&&c.status!=="갱신완료")return false;if(sFilter==="미갱신"&&!(c.status==="미갱신"||isOver(c)))return false;if(sFilter==="선물"&&!giftOK(c))return false;
   if(q&&!(`${c.name} ${c.car} ${c.carName} ${c.product}`.toLowerCase().includes(q)))return false;return true}).sort((a,b)=>(a.due||"").localeCompare(b.due||"")||a.name.localeCompare(b.name))}
 function renderCases(){const rows=filtered();$("#cases-count").textContent=rows.length+"건";
-  $("#cb").innerHTML=rows.length?rows.map(c=>`<tr data-id="${c.id}" class="${isOver(c)?"over":isDue(c)?"due":""}">
+  $("#cb").innerHTML=rows.length?rows.map(c=>`<tr data-id="${c.id}" class="${isOver(c)?"over":isSoon(c)?"due":""}">
    <td>${c.due||""}</td><td><button class="nm" type="button" data-open="${c.id}">${esc(c.name)}</button>${c.branch?` <span class="chip" style="background:var(--line2);color:var(--dim)">${esc(c.branch)}</span>`:""}</td>
    <td>${esc(c.car)}<br><span style="color:var(--dim);font-size:11.5px">${esc(c.carName||"")}</span></td><td>${esc(c.product||"")}</td><td><span class="chip k-${c.kind||"갱신"}">${c.kind||"갱신"}</span></td>
    <td><select class="in" data-st="${c.id}" style="padding:3px 6px;font-size:12px">${STATUS.map(s=>`<option ${s===c.status?"selected":""}>${s}</option>`).join("")}</select></td>
    <td class="num">${won(c.prevPremium)}</td><td class="num">${won(c.premium)}${giftOK(c)?' <span class="chip s-갱신완료" title="40만원 이상 감사 선물 대상">선물</span>':""}</td>
    <td>${c.paidAt?'<span class="chip s-갱신완료">완료</span>':c.payDay?`<span class="chip s-안내완료">${esc(c.payDay)}일</span>`:""}</td>
    <td><div class="acts">${["갱신설계","안내준비","카드결제","증권출력","송장출력"].map(k=>`<button class="btn" type="button" data-req="${k}" data-id="${c.id}" title="${KINDS[k]}">${k.slice(0,2)}</button>`).join("")}</div></td></tr>`).join(""):`<tr><td colspan="10"><div class="empty">해당하는 건이 없습니다. "건 추가" 또는 "만기명세 붙여넣기"로 올리세요.</div></td></tr>`}
+/* ---- 일반보험 ---- */
+function genFiltered(){const q=($("#gq").value||"").trim().toLowerCase();return cases.filter(c=>{if(!isGen(c))return false;
+  if(gFilter==="이달"&&!inMonth(c))return false;if(gFilter==="진행"&&!(isRun(c)&&!isOver(c)))return false;if(gFilter==="임박"&&!isSoon(c))return false;if(gFilter==="경과"&&!isOver(c))return false;
+  if(gFilter==="갱신완료"&&!(c.status==="갱신완료"&&inMonth(c)))return false;if(gFilter==="미갱신"&&!(c.status==="미갱신"&&inMonth(c)))return false;
+  if(gFilter===""&&!(inMonth(c)||isSoon(c)||isOver(c)))return false;
+  if(gpFilter&&prodKey(c.product)!==gpFilter)return false;
+  if(q&&!(`${c.name} ${c.insured||""} ${c.prevNo||""} ${c.renewNo||""} ${c.product||""} ${c.object||""}`.toLowerCase().includes(q)))return false;return true}).sort((a,b)=>(a.due||"").localeCompare(b.due||"")||a.name.localeCompare(b.name))}
+function renderGen(){const rows=genFiltered();$("#gen-count").textContent=rows.length+"건"+(gFilter===""?" · 이달 + 임박 + 만기 지남":"");
+  $("#gb").innerHTML=rows.length?rows.map(c=>{const d=daysLeft(c);const dl=isNaN(d)?"":d<0?`<span style="color:var(--bad);font-size:11px">${-d}일 지남</span>`:d<=SOON_DAYS&&!["갱신완료","미갱신"].includes(c.status)?`<span style="color:var(--warn);font-size:11px">D-${d}</span>`:"";
+   return `<tr data-id="${c.id}" class="${isOver(c)?"over":isSoon(c)?"due":""}">
+   <td>${c.due||""}<br>${dl}</td><td><button class="nm" type="button" data-open="${c.id}" data-line="일반">${esc(c.name)}</button>${c.insured&&c.insured!==c.name?`<br><span style="color:var(--dim);font-size:11.5px">${esc(c.insured)}</span>`:""}</td>
+   <td>${esc(c.product||"")}${c.object?`<br><span style="color:var(--dim);font-size:11.5px">${esc(c.object)}</span>`:""}</td><td style="font-family:var(--f-mono);font-size:12px">${esc(c.prevNo||"")}${c.renewNo?`<br><span style="color:var(--good)">→ ${esc(c.renewNo)}</span>`:""}</td>
+   <td><select class="in" data-st="${c.id}" style="padding:3px 6px;font-size:12px">${STATUS.map(s=>`<option ${s===c.status?"selected":""}>${s}</option>`).join("")}</select></td>
+   <td class="num">${won(c.prevPremium)}</td><td class="num">${won(c.premium)}${isGift(c)?' <span class="chip s-갱신완료" title="40만원 이상 감사 선물 대상">선물</span>':""}</td>
+   <td>${c.notifiedAt?fmtD(c.notifiedAt):'<span style="color:var(--dim)">—</span>'}</td>
+   <td>${c.paidAt?'<span class="chip s-갱신완료">완료</span>':c.payDay?`<span class="chip s-안내완료">${esc(c.payDay)}일</span>`:""}</td>
+   <td><div class="acts">${["갱신설계","안내준비","카드결제","증권출력"].map(k=>`<button class="btn" type="button" data-req="${k}" data-id="${c.id}" title="${KINDS[k]}">${k.slice(0,2)}</button>`).join("")}</div></td></tr>`}).join(""):`<tr><td colspan="10"><div class="empty">해당하는 건이 없습니다. "건 추가" 또는 "만기리스트 붙여넣기"로 올리세요.</div></td></tr>`}
+
+/* ---- 선물·우편 발송 ---- */
+function shipRows(kind){const q=($("#shq").value||"").trim().toLowerCase();const useM=$("#ship-month").checked;const doneKey=kind==="gift"?"waybillAt":"mailedAt";
+  return cases.filter(c=>(kind==="gift"?isGift(c):isMail(c))&&(!useM||inMonth(c))&&(shFilter==="all"||(shFilter==="done"?!!c[doneKey]:!c[doneKey]))&&(!q||`${c.name} ${c.address||""}`.toLowerCase().includes(q))).sort((a,b)=>(b.renewedAt||b.due||"").localeCompare(a.renewedAt||a.due||"")||a.name.localeCompare(b.name))}
+const zipOf=c=>c.zip||((c.address||"").match(/\b\d{5}\b/)||[])[0]||"";
+function renderShip(){const g=shipRows("gift"),m=shipRows("mail");$("#ship-count").textContent=`선물 ${g.length} · 우편 ${m.length}`;
+  const addrTd=c=>c.address?esc(c.address):'<span class="chip s-미갱신">주소 없음</span>';
+  $("#gift-b").innerHTML=g.length?g.map(c=>`<tr data-id="${c.id}"><td><input type="checkbox" class="chk" data-sel="${c.id}" ${c.address?"":"disabled"}></td><td>${fmtD(c.renewedAt||c.due)}</td><td><button class="nm" type="button" data-open="${c.id}" data-line="${lineOf(c)}">${esc(c.name)}</button></td><td><span class="chip l-${lineOf(c)}">${lineOf(c)}</span></td><td>${esc(c.phone||"")}${c.phone?"":'<span style="color:var(--dim)">—</span>'}</td><td style="white-space:normal;min-width:220px">${addrTd(c)}</td><td class="num">${won(c.premium)}</td><td>${c.waybillAt?`<span class="chip s-갱신완료">${fmtD(c.waybillAt)}</span>`:'<span class="chip s-안내완료">대기</span>'}</td><td><div class="acts"><button class="btn" type="button" data-wb="${c.id}" ${c.address?"":"disabled"}>송장</button><button class="btn" type="button" data-req="송장출력" data-id="${c.id}" title="실장님 PC의 Claude가 로젠 사이트에 접수">로젠 접수</button></div></td></tr>`).join(""):`<tr><td colspan="9"><div class="empty">${shFilter==="wait"?"송장을 출력할 선물 대상이 없습니다 (갱신 완료 · 40만원 이상)":"해당 건이 없습니다"}</div></td></tr>`;
+  $("#mail-b").innerHTML=m.length?m.map(c=>`<tr data-id="${c.id}"><td><input type="checkbox" class="chk" data-msel="${c.id}" ${c.address?"":"disabled"}></td><td>${fmtD(c.renewedAt||c.due)}</td><td><button class="nm" type="button" data-open="${c.id}" data-line="${lineOf(c)}">${esc(c.name)}</button></td><td><span class="chip l-${lineOf(c)}">${lineOf(c)}</span></td><td style="font-family:var(--f-mono)">${esc(zipOf(c))}</td><td style="white-space:normal;min-width:220px">${addrTd(c)}</td><td class="num">${won(c.premium)}</td><td>${c.mailedAt?`<span class="chip s-갱신완료">${fmtD(c.mailedAt)}</span>`:'<span class="chip s-안내완료">대기</span>'}</td><td><div class="acts"><button class="btn" type="button" data-lb="${c.id}" ${c.address?"":"disabled"}>라벨</button></div></td></tr>`).join(""):`<tr><td colspan="9"><div class="empty">${shFilter==="wait"?"라벨을 출력할 우편 대상이 없습니다 (갱신 완료 · 40만원 미만)":"해당 건이 없습니다"}</div></td></tr>`;
+  $("#gift-all").checked=false;$("#mail-all").checked=false}
+function selIds(attr){return $$(`input[${attr}]:checked`).map(i=>i.getAttribute(attr))}
+function senderInfo(){return{name:sender.name||"박문철보험대리점",phone:sender.phone||"",zip:sender.zip||"",addr:sender.addr||"",item:sender.item||"감사 선물",msg:sender.msg||"보험 갱신 감사 선물입니다"}}
+function waybillHtml(c){const s=senderInfo();return `<div class="wb"><h1>로젠택배 송장 작성 전표 <small>${esc(s.name)} · ${today()}</small></h1>
+  <table><tr><th>받는 분</th><td class="big">${esc(c.name)}</td></tr><tr><th>전화</th><td>${esc(c.phone||"")}</td></tr><tr><th>주소</th><td class="big" style="font-size:14pt">${zipOf(c)?"("+esc(zipOf(c))+") ":""}${esc(c.address||"")}</td></tr>
+  <tr><th>품목</th><td>${esc(s.item)} · 1개</td></tr><tr><th>배송 메시지</th><td>${esc(s.msg)}</td></tr>
+  <tr><th>보내는 분</th><td>${esc(s.name)}${s.phone?" · "+esc(s.phone):""}<br>${s.zip?"("+esc(s.zip)+") ":""}${esc(s.addr)}</td></tr></table>
+  <div class="ft"><span>${esc(lineOf(c))} · ${esc(c.product||"")}${c.car?" · "+esc(c.car):""} · 갱신 ${esc(c.renewedAt||c.due||"")} · ${won(c.premium)}</span><span>건 번호 ${esc(c.id)}</span></div></div>`}
+const LBL={"3108":{w:99.1,h:33.9,cols:2,rows:8,left:4.7,top:12.9,gap:2.5},"3107":{w:99.1,h:38.1,cols:2,rows:7,left:4.7,top:15.15,gap:2.5},"3100":{w:63.5,h:38.1,cols:3,rows:7,left:7.25,top:15.15,gap:2.5}};
+function labelsHtml(list){const f=LBL[$("#lbl-fmt").value]||LBL["3108"];const per=f.cols*f.rows;const skip=Math.max(0,Math.min(per-1,Number($("#lbl-skip").value||0)));const cells=Array(skip).fill(null).concat(list);const s=senderInfo();const pages=[];
+  for(let i=0;i<cells.length;i+=per){const chunk=cells.slice(i,i+per);while(chunk.length<per)chunk.push(null);
+    pages.push(`<div class="sheet-lbl" style="grid-template-columns:repeat(${f.cols},${f.w}mm);grid-auto-rows:${f.h}mm;column-gap:${f.gap}mm;padding:${f.top}mm 0 0 ${f.left}mm">${chunk.map(c=>c?`<div class="lbl ${f.w<70?"s":""}"><span class="z">${esc(zipOf(c))}</span><span>${esc(c.address||"")}</span><b>${esc(c.name)} 귀하</b></div>`:'<div class="lbl"></div>').join("")}</div>`)}
+  return pages.join("")}
+let printIds=[],printKind="";
+function doPrint(html,ids,kind){if(!ids.length)return toast("출력할 건이 없습니다. 주소가 있는 건만 출력됩니다");const area=$("#print-area");area.innerHTML=html;printIds=ids;printKind=kind;document.body.classList.add("printing");
+  setTimeout(()=>{try{window.print()}catch(e){toast("인쇄 창을 열지 못했습니다")}},50)}
+window.addEventListener("afterprint",async()=>{document.body.classList.remove("printing");const ids=printIds,kind=printKind;printIds=[];printKind="";$("#print-area").innerHTML="";if(!ids.length||!db)return;
+  const auto=kind==="gift"?$("#gift-auto").checked:$("#mail-auto").checked;if(!auto)return;await markShipped(ids,kind)});
+async function markShipped(ids,kind){if(!db)return toast("데이터 연결이 안 됐습니다");const key=kind==="gift"?"waybillAt":"mailedAt";const now=new Date().toISOString();
+  try{await db.batch(ids.map(id=>({op:"update",col:"cases",id,data:{[key]:today(),updatedAt:now}})));toast(`${ids.length}건 ${kind==="gift"?"송장 출력":"우편 발송"} 완료로 표시했습니다`)}catch(e){toast("완료 표시 실패")}}
+function giftCsv(list){const s=senderInfo();const H=["받는분성명","받는분전화","받는분우편번호","받는분주소","품목","수량","배송메시지","보내는분","보내는분전화","보내는분주소","비고"];
+  const rows=list.map(c=>[c.name,c.phone||"",zipOf(c),c.address||"",s.item,"1",s.msg,s.name,s.phone,(s.zip?"("+s.zip+") ":"")+s.addr,`${lineOf(c)} ${c.product||""} 갱신 ${c.renewedAt||c.due||""}`]);
+  const q=v=>'"'+String(v??"").replace(/"/g,'""')+'"';const csv="\ufeff"+[H,...rows].map(r=>r.map(q).join(",")).join("\r\n");
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));a.download=`로젠_일괄등록_${today()}.csv`;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);toast(`${list.length}건 CSV를 내려받았습니다`)}
+async function fillAddresses(){if(!db)return toast("데이터 연결이 안 됐습니다");await loadCustomers();if(!custRows.length)return toast("보유고객 명부를 불러오지 못했습니다");
+  const need=cases.filter(c=>c.status==="갱신완료"&&!c.address);const writes=[];const now=new Date().toISOString();
+  for(const c of need){const hits=custRows.filter(r=>norm(r.name)===norm(c.name)&&r.addr);if(hits.length===1)writes.push({op:"update",col:"cases",id:c.id,data:{address:hits[0].addr,updatedAt:now}})}
+  if(!writes.length)return toast(need.length?`주소를 못 찾았습니다 (명부에 없거나 동명이인 ${need.length}건). 상세에서 직접 적어 주세요`:"주소가 비어 있는 갱신 완료 건이 없습니다");
+  try{await db.batch(writes);toast(`${writes.length}건 주소를 채웠습니다 (동명이인·명부에 없는 ${need.length-writes.length}건은 직접 입력)`)}catch(e){toast("저장 실패")}}
+function loadSenderForm(){const s=sender||{};$("#sd-name").value=s.name||"";$("#sd-phone").value=s.phone||"";$("#sd-zip").value=s.zip||"";$("#sd-addr").value=s.addr||"";$("#sd-item").value=s.item||"";$("#sd-msg").value=s.msg||""}
+$("#sender-open").onclick=()=>{const c=$("#sender-card");c.hidden=!c.hidden;if(!c.hidden)loadSenderForm()};
+$("#sender-save").onclick=async()=>{if(!db)return toast("데이터 연결이 안 됐습니다");const d={name:$("#sd-name").value.trim(),phone:$("#sd-phone").value.trim(),zip:$("#sd-zip").value.trim(),addr:$("#sd-addr").value.trim(),item:$("#sd-item").value.trim(),msg:$("#sd-msg").value.trim()};
+  try{await db.doc("portal/sender").set(d);sender=d;toast("보내는 분 정보를 저장했습니다")}catch(e){toast("저장 실패")}};
+$("#ship-fill").onclick=fillAddresses;
+$("#shq").oninput=renderShip;$("#ship-month").onchange=renderShip;
+$$("#shf .fchip").forEach(c=>c.onclick=()=>{shFilter=c.dataset.sh;$$("#shf .fchip").forEach(x=>x.setAttribute("aria-pressed",String(x===c)));renderShip()});
+$("#gift-all").onchange=e=>$$("input[data-sel]:not(:disabled)").forEach(i=>i.checked=e.target.checked);
+$("#mail-all").onchange=e=>$$("input[data-msel]:not(:disabled)").forEach(i=>i.checked=e.target.checked);
+$("#gift-print-all").onclick=()=>{const l=shipRows("gift").filter(c=>c.address&&(shFilter!=="wait"||!c.waybillAt));doPrint(l.map(waybillHtml).join(""),l.map(c=>c.id),"gift")};
+$("#gift-print-sel").onclick=()=>{const ids=selIds("data-sel");const l=ids.map(id=>cases.find(c=>c.id===id)).filter(c=>c&&c.address);if(!l.length)return toast("왼쪽 칸에서 출력할 고객을 고르세요");doPrint(l.map(waybillHtml).join(""),l.map(c=>c.id),"gift")};
+$("#gift-csv").onclick=()=>{const ids=selIds("data-sel");const l=(ids.length?ids.map(id=>cases.find(c=>c.id===id)):shipRows("gift")).filter(c=>c&&c.address);if(!l.length)return toast("내려받을 건이 없습니다");giftCsv(l)};
+$("#gift-done").onclick=()=>{const ids=selIds("data-sel");if(!ids.length)return toast("왼쪽 칸에서 고객을 고르세요");markShipped(ids,"gift")};
+$("#mail-print-all").onclick=()=>{const l=shipRows("mail").filter(c=>c.address&&(shFilter!=="wait"||!c.mailedAt));doPrint(labelsHtml(l),l.map(c=>c.id),"mail")};
+$("#mail-print-sel").onclick=()=>{const ids=selIds("data-msel");const l=ids.map(id=>cases.find(c=>c.id===id)).filter(c=>c&&c.address);if(!l.length)return toast("왼쪽 칸에서 출력할 고객을 고르세요");doPrint(labelsHtml(l),l.map(c=>c.id),"mail")};
+$("#mail-done").onclick=()=>{const ids=selIds("data-msel");if(!ids.length)return toast("왼쪽 칸에서 고객을 고르세요");markShipped(ids,"mail")};
+
 function renderPay(){const days=["즉시","5","10","15","20","25","말일"];const list=cases.filter(c=>c.payDay&&!c.paidAt);const d=new Date().getDate();
   const nextDay=days.find(x=>Number(x)>=d)||"말일";
-  $("#pays").innerHTML=days.map(k=>{const items=list.filter(c=>String(c.payDay)===k);return `<div class="pay ${k===nextDay?"next":""}"><h3>${k==="즉시"||k==="말일"?k:k+"일"} <small>${items.length}건 · ${won(items.reduce((s,c)=>s+Number(c.premium||0),0))||"0원"}</small></h3><ul>${items.length?items.map(c=>`<li><span><b>${esc(c.name)}</b> ${won(c.premium)}</span><span class="acts"><button class="btn" type="button" data-req="카드결제" data-id="${c.id}">결제 요청</button><button class="btn" type="button" data-paid="${c.id}">결제 완료</button></span></li>`).join(""):'<li style="color:var(--dim)">없음</li>'}</ul></div>`}).join("");
-  const sel=$("#pay-case");const cur=sel.value;sel.innerHTML='<option value="">고객 선택</option>'+cases.filter(c=>!c.paidAt&&c.status!=="미갱신").sort((a,b)=>a.name.localeCompare(b.name)).map(c=>`<option value="${c.id}">${esc(c.name)} · ${esc(c.car)} · ${won(c.premium)||"보험료 미정"}</option>`).join("");sel.value=cur}
+  $("#pays").innerHTML=days.map(k=>{const items=list.filter(c=>String(c.payDay)===k);return `<div class="pay ${k===nextDay?"next":""}"><h3>${k==="즉시"||k==="말일"?k:k+"일"} <small>${items.length}건 · ${won(items.reduce((s,c)=>s+Number(c.premium||0),0))||"0원"}</small></h3><ul>${items.length?items.map(c=>`<li><span><b>${esc(c.name)}</b> ${isGen(c)?'<span class="chip l-일반">일반</span> ':""}${won(c.premium)}</span><span class="acts"><button class="btn" type="button" data-req="카드결제" data-id="${c.id}">결제 요청</button><button class="btn" type="button" data-paid="${c.id}">결제 완료</button></span></li>`).join(""):'<li style="color:var(--dim)">없음</li>'}</ul></div>`}).join("");
+  const sel=$("#pay-case");const cur=sel.value;sel.innerHTML='<option value="">고객 선택</option>'+cases.filter(c=>!c.paidAt&&c.status!=="미갱신").sort((a,b)=>a.name.localeCompare(b.name)).map(c=>`<option value="${c.id}">${esc(c.name)} · ${esc(isGen(c)?(c.product||"일반"):c.car)} · ${won(c.premium)||"보험료 미정"}</option>`).join("");sel.value=cur}
 function renderReqs(){const rows=reqs.filter(r=>rFilter==="all"||(rFilter==="done"?r.status==="done":r.status!=="done")).sort((a,b)=>(b.createdAt||"").localeCompare(a.createdAt||""));
   $("#req-count").textContent=`대기 ${reqs.filter(r=>r.status==="new").length} · 진행 ${reqs.filter(r=>r.status==="working").length} · 완료 ${reqs.filter(r=>r.status==="done").length}`;
   const L={new:"대기",working:"진행",done:"완료",hold:"보류"};
@@ -491,23 +711,25 @@ function renderNotes(){const q=($("#note-q").value||"").trim().toLowerCase();con
   $("#note-list").innerHTML=rows.length?rows.map(n=>`<li data-nid="${n.id}"><div class="row" style="justify-content:space-between"><span class="t">${esc(n.title)} <span class="g">${esc(n.tag||"")}</span></span><span class="acts"><button class="btn" type="button" data-nedit="${n.id}">수정</button><button class="btn danger" type="button" data-ndel="${n.id}">삭제</button></span></div><div class="b">${esc(n.body)}</div></li>`).join(""):'<li class="empty" style="display:block">메모가 없습니다</li>'}
 
 /* ---- drawer (case edit) ---- */
-function openCase(id){const c=id?cases.find(x=>x.id===id):{kind:"갱신",status:"미착수",due:today().slice(0,8)+"01"};if(!c)return;
+function openCase(id,line){const c=id?cases.find(x=>x.id===id):{kind:"갱신",status:"미착수",due:today().slice(0,8)+"01",line:line==="일반"?"일반":""};if(!c)return;const gen=isGen(c);
   const f=(k,l,type="text",extra="")=>`<label${extra.includes("full")?' class="full"':""}>${l}<input class="in" name="${k}" type="${type}" value="${esc(c[k]??"")}" ${extra.replace("full","")}></label>`;
-  $("#dw-sheet").innerHTML=`<h3 id="dw-title">${id?esc(c.name)+" 상세":"건 추가"} <button class="btn sm" type="button" id="dw-x">닫기</button></h3>
-  <form id="dw-form" class="fg">
-   ${f("name","고객명","text",'required maxlength="20"')}${f("car","차량번호","text",'maxlength="12"')}${f("carName","차명","text",'maxlength="30"')}${f("product","상품명","text",'maxlength="30"')}
+  const prodSel=`<label>상품명<input class="in" name="product" list="gen-products" value="${esc(c.product||"")}" maxlength="30"><datalist id="gen-products">${GEN_PRODUCTS.map(p=>`<option value="${p}">`).join("")}</datalist></label>`;
+  $("#dw-sheet").innerHTML=`<h3 id="dw-title">${id?esc(c.name)+" 상세":(gen?"일반보험 건 추가":"자동차 건 추가")} <span class="chip l-${lineOf(c)}">${lineOf(c)}</span> <button class="btn sm" type="button" id="dw-x" style="margin-left:auto">닫기</button></h3>
+  <form id="dw-form" class="fg"><input type="hidden" name="line" value="${gen?"일반":""}">
+   ${gen?f("name","계약자(업체명)","text",'required maxlength="30"')+f("insured","피보험자","text",'maxlength="30"')+prodSel+f("object","목적물·소재지","text",'maxlength="60"'):f("name","고객명","text",'required maxlength="20"')+f("car","차량번호","text",'maxlength="12"')+f("carName","차명","text",'maxlength="30"')+f("product","상품명","text",'maxlength="30"')}
    <label>구분<select class="in" name="kind"><option ${c.kind!=="신규"?"selected":""}>갱신</option><option ${c.kind==="신규"?"selected":""}>신규</option></select></label>
    <label>상태<select class="in" name="status">${STATUS.map(s=>`<option ${s===c.status?"selected":""}>${s}</option>`).join("")}</select></label>
-   ${f("due","만기일","date")}${f("branch","자/타점","text",'maxlength="6"')}${f("prevNo","전계약번호")}${f("designNo","만기가설계번호")}${f("renewNo","갱신계약번호")}${f("year","년차","text",'maxlength="6"')}
+   ${f("due","만기일","date")}${f("branch","자/타점","text",'maxlength="6"')}${f("prevNo",gen?"전계약 증권번호":"전계약번호")}${gen?"":f("designNo","만기가설계번호")}${f("renewNo",gen?"갱신 증권번호":"갱신계약번호")}${f("year","년차","text",'maxlength="6"')}
    ${f("prevPremium","작년 보험료","number",'min="0" step="10"')}${f("premium","갱신 보험료","number",'min="0" step="10"')}
    <label>결제 방식<select class="in" name="payMethod"><option value="">미정</option>${["카드","계좌이체","현금","고객 직접"].map(m=>`<option ${m===c.payMethod?"selected":""}>${m}</option>`).join("")}</select></label>
    <label>결제일<select class="in" name="payDay"><option value="">없음</option>${["즉시","5","10","15","20","25","말일"].map(d=>`<option value="${d}" ${d===String(c.payDay||"")?"selected":""}>${d==="즉시"||d==="말일"?d:d+"일"}</option>`).join("")}</select></label>
-   ${f("designedAt","설계 완료","date")}${f("notifiedAt","안내 발송","date")}${f("renewedAt","갱신 완료","date")}${f("paidAt","결제 완료","date")}${f("policyAt","증권 발행","date")}${f("waybillAt","송장 출력","date")}
-   ${f("address","배송 주소 (선물)","text",'full maxlength="120"')}
+   ${f("designedAt","설계 완료","date")}${f("notifiedAt","안내 발송","date")}${f("renewedAt","갱신 완료","date")}${f("paidAt","결제 완료","date")}${f("policyAt","증권 발행","date")}${f("waybillAt","송장 출력","date")}${f("mailedAt","우편 발송","date")}
+   ${f("phone","연락처 (송장용)","tel",'maxlength="20"')}${f("zip","우편번호","text",'maxlength="7" inputmode="numeric"')}
+   ${f("address","배송·우편 주소","text",'full maxlength="120"')}
    <label class="full">메모<textarea class="in" name="memo" rows="3" maxlength="500">${esc(c.memo||"")}</textarea></label>
   </form>
   <div class="row"><button class="btn pri" type="submit" form="dw-form">저장</button>${id?`<button class="btn danger" type="button" id="dw-del">삭제</button>`:""}<span class="note" id="dw-note"></span></div>
-  <p class="note">주민번호·카드번호는 어디에도 적지 않습니다.</p>`;
+  <p class="note">주민번호·카드번호는 어디에도 적지 않습니다. 갱신 보험료 40만원 이상이면 로젠택배 선물, 미만이면 우편 발송 대상이 됩니다.</p>`;
   $("#dw").hidden=false;$("#dw-x").onclick=closeDw;
   $("#dw-form").onsubmit=async e=>{e.preventDefault();if(!db)return toast("데이터 연결이 안 됐습니다");const fd=new FormData(e.target);const d={};for(const[k,v]of fd.entries())d[k]=String(v).trim();d.prevPremium=Number(d.prevPremium||0);d.premium=Number(d.premium||0);d.updatedAt=new Date().toISOString();
     for(const k of ["designedAt","notifiedAt","renewedAt","paidAt"]){const st={designedAt:"설계완료",notifiedAt:"안내완료",renewedAt:"갱신완료"}[k];if(k==="renewedAt"&&d.status==="갱신완료"&&!d.renewedAt)d.renewedAt=today();if(k==="designedAt"&&d.status==="설계완료"&&!d.designedAt)d.designedAt=today();if(k==="notifiedAt"&&d.status==="안내완료"&&!d.notifiedAt)d.notifiedAt=today()}
@@ -524,7 +746,9 @@ async function makeReq(kind,caseId,detail){if(!db)return toast("데이터 연결
   const r={kind,caseId,name:c.name,car:c.car,product:c.product||"",due:c.due||"",premium:c.premium||0,prevNo:c.prevNo||"",designNo:c.designNo||"",address:kind==="송장출력"?c.address:"",detail:detail||"",status:"new",from:who,createdAt:new Date().toISOString()};
   try{await db.collection("requests").doc("r"+Date.now()).set(r);toast(`${c.name} ${kind} 요청을 올렸습니다`)}catch(err){toast("요청 실패: "+(err.code||""))}}
 document.addEventListener("click",async e=>{const b=e.target.closest("button");if(!b)return;
-  if(b.dataset.open!==undefined)return openCase(b.dataset.open);
+  if(b.dataset.open!==undefined)return openCase(b.dataset.open,b.dataset.line);
+  if(b.dataset.wb){const c=cases.find(x=>x.id===b.dataset.wb);if(!c)return;return doPrint(waybillHtml(c),[c.id],"gift")}
+  if(b.dataset.lb){const c=cases.find(x=>x.id===b.dataset.lb);if(!c)return;return doPrint(labelsHtml([c]),[c.id],"mail")}
   if(b.dataset.req)return makeReq(b.dataset.req,b.dataset.id);
   if(b.dataset.paid){const c=cases.find(x=>x.id===b.dataset.paid);if(!c||!db)return;try{await db.doc("cases/"+c.id).update({paidAt:today(),updatedAt:new Date().toISOString()});toast(c.name+" 결제 완료로 표시. 증권출력 요청을 올릴까요? 명단의 '증권' 버튼을 누르세요")}catch(err){toast("실패")}return}
   if(b.dataset.rdone||b.dataset.rhold||b.dataset.rdel){const id=b.dataset.rdone||b.dataset.rhold||b.dataset.rdel;const r=reqs.find(x=>x.id===id);if(!r||!db)return;try{
@@ -542,7 +766,12 @@ document.addEventListener("change",async e=>{const cb=e.target.closest("input[da
 $("#q").oninput=renderCases;
 $$("#sf .fchip").forEach(c=>c.onclick=()=>{sFilter=c.dataset.s;$$("#sf .fchip").forEach(x=>x.setAttribute("aria-pressed",String(x===c)));renderCases()});
 $$("[data-r]").forEach(c=>c.onclick=()=>{rFilter=c.dataset.r;$$("[data-r]").forEach(x=>x.setAttribute("aria-pressed",String(x===c)));renderReqs()});
-$("#add-case").onclick=()=>openCase(null);
+$("#add-case").onclick=()=>openCase(null,"");
+$("#gq").oninput=renderGen;
+$$("#gf .fchip").forEach(c=>c.onclick=()=>{gFilter=c.dataset.g;$$("#gf .fchip").forEach(x=>x.setAttribute("aria-pressed",String(x===c)));renderGen()});
+$$("#gp .fchip").forEach(c=>c.onclick=()=>{gpFilter=c.dataset.gp;$$("#gp .fchip").forEach(x=>x.setAttribute("aria-pressed",String(x===c)));renderGen()});
+$("#add-gen").onclick=()=>openCase(null,"일반");
+$("#gimport-open").onclick=()=>{$("#gimport-card").hidden=!$("#gimport-card").hidden;$("#gimport-in").focus()};
 $("#import-open").onclick=()=>{$("#import-card").hidden=!$("#import-card").hidden;$("#import-in").focus()};
 
 /* ---- import parser ---- */
@@ -558,6 +787,24 @@ $("#import-parse").onclick=()=>{imported=parseRows($("#import-in").value);$("#im
   $("#import-body").innerHTML=imported.map(r=>`<tr><td>${r.due}</td><td>${esc(r.name)}</td><td>${esc(r.car)}</td><td>${esc(r.carName)}</td><td>${esc(r.product)}</td><td>${r.branch}</td><td>${r.prevNo}</td><td>${r.designNo}</td><td>${r.renewNo}</td><td>${r.status}</td></tr>`).join("")};
 $("#import-save").onclick=async()=>{if(!db)return toast("데이터 연결이 안 됐습니다");let n=0;const have=new Set(cases.map(c=>c.car+"|"+c.due));for(const r of imported){if(r.car&&have.has(r.car+"|"+r.due))continue;try{await db.collection("cases").doc("c"+Date.now()+"_"+n).set({...r,prevPremium:0,premium:0,createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()});n++}catch(e){}}
   toast(`${n}건 저장했습니다`);$("#import-in").value="";imported=[];$("#import-prev").hidden=true;$("#import-save").disabled=true;$("#import-note").textContent=""};
+
+/* ---- 일반보험 만기리스트 파서 ---- */
+let gImported=[];
+function parseGenRows(txt){const out=[];const lines=txt.split(/\r?\n/);for(const line of lines){if(!line.trim())continue;
+  const due=(line.match(/\d{4}[-./]\d{2}[-./]\d{2}/)||[])[0];if(!due)continue;const dueN=due.replace(/[./]/g,"-");
+  const toks=(/\t|\s{2,}/.test(line)?line.split(/\t|\s{2,}/):line.split(/,(?!\d{3})/)).map(s=>s.trim()).filter(Boolean);
+  const product=toks.find(t=>GEN_PRODUCTS.some(p=>t.includes(p.replace("보험","")))||/배상|기업종합|화재|플러스|종합보험/.test(t))||"";
+  const nums=toks.filter(t=>/^[A-Z]?\d{4,}[A-Z]?[\d-]{4,}$/i.test(t.replace(/\s/g,""))&&!/^\d{4}-\d{2}-\d{2}$/.test(t)).map(t=>t.replace(/\s/g,""));
+  const money=[...line.matchAll(/(?<![A-Za-z\d-])(\d{1,3}(?:,\d{3})+|\d{5,9})(?![\d-])/g)].map(m=>Number(m[1].replace(/,/g,""))).filter(n=>n>=1000&&!nums.some(x=>x.includes(String(n))));
+  const skip=/자점|타점|년차|개인|법인|업무|갱신|신규|만기|증권|보험료/;
+  const name=toks.find(t=>t!==product&&/[가-힣]/.test(t)&&t.length<=20&&!skip.test(t)&&!/\d{4}-\d{2}-\d{2}/.test(t)&&!/\(\d{6}/.test(t))||toks.find(t=>/([가-힣]{2,5})\s*\(\d{6}/.test(t))?.match(/([가-힣]{2,5})/)?.[1]||"";
+  const branch=/자점/.test(line)?"자점":/타점/.test(line)?"타점":"";
+  out.push({line:"일반",name:name.replace(/\(\d{6}.*$/,"").trim(),product,prevNo:nums[0]||"",renewNo:nums[1]||"",prevPremium:money.length?Math.max(...money):0,branch,due:dueN,kind:"갱신",status:"미착수"})}return out}
+$("#gimport-parse").onclick=()=>{gImported=parseGenRows($("#gimport-in").value);$("#gimport-prev").hidden=!gImported.length;$("#gimport-save").disabled=!gImported.length;$("#gimport-note").textContent=gImported.length?`${gImported.length}건 인식. 같은 증권번호+만기일은 건너뜁니다. 잘못 읽힌 칸은 저장 후 상세에서 고치세요`:"인식된 줄이 없습니다. 만기일(YYYY-MM-DD)이 있어야 합니다";
+  $("#gimport-body").innerHTML=gImported.map(r=>`<tr><td>${r.due}</td><td>${esc(r.name)}</td><td>${esc(r.product)}</td><td>${esc(r.prevNo)}</td><td>${won(r.prevPremium)}</td><td>${r.status}</td></tr>`).join("")};
+$("#gimport-save").onclick=async()=>{if(!db)return toast("데이터 연결이 안 됐습니다");const have=new Set(cases.filter(isGen).map(c=>(c.prevNo||c.name)+"|"+c.due));const now=new Date().toISOString();const writes=[];let n=0;
+  for(const r of gImported){if(have.has((r.prevNo||r.name)+"|"+r.due))continue;writes.push({op:"set",col:"cases",id:"g"+Date.now()+"_"+(n++),data:{...r,premium:0,createdAt:now,updatedAt:now}})}
+  if(!writes.length)return toast("새로 올릴 건이 없습니다 (모두 이미 있음)");try{await db.batch(writes);toast(`${writes.length}건 저장했습니다`);$("#gimport-in").value="";gImported=[];$("#gimport-prev").hidden=true;$("#gimport-save").disabled=true;$("#gimport-note").textContent=""}catch(e){toast("저장 실패")}};
 
 /* ---- pay ---- */
 $("#pay-add").onclick=async()=>{const id=$("#pay-case").value;if(!id||!db)return toast("고객을 고르세요");try{await db.doc("cases/"+id).update({payMethod:"카드",payDay:$("#pay-day").value,updatedAt:new Date().toISOString()});toast("결제 명단에 올렸습니다")}catch(e){toast("실패")}};
@@ -611,10 +858,11 @@ try{API=localStorage.getItem("api")||DEFAULT_API;KEY=localStorage.getItem("key")
 async function call(action,params){const url=API+(API.includes("?")?"&":"?")+new URLSearchParams({action,key:KEY,...(params||{})});const r=await fetch(url,{redirect:"follow"});const j=await r.json();if(!j.ok)throw new Error(j.error||"error");return j}
 async function post(body){const r=await fetch(API,{method:"POST",redirect:"follow",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({key:KEY,...body})});const j=await r.json();if(!j.ok){const e=new Error(j.message||j.error||"error");e.code=j.error;throw e}return j}
 /* db 흉내: 페이지 코드는 db.doc("col/id").set/update/delete 와 db.collection("col").doc(id) 만 쓴다 */
-const apiDb={doc:p=>{const [col,id]=p.split("/");return{set:async d=>{await post({action:"set",col,id,data:d});refresh()},update:async d=>{await post({action:"update",col,id,data:d});refresh()},delete:async()=>{await post({action:"delete",col,id});refresh()}}},collection:c=>({doc:id=>apiDb.doc(c+"/"+(id||"x"+Date.now()))})};
+const apiDb={doc:p=>{const [col,id]=p.split("/");return{set:async d=>{await post({action:"set",col,id,data:d});refresh()},update:async d=>{await post({action:"update",col,id,data:d});refresh()},delete:async()=>{await post({action:"delete",col,id});refresh()}}},collection:c=>({doc:id=>apiDb.doc(c+"/"+(id||"x"+Date.now()))}),
+  batch:async writes=>{for(let i=0;i<writes.length;i+=50)await post({action:"batch",writes:writes.slice(i,i+50)});refresh()}};
 const apiSample={json:async(input,opts)=>{const msgs=Array.isArray(input)?input:[{role:"user",content:String(input)}];const sys=msgs.length>1?msgs[0].content:"";const prompt=msgs[msgs.length-1].content;if(opts&&opts.onText)opts.onText({text:"정리 중…"});const r=await post({action:"summarize",system:sys,prompt});if(!r.data){const e=new Error("JSON 아님");e.text=r.text;throw e}return r.data}};
 let refreshT=null;function refresh(){clearTimeout(refreshT);refreshT=setTimeout(loadAll,400)}
-async function loadAll(){if(!API||!KEY)return;try{const j=await call("all");const d=j.data||{};cases=d.cases||[];reqs=d.requests||[];tpls=(d.templates||[]).sort((a,b)=>(a.order||0)-(b.order||0));notes=d.notes||[];calls=d.calls||[];todos=d.todos||[];profiles={};(d.profiles||[]).forEach(p=>profiles[p.id]=p);portal=(d.portal||[]).find(x=>x.id==="snapshot")||null;monthOpts();$("#db-note").textContent="연결됨 · "+new Date().toLocaleTimeString("ko-KR",{hour:"2-digit",minute:"2-digit"});render()}catch(e){$("#db-note").textContent="데이터를 불러오지 못했습니다: "+(e.message||"");if(/unauthorized/.test(e.message||""))showLogin("비밀번호가 맞지 않습니다")}}
+async function loadAll(){if(!API||!KEY)return;try{const j=await call("all");const d=j.data||{};cases=d.cases||[];reqs=d.requests||[];tpls=(d.templates||[]).sort((a,b)=>(a.order||0)-(b.order||0));notes=d.notes||[];calls=d.calls||[];todos=d.todos||[];profiles={};(d.profiles||[]).forEach(p=>profiles[p.id]=p);portal=(d.portal||[]).find(x=>x.id==="snapshot")||null;sender=(d.portal||[]).find(x=>x.id==="sender")||sender||{};monthOpts();$("#db-note").textContent="연결됨 · "+new Date().toLocaleTimeString("ko-KR",{hour:"2-digit",minute:"2-digit"});render()}catch(e){$("#db-note").textContent="데이터를 불러오지 못했습니다: "+(e.message||"");if(/unauthorized/.test(e.message||""))showLogin("비밀번호가 맞지 않습니다")}}
 async function loadCustomers(){if(custLoaded||!API||!KEY)return;custLoaded=true;try{const j=await call("list",{col:"customers"});custRows=j.data||[];const m=await call("get",{col:"customers_meta",id:"meta"});$("#cust-meta").textContent=`보유고객 ${custRows.length.toLocaleString("ko-KR")}명 · ${(m.data&&m.data.updatedAt)||""}`;renderCust()}catch(e){custLoaded=false;$("#cust-meta").textContent="명부를 불러오지 못했습니다"}}
 function showLogin(msg){$("#login").hidden=false;$("#login-url").value=API||DEFAULT_API;$("#login-note").textContent=msg||""}
 $("#login-form").onsubmit=async e=>{e.preventDefault();const url=$("#login-url").value.trim(),key=$("#login-key").value;if(!url||!key){$("#login-note").textContent="주소와 비밀번호를 넣어 주세요";return}
