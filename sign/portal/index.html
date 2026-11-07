@@ -599,7 +599,7 @@ $("#ne-save").onclick=async()=>{if(!db)return toast("데이터 연결이 안 됐
   try{if(curNote)await db.doc("notes/"+curNote).update(d);else await db.doc("notes/n"+Date.now()).set(d);$("#note-editor").hidden=true;toast("저장했습니다")}catch(e){toast("저장 실패")}};
 
 /* ---- boot: Apps Script API ---- */
-const DEFAULT_API=""; /* 배포 후 여기에 웹앱 URL을 넣으면 로그인 창에 미리 채워진다 */
+const DEFAULT_API="https://script.google.com/macros/s/AKfycbyATdbsyJxqsp2X_wlQO5L5TvyYsTqF9RCIU26u6R_OBdTXWbXfuCe42NzoTJICpI5_/exec"; /* 배포 후 여기에 웹앱 URL을 넣으면 로그인 창에 미리 채워진다 */
 let API="",KEY="",pollT=null,custRowsLoaded=false;
 try{API=localStorage.getItem("api")||DEFAULT_API;KEY=localStorage.getItem("key")||""}catch(e){}
 async function call(action,params){const url=API+(API.includes("?")?"&":"?")+new URLSearchParams({action,key:KEY,...(params||{})});const r=await fetch(url,{redirect:"follow"});const j=await r.json();if(!j.ok)throw new Error(j.error||"error");return j}
