@@ -559,7 +559,7 @@ function buildNav(){const R=ROLES[who];const cur=location.hash.replace("#","").s
   const order=vs=>vs.slice().sort((a,b)=>{const ia=R.main.indexOf(a),ib=R.main.indexOf(b);return (ia<0?99:ia)-(ib<0?99:ib)});
   const tops=NAV_GROUPS.map(([id,l,vs])=>`<a href="#${NAV_LAST[id]||order(vs)[0]}" data-g="${id}" class="${id===gid?"on":""}">${l}<span class="n" id="g-${id}"></span></a>`).join("");
   const subs=NAV_GROUPS.map(([id,l,vs])=>vs.length<2?"":`<div class="subs" data-g="${id}"${id===gid?"":" hidden"}>`+order(vs).map(x=>`<a href="#${x}" data-v="${x}"${x===v?' aria-current="page"':""}>${label(x)}${NAV_N[x]?` <span class="n" id="${NAV_N[x]}"></span>`:""}</a>`).join("")+`</div>`).join("");
-  $("#nav").innerHTML=`<div class="tops">${tops}</div>${subs}`;syncGroupBadges()}
+  $("#nav").innerHTML=`<div class="tops">${tops}</div>${subs}`;try{renderNav()}catch(e){syncGroupBadges()}}
 function syncGroupBadges(){NAV_GROUPS.forEach(([id,l,vs])=>{const g=document.getElementById("g-"+id);if(!g)return;let sum=0,hot=false;vs.forEach(x=>{const el=NAV_N[x]&&document.getElementById(NAV_N[x]);if(!el)return;sum+=parseInt(el.textContent,10)||0;if(el.classList.contains("hot"))hot=true});g.textContent=sum||"";g.classList.toggle("hot",hot)})}
 buildNav();
 window.addEventListener("hashchange",buildNav);
