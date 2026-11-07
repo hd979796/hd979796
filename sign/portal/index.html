@@ -958,7 +958,21 @@ const DEFAULT_API="https://script.google.com/macros/s/AKfycbyATdbsyJxqsp2X_wlQO5
 let API="",KEY="",pollT=null,custRowsLoaded=false;
 try{API=localStorage.getItem("api")||DEFAULT_API;KEY=localStorage.getItem("key")||""}catch(e){}
 async function call(action,params){const url=API+(API.includes("?")?"&":"?")+new URLSearchParams({action,key:KEY,...(params||{})});const r=await fetch(url,{redirect:"follow"});const j=await r.json();if(!j.ok)throw new Error(j.error||"error");return j}
-async function post(body){const r=await fetch(API,{method:"POST",redirect:"follow",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({key:KEY,...body})});const j=await r.json();if(!j.ok){const e=new Error(j.message||j.error||"error");e.code=j.error;throw e}return j}
+async function post(body){const r=await fetch(API,{method:"POST",redirect:"follow",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({key:KEY,...body})});const j=await r.json();if(!j.ok){const e=new Error(j.message||j.error||"error");e.code=j.error;throw e}logUse(body);return j}
+function logUse(body){try{
+  if(!body||body.col==="log"||!/^(set|update|delete|batch)$/.test(body.action))return;
+  const items=body.action==="batch"?(body.writes||[]):[body];
+  items.forEach((w,i)=>{
+    if(!w||w.col==="log")return;
+    const d=w.data||{};
+    const e={who:who||"",action:w.op||body.action,col:w.col||"",id:w.id||"",
+      name:d.name||"",kind:d.kind||d.line||"",status:d.status||"",
+      detail:String(d.detail||d.memo||d.text||d.title||"").slice(0,120),
+      view:view||"",at:new Date().toISOString()};
+    fetch(API,{method:"POST",redirect:"follow",headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body:JSON.stringify({key:KEY,action:"set",col:"log",id:"l"+Date.now()+"_"+i+Math.random().toString(36).slice(2,5),data:e})}).catch(()=>{});
+  });
+}catch(err){}}
 /* db 흉내: 페이지 코드는 db.doc("col/id").set/update/delete 와 db.collection("col").doc(id) 만 쓴다 */
 const apiDb={doc:p=>{const [col,id]=p.split("/");return{set:async d=>{await post({action:"set",col,id,data:d});refresh()},update:async d=>{await post({action:"update",col,id,data:d});refresh()},delete:async()=>{await post({action:"delete",col,id});refresh()}}},collection:c=>({doc:id=>apiDb.doc(c+"/"+(id||"x"+Date.now()))}),
   batch:async writes=>{for(let i=0;i<writes.length;i+=50)await post({action:"batch",writes:writes.slice(i,i+50)});refresh()}};
