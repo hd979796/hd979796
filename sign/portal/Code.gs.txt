@@ -1,0 +1,176 @@
+/**
+ * 박문철보험대리점 업무포탈 — 백엔드 (Google Apps Script 웹앱)
+ * 데이터는 이 스크립트가 연결된 구글 시트에 탭(컬렉션)별로 저장된다.
+ *
+ * 설치 순서는 README(설치안내.md) 참고.
+ * 스크립트 속성(프로젝트 설정 > 스크립트 속성):
+ *   PASSCODE          포탈 비밀번호 (필수)
+ *   ANTHROPIC_API_KEY 통화 정리(AI 요약)용 키 (선택, 없으면 정리 기능만 꺼짐)
+ *   MODEL             기본 claude-opus-5-5
+ */
+
+var COLS = ["cases", "requests", "templates", "notes", "calls", "todos", "profiles", "customers", "customers_meta", "portal"];
+var JSON_FIELDS = ["family", "todos", "support", "contracts", "renewal", "missing"]; // 배열·객체로 다루는 칸
+var NUM_FIELDS = ["premium", "prevPremium", "order", "portalNo", "all", "long", "gen", "transfer", "count", "total"]; // 숫자로 되돌릴 칸 (customers.car 건수 포함)
+
+function doGet(e) {
+  var p = (e && e.parameter) || {};
+  if (p.action === "ping") return out({ ok: true, name: "박문철보험대리점 업무포탈", time: new Date().toISOString(), ai: !!prop("ANTHROPIC_API_KEY") });
+  if (!auth(p.key)) return out({ ok: false, error: "unauthorized" });
+  if (p.action === "all") {
+    var res = {};
+    COLS.forEach(function (c) { if (c !== "customers") res[c] = readAll(c); });
+    return out({ ok: true, data: res, time: new Date().toISOString() });
+  }
+  if (p.action === "list") return out({ ok: true, data: readAll(p.col) });
+  if (p.action === "get") return out({ ok: true, data: readOne(p.col, p.id) });
+  return out({ ok: false, error: "unknown action" });
+}
+
+function doPost(e) {
+  var body = {};
+  try { body = JSON.parse(e.postData.contents || "{}"); } catch (err) { return out({ ok: false, error: "bad json" }); }
+  if (!auth(body.key)) return out({ ok: false, error: "unauthorized" });
+  var lock = LockService.getScriptLock();
+  try {
+    lock.waitLock(20000);
+    switch (body.action) {
+      case "set": return out({ ok: true, data: writeDoc(body.col, body.id, body.data, false) });
+      case "update": return out({ ok: true, data: writeDoc(body.col, body.id, body.data, true) });
+      case "delete": deleteDoc(body.col, body.id); return out({ ok: true });
+      case "batch":
+        (body.writes || []).forEach(function (w) {
+          if (w.op === "delete") deleteDoc(w.col, w.id); else writeDoc(w.col, w.id, w.data, w.op === "update");
+        });
+        return out({ ok: true, count: (body.writes || []).length });
+      case "replace_customers": replaceCustomers(body.rows || [], body.meta || {}); return out({ ok: true, count: (body.rows || []).length });
+      case "summarize": return out(summarize(body));
+      default: return out({ ok: false, error: "unknown action" });
+    }
+  } catch (err) {
+    return out({ ok: false, error: String(err && err.message || err) });
+  } finally {
+    try { lock.releaseLock(); } catch (e2) {}
+  }
+}
+
+/* ---------- 시트 접근 ---------- */
+function ss() { return SpreadsheetApp.getActiveSpreadsheet(); }
+function prop(k) { return PropertiesService.getScriptProperties().getProperty(k) || ""; }
+function auth(key) { var pc = prop("PASSCODE"); return !!pc && key === pc; }
+function out(obj) { return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON); }
+
+function sheet(col) {
+  if (COLS.indexOf(col) < 0) throw new Error("없는 컬렉션: " + col);
+  var sh = ss().getSheetByName(col);
+  if (!sh) { sh = ss().insertSheet(col); textFormat(sh); sh.appendRow(["id", "updatedAt"]); sh.setFrozenRows(1); }
+  return sh;
+}
+/* 모든 칸을 '일반 텍스트'로 두어 날짜·전화번호·차량번호가 변형되지 않게 한다 */
+function textFormat(sh) { sh.getRange(1, 1, sh.getMaxRows(), sh.getMaxColumns()).setNumberFormat("@"); }
+function headers(sh) { var lc = sh.getLastColumn(); return lc ? sh.getRange(1, 1, 1, lc).getValues()[0].map(String) : []; }
+function encode(v) {
+  if (v === null || v === undefined) return "";
+  if (typeof v === "object") return JSON.stringify(v);
+  return v;
+}
+function decode(k, v) {
+  if (v === "" || v === null || v === undefined) return undefined;
+  if (v instanceof Date) return Utilities.formatDate(v, "Asia/Seoul", "yyyy-MM-dd");
+  if (typeof v === "string") {
+    if (JSON_FIELDS.indexOf(k) >= 0 || /^[\[{]/.test(v)) { try { return JSON.parse(v); } catch (e) { return v; } }
+    if (v === "TRUE" || v === "true") return true;
+    if (v === "FALSE" || v === "false") return false;
+    if (NUM_FIELDS.indexOf(k) >= 0 && /^-?\d+(\.\d+)?$/.test(v)) return Number(v);
+    if (k === "car" && /^\d+$/.test(v)) return Number(v); // customers 탭의 자동차 건수
+  }
+  return v;
+}
+function rowToDoc(h, row) {
+  var d = {};
+  for (var i = 0; i < h.length; i++) { var v = decode(h[i], row[i]); if (v !== undefined) d[h[i]] = v; }
+  return d;
+}
+function readAll(col) {
+  var sh = sheet(col); var lr = sh.getLastRow(); if (lr < 2) return [];
+  var h = headers(sh); var rows = sh.getRange(2, 1, lr - 1, h.length).getValues();
+  return rows.filter(function (r) { return r[0] !== ""; }).map(function (r) { return rowToDoc(h, r); });
+}
+function findRow(sh, id) {
+  var lr = sh.getLastRow(); if (lr < 2) return -1;
+  var ids = sh.getRange(2, 1, lr - 1, 1).getValues();
+  for (var i = 0; i < ids.length; i++) if (String(ids[i][0]) === String(id)) return i + 2;
+  return -1;
+}
+function readOne(col, id) { var sh = sheet(col); var r = findRow(sh, id); if (r < 0) return null; var h = headers(sh); return rowToDoc(h, sh.getRange(r, 1, 1, h.length).getValues()[0]); }
+function writeDoc(col, id, data, merge) {
+  if (!id) throw new Error("id 필요");
+  var sh = sheet(col); var h = headers(sh); var r = findRow(sh, id);
+  var cur = {};
+  if (r > 0 && merge) cur = rowToDoc(h, sh.getRange(r, 1, 1, h.length).getValues()[0]);
+  var doc = merge ? Object.assign({}, cur, data || {}) : Object.assign({}, data || {});
+  doc.id = id; doc.updatedAt = new Date().toISOString();
+  Object.keys(doc).forEach(function (k) { if (h.indexOf(k) < 0) { h.push(k); sh.getRange(1, h.length).setValue(k); } });
+  var row = h.map(function (k) { return encode(doc[k]); });
+  if (r < 0) { r = sh.getLastRow() + 1; if (r > sh.getMaxRows()) sh.insertRowsAfter(sh.getMaxRows(), 100); }
+  sh.getRange(r, 1, 1, row.length).setNumberFormat("@").setValues([row]);
+  return doc;
+}
+function deleteDoc(col, id) { var sh = sheet(col); var r = findRow(sh, id); if (r > 0) sh.deleteRow(r); }
+function replaceCustomers(rows, meta) {
+  var sh = sheet("customers"); sh.clearContents(); if (sh.getMaxRows() < rows.length + 2) sh.insertRowsAfter(sh.getMaxRows(), rows.length + 2 - sh.getMaxRows()); textFormat(sh);
+  var keys = ["name", "birth", "sex", "type", "all", "long", "car", "gen", "transfer", "privacyEnd", "marketingEnd", "job", "addr"];
+  var values = [keys].concat(rows.map(function (r) { return keys.map(function (k) { return r[k] === undefined ? "" : r[k]; }); }));
+  sh.getRange(1, 1, values.length, keys.length).setValues(values); sh.setFrozenRows(1);
+  writeDoc("customers_meta", "meta", Object.assign({ total: rows.length }, meta), false);
+}
+
+/* ---------- 통화 정리 (Claude API) ---------- */
+function summarize(body) {
+  var key = prop("ANTHROPIC_API_KEY");
+  if (!key) return { ok: false, error: "no_ai", message: "ANTHROPIC_API_KEY가 설정되지 않았습니다" };
+  var model = prop("MODEL") || "claude-opus-5-5";
+  var payload = {
+    model: model, max_tokens: 4000,
+    fallbacks: "default",
+    system: body.system || "",
+    messages: [{ role: "user", content: String(body.prompt || "") }]
+  };
+  var res = UrlFetchApp.fetch("https://api.anthropic.com/v1/messages", {
+    method: "post", contentType: "application/json", muteHttpExceptions: true,
+    headers: { "x-api-key": key, "anthropic-version": "2023-06-01", "anthropic-beta": "server-side-fallback-2026-07-01" },
+    payload: JSON.stringify(payload)
+  });
+  var code = res.getResponseCode(); var txt = res.getContentText();
+  if (code !== 200) return { ok: false, error: "api_" + code, message: txt.slice(0, 300) };
+  var j = JSON.parse(txt);
+  if (j.stop_reason === "refusal") return { ok: false, error: "refusal", message: "모델이 응답을 거부했습니다" };
+  var text = (j.content || []).filter(function (b) { return b.type === "text"; }).map(function (b) { return b.text; }).join("");
+  var m = text.match(/\{[\s\S]*\}/);
+  var data = null; try { data = JSON.parse(m ? m[0] : text); } catch (e) {}
+  return { ok: true, text: text, data: data };
+}
+
+/* ---------- 초기 설정 (스크립트 편집기에서 직접 실행) ---------- */
+function setup() {
+  COLS.forEach(function (c) { sheet(c); });
+  var s0 = ss().getSheetByName("Sheet1") || ss().getSheetByName("시트1"); if (s0 && ss().getSheets().length > 1) ss().deleteSheet(s0);
+  Logger.log("탭 생성 완료. 스크립트 속성에 PASSCODE를 넣고 웹앱으로 배포하세요.");
+}
+/** seed.json을 올린 뒤 그 주소(사이트 주소/seed.json 또는 Drive 파일 id)로 초기 데이터를 넣는다. 한 번만 실행. */
+function importSeed(urlOrFileId) {
+  var txt;
+  if (/^https?:\/\//.test(urlOrFileId)) txt = UrlFetchApp.fetch(urlOrFileId).getContentText();
+  else txt = DriveApp.getFileById(urlOrFileId).getBlob().getDataAsString("UTF-8");
+  var seed = JSON.parse(txt);
+  ["cases", "requests", "templates", "notes", "calls", "todos", "profiles", "portal"].forEach(function (c) {
+    var docs = seed[c] || {}; var ids = Object.keys(docs); if (!ids.length) return;
+    var sh = sheet(c); sh.clearContents(); var h = ["id", "updatedAt"];
+    if (sh.getMaxRows() < ids.length + 2) sh.insertRowsAfter(sh.getMaxRows(), ids.length + 2 - sh.getMaxRows()); textFormat(sh);
+    ids.forEach(function (id) { Object.keys(docs[id]).forEach(function (k) { if (h.indexOf(k) < 0) h.push(k); }); });
+    var values = [h].concat(ids.map(function (id) { var d = docs[id]; return h.map(function (k) { return k === "id" ? id : encode(d[k]); }); }));
+    sh.getRange(1, 1, values.length, h.length).setValues(values); sh.setFrozenRows(1);
+    Logger.log(c + ": " + ids.length + "건");
+  });
+  if (seed.customers) { replaceCustomers(seed.customers, (seed.customers_meta || {}).meta || {}); Logger.log("customers: " + seed.customers.length + "명"); }
+}
