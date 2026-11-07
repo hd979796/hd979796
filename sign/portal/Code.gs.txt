@@ -55,7 +55,8 @@ function doPost(e) {
 }
 
 /* ---------- 시트 접근 ---------- */
-function ss() { return SpreadsheetApp.getActiveSpreadsheet(); }
+var SHEET_ID = "1lab_bOLUQ02S1SlXG_wIWMoejj0wnbLyNl89U1qrv-w"; // 업무포탈 데이터 시트
+function ss() { try { var a = SpreadsheetApp.getActiveSpreadsheet(); if (a) return a; } catch (e) {} return SpreadsheetApp.openById(SHEET_ID); }
 function prop(k) { return PropertiesService.getScriptProperties().getProperty(k) || ""; }
 function auth(key) { var pc = prop("PASSCODE"); return !!pc && key === pc; }
 function out(obj) { return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON); }

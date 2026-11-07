@@ -1,6 +1,6 @@
 # 업무포탈 백엔드 설치 지시문 (Claude용)
 
-업무포탈 백엔드(Google Apps Script 웹앱)를 내 대신 설치해 줘. 사무실 크롬에서 작업하고, 아이디·비밀번호는 절대 입력하지 마. 순서:
+업무포탈 백엔드(Google Apps Script 웹앱)를 내 대신 설치해 줘. 지금 연결된 크롬(구글 로그인된 것)에서 작업하고, 아이디·비밀번호는 절대 입력하지 마. 순서:
 
 1. 새 탭에서 https://hd979796.github.io/hd979796/portal/Code.gs.txt 를 열고 본문을 클릭한 뒤 Ctrl+A, Ctrl+C로 전체 복사.
 2. 새 탭에서 https://docs.google.com/spreadsheets/d/1lab_bOLUQ02S1SlXG_wIWMoejj0wnbLyNl89U1qrv-w/edit ("업무포탈 데이터" 시트)를 열고 메뉴 확장 프로그램 > Apps Script.
