@@ -164,7 +164,7 @@ tr.over td:first-child{box-shadow:inset 3px 0 var(--bad)}
 <header>
   <div class="hd">
     <div class="brand">박문철보험대리점 업무포탈 <small>현대해상 · 대표·실장 전용</small></div>
-    <div class="who" id="who"><span>작성자</span><button type="button" data-w="대표" aria-pressed="true">박문철 대표</button><button type="button" data-w="실장" aria-pressed="false">황혜정 실장</button></div>
+    <div class="who" id="who"><span>작성자</span><button type="button" data-w="대표" aria-pressed="true">박문철 대표</button><button type="button" data-w="실장" aria-pressed="false">황혜정 실장</button><button type="button" id="logout" title="이 브라우저에 저장된 로그인 지우기" style="margin-left:6px">로그아웃</button></div>
   </div>
   <nav id="nav">
     <a href="#home" data-v="home">현황</a>
@@ -613,6 +613,7 @@ async function loadCustomers(){if(custLoaded||!API||!KEY)return;custLoaded=true;
 function showLogin(msg){$("#login").hidden=false;$("#login-url").value=API||DEFAULT_API;$("#login-note").textContent=msg||""}
 $("#login-form").onsubmit=async e=>{e.preventDefault();const url=$("#login-url").value.trim(),key=$("#login-key").value;if(!url||!key){$("#login-note").textContent="주소와 비밀번호를 넣어 주세요";return}
   API=url;KEY=key;$("#login-note").textContent="확인 중…";try{await call("all");try{localStorage.setItem("api",API);localStorage.setItem("key",KEY)}catch(e2){}$("#login").hidden=true;db=apiDb;sampleFn=apiSample;await loadAll();if(view==="customers")loadCustomers();clearInterval(pollT);pollT=setInterval(loadAll,30000)}catch(err){$("#login-note").textContent="연결 실패: "+(err.message||"")}};
+$("#logout").onclick=()=>{try{localStorage.removeItem("key");localStorage.removeItem("api")}catch(e){}KEY="";clearInterval(pollT);cases=[];reqs=[];tpls=[];notes=[];calls=[];todos=[];profiles={};render();showLogin("로그아웃했습니다")};
 go();
 (async()=>{if(!API||!KEY){showLogin("");return}db=apiDb;sampleFn=apiSample;await loadAll();if(view==="customers")loadCustomers();pollT=setInterval(loadAll,30000);document.addEventListener("visibilitychange",()=>{if(!document.hidden)loadAll()})})();
 </script>
