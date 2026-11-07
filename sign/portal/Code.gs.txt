@@ -58,7 +58,15 @@ function doPost(e) {
 var SHEET_ID = "1lab_bOLUQ02S1SlXG_wIWMoejj0wnbLyNl89U1qrv-w"; // 업무포탈 데이터 시트
 function ss() { try { var a = SpreadsheetApp.getActiveSpreadsheet(); if (a) return a; } catch (e) {} return SpreadsheetApp.openById(SHEET_ID); }
 function prop(k) { return PropertiesService.getScriptProperties().getProperty(k) || ""; }
-function auth(key) { var pc = prop("PASSCODE"); return !!pc && key === pc; }
+/* 비밀번호 확인. 틀린 시도가 15분 안에 5번 쌓이면 15분 동안 전부 거절한다(짧은 비밀번호 보호). */
+function auth(key) {
+  var pc = prop("PASSCODE"); if (!pc) return false;
+  var cache = CacheService.getScriptCache(); var fails = Number(cache.get("auth_fails") || 0);
+  if (fails >= 5) return false;
+  if (String(key) === pc) return true;
+  cache.put("auth_fails", String(fails + 1), 900);
+  return false;
+}
 function out(obj) { return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON); }
 
 function sheet(col) {
