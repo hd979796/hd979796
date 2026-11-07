@@ -44,7 +44,15 @@ header{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var
 .brand small{font-weight:500;font-size:12px;color:var(--dim)}
 .who{margin-left:auto;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--mute)}
 .who button{font:inherit;font-size:12px;border:1px solid var(--line);background:var(--bg);color:var(--mute);border-radius:999px;padding:3px 10px;cursor:pointer}
-.who button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.who button[data-w]{font-weight:600;transition:transform .15s,background .15s}
+.who button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);transform:scale(1.08);font-size:13px;box-shadow:0 2px 8px rgba(15,107,92,.3)}
+.who button[data-w="실장"][aria-pressed="true"]{background:var(--info);border-color:var(--info);box-shadow:0 2px 8px rgba(43,95,158,.3)}
+.mywork{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.mywork .ttl{font-weight:700;font-size:14px;margin-right:4px}
+.lines .lsec{font-size:12px;font-weight:700;color:var(--dim);letter-spacing:.06em;margin:4px 0 -4px}
+.tool.big{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.tool.big small{color:var(--accent-ink);opacity:.85}
+.tool.big:hover{filter:brightness(1.08)}
 nav{max-width:1180px;margin:6px auto 0;display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
 nav a{flex:none;text-decoration:none;color:var(--mute);font-weight:600;font-size:13.5px;padding:8px 12px;border-bottom:2.5px solid transparent;white-space:nowrap;display:flex;align-items:center;gap:6px}
 nav a[aria-current="page"]{color:var(--fg);border-bottom-color:var(--accent)}
@@ -225,28 +233,16 @@ tr.over td:first-child{box-shadow:inset 3px 0 var(--bad)}
 <header>
   <div class="hd">
     <div class="brand">박문철보험대리점 업무포탈 <small>현대해상 · 대표·실장 전용</small></div>
-    <div class="who" id="who"><span>작성자</span><button type="button" data-w="대표" aria-pressed="true">박문철 대표</button><button type="button" data-w="실장" aria-pressed="false">황혜정 실장</button><button type="button" id="logout" title="이 브라우저에 저장된 로그인 지우기" style="margin-left:6px">로그아웃</button></div>
+    <div class="who" id="who"><button type="button" data-w="대표" aria-pressed="true">박문철 대표 업무</button><button type="button" data-w="실장" aria-pressed="false">황혜정 실장 업무</button><button type="button" id="logout" title="이 브라우저에 저장된 로그인 지우기" style="margin-left:6px">로그아웃</button></div>
   </div>
-  <nav id="nav">
-    <a href="#home" data-v="home">현황</a>
-    <a href="#long" data-v="long">장기 <span class="n" id="n-long"></span></a>
-    <a href="#cases" data-v="cases">자동차 <span class="n" id="n-cases"></span></a>
-    <a href="#gen" data-v="gen">일반 <span class="n" id="n-gen"></span></a>
-    <a href="#claims" data-v="claims">보상·청구 <span class="n" id="n-claims"></span></a>
-    <a href="#ship" data-v="ship">발송 <span class="n" id="n-ship"></span></a>
-    <a href="#customers" data-v="customers">고객</a>
-    <a href="#requests" data-v="requests" class="sub">요청함 <span class="n" id="n-req"></span></a>
-    <a href="#pay" data-v="pay" class="sub">카드결제 <span class="n" id="n-pay"></span></a>
-    <a href="#calls" data-v="calls" class="sub">통화·할 일 <span class="n" id="n-todo"></span></a>
-    <a href="#templates" data-v="templates" class="sub">멘트</a>
-    <a href="#study" data-v="study" class="sub">공부방</a>
-  </nav>
+  <nav id="nav"></nav>
 </header>
 
 <div class="wrap">
 
 <section class="view" id="v-home">
   <div class="row"><label class="note">기준월 <select class="in msel" aria-label="기준월"></select></label><span class="note" id="db-note">데이터 연결 중</span><span class="note" style="margin-left:auto" id="home-today"></span></div>
+  <div class="card" id="home-my"></div>
   <div id="home-lines" class="lines"></div>
   <div class="grid2">
     <div class="card">
@@ -261,7 +257,7 @@ tr.over td:first-child{box-shadow:inset 3px 0 var(--bad)}
   </div>
   <div class="grid2">
     <div class="card">
-      <h2>보상·청구 <em>바로 열기</em></h2>
+      <h2>보상·청구 <em>사고접수 · 검산</em></h2>
       <div class="tools" id="home-tools"></div>
     </div>
     <div class="card">
@@ -293,29 +289,25 @@ tr.over td:first-child{box-shadow:inset 3px 0 var(--bad)}
 
 <section class="view" id="v-claims" hidden>
   <div class="card">
-    <h2>보상·청구 업무 <em>미리 만들어 둔 도구를 여기서 바로 엽니다</em></h2>
+    <h2>보상·청구 <em>사고접수는 배상책임·상해질병 모두 한 화면에서</em></h2>
     <div class="tools" id="claims-tools"></div>
   </div>
-  <div class="grid2">
-    <div class="card">
-      <h2>고객에게 보낼 링크 <em>복사해서 카톡·문자에 붙여넣기</em></h2>
-      <div class="row" style="margin-bottom:8px"><label class="note">보험사 <select class="in" id="cl-ins"><option value="">고객이 직접 선택</option><option value="hyundai">현대해상</option><option value="samsung">삼성화재</option><option value="db">DB손해보험</option><option value="kb">KB손해보험</option><option value="meritz">메리츠화재</option><option value="hanwha">한화손해보험</option><option value="lotte">롯데손해보험</option><option value="heungkuk">흥국화재</option><option value="mg">MG손해보험</option><option value="nh">NH농협손해보험</option><option value="axa">AXA손해보험</option><option value="hana">하나손해보험</option><option value="lina">라이나손해보험</option><option value="aig">AIG손해보험</option><option value="carrot">캐롯손해보험</option><option value="shinhanez">신한EZ손해보험</option></select></label></div>
-      <div class="row"><button class="btn pri" type="button" id="cl-copy-claim">상해·질병 청구서 작성 링크+안내문 복사</button><button class="btn" type="button" id="cl-copy-liab">배상책임 사고접수 링크+안내문 복사</button></div>
-      <p class="note" style="margin-top:8px">고객이 휴대폰에서 작성·서명하면 청구서 PDF가 사무실 메일로 오고, 배상책임 사고통보서는 배상센터로 바로 접수됩니다. 문구를 고치려면 보험청구방·사고접수방에서 바꾸세요.</p>
-    </div>
-    <div class="card">
-      <h2>청구 요청 올리기 <em>Claude가 접수·검산을 준비</em></h2>
-      <form class="fg" id="cl-form">
-        <label>종류<select class="in" name="kind"><option>상해질병청구</option><option>배상책임청구</option><option>보험금검산</option><option>자동차사고접수</option></select></label>
-        <label>고객명<input class="in" name="name" required maxlength="20" placeholder="고객명"></label>
-        <label class="full">내용<textarea class="in" name="detail" rows="3" maxlength="400" placeholder="예: 11/3 OO내과 통원 2회, 실손 4세대. 영수증 사진은 카톡으로 받음"></textarea></label>
-      </form>
-      <div class="row" style="margin-top:8px"><button class="btn pri" type="submit" form="cl-form">요청함에 올리기</button><span class="note">주민번호·계좌번호는 적지 않습니다. 접수 서류는 보험청구방 대장에 보관됩니다.</span></div>
-    </div>
-  </div>
   <div class="card">
-    <h2>진행 중인 청구 <em id="cl-count"></em></h2>
-    <ul class="list" id="cl-list"></ul>
+    <h2>보상청구 기록 <em id="cl-count"></em></h2>
+    <div class="filters">
+      <input class="in" id="cl-q" type="search" placeholder="고객명 검색" aria-label="고객명 검색">
+      <div class="row" id="clf"><button class="fchip" data-ck="" aria-pressed="true">전체</button><button class="fchip" data-ck="배상책임접수">배상책임</button><button class="fchip" data-ck="상해질병접수">상해·질병</button></div>
+      <button class="btn" type="button" id="cl-add">+ 기록 직접 추가</button>
+    </div>
+    <form class="row" id="cl-form" hidden style="margin-top:10px;border-top:1px dashed var(--line);padding-top:10px">
+      <select class="in" name="kind"><option value="배상책임접수">배상책임 접수</option><option value="상해질병접수">상해·질병 접수</option></select>
+      <input class="in" name="name" required maxlength="20" placeholder="고객명" style="width:140px">
+      <input class="in" name="at" type="date">
+      <input class="in" name="detail" maxlength="120" placeholder="메모 (보험사 · 사고일 · 접수번호)" style="flex:1 1 200px">
+      <button class="btn pri" type="submit">기록</button>
+    </form>
+    <div class="tw"><table><thead><tr><th>접수일</th><th>구분</th><th>고객명</th><th>내용</th><th>처리</th><th></th></tr></thead><tbody id="cl-body"></tbody></table></div>
+    <p class="note" style="margin-top:8px">사고접수 화면에서 배상책임 접수 메일을 보내거나 상해·질병 청구 PDF를 만들면 여기에 자동으로 남습니다(접수 완료 고객 확인용). 자동 기록 연결은 사고접수 스크립트에 한 번 설치해야 하며, 설치 전에는 「기록 직접 추가」로 남깁니다.</p>
   </div>
 </section>
 
@@ -449,12 +441,13 @@ tr.over td:first-child{box-shadow:inset 3px 0 var(--bad)}
 
 <section class="view" id="v-study" hidden>
   <div class="card">
-    <h2>보험공부방 <em>업무 규칙과 공부 메모</em></h2>
-    <div class="links"><a href="https://claude.ai/artifact/S6grncxvSnN47riuAdZcxX" target="_blank" rel="noopener">보험 공부방 (약관 질문)</a><a href="https://claude.ai/artifact/UwS7YRZJcwGMfo2q7JhbBm" target="_blank" rel="noopener">AI 사무실</a><a href="https://claude.ai/artifact/ShBURvuEzjhAwe6RpjPsJS" target="_blank" rel="noopener">자동차 갱신설계 매뉴얼</a><a href="https://sp.hi.co.kr" target="_blank" rel="noopener">하이 영업포탈</a><a href="https://www.ilogen.com" target="_blank" rel="noopener">로젠택배</a></div>
-    <div class="filters" style="margin-top:12px"><input class="in" id="note-q" type="search" placeholder="메모 검색 (예: 그린서비스, 마일리지)" aria-label="메모 검색"><button class="btn" id="note-new" type="button">+ 메모</button></div>
+    <h2>보험상담 <em>상담 중 바로 찾는 정보 · 약관 학습 메모</em></h2>
+    <div class="tools" id="study-tools"></div>
+    <div class="filters" style="margin-top:12px"><input class="in" id="note-q" type="search" placeholder="상담 정보 검색 (예: 대장용종, 그린서비스, 마일리지)" aria-label="상담 정보 검색"><button class="btn" id="note-new" type="button">+ 정보 메모</button></div>
+    <div class="row" id="note-tags" style="margin-top:6px"></div>
     <ul class="list notes" id="note-list" style="margin-top:10px"></ul>
     <div id="note-editor" hidden style="margin-top:10px;display:flex;flex-direction:column;gap:6px">
-      <input class="in" id="ne-title" placeholder="제목" maxlength="60"><input class="in" id="ne-tag" placeholder="분류 (예: 자동차 특약 / 일반보험 / 청구)" maxlength="30">
+      <input class="in" id="ne-title" placeholder="제목 (예: 대장용종 제거 — 퍼펙트플러스 종합보험 수술비)" maxlength="80"><input class="in" id="ne-tag" placeholder="분류 (예: 장기 담보 / 자동차 특약 / 일반보험 / 청구)" maxlength="30">
       <textarea class="in" id="ne-body" rows="6" placeholder="내용"></textarea>
       <div class="row"><button class="btn pri" id="ne-save" type="button">저장</button><button class="btn" id="ne-cancel" type="button">취소</button></div>
     </div>
@@ -485,22 +478,29 @@ const LINES={
   "일반":{key:"gen",title:"일반보험",sub:"기타전문인배상 · 하이기업종합플러스 · 승강기 · 생산물배상 · 화재",dateLabel:"만기일",status:STATUS,done:"갱신완료",fail:"미갱신",run:["미착수","설계완료","안내완료","보류"],kinds:["갱신","신규"],nameLabel:"계약자(업체명)",noLabel:"전계약 증권번호",premLabel:"갱신 보험료",prevLabel:"작년 보험료",reqs:["갱신설계","안내준비","카드결제"]}
 };
 const LINE_KEYS={long:"장기",cases:"자동차",gen:"일반"};
-const KINDS={"갱신설계":"갱신설계","안내준비":"안내 멘트·청약서 이미지","카드결제":"카드결제 화면 준비","증권출력":"증권 발행·출력","송장출력":"로젠택배 송장 접수","상해질병청구":"상해·질병 보험금 청구 접수","배상책임청구":"배상책임 사고접수·청구 진행","보험금검산":"실손 보험금 검산","자동차사고접수":"자동차 사고접수·보상 진행"};
-const CLAIM_KINDS=["상해질병청구","배상책임청구","보험금검산","자동차사고접수"];
+const KINDS={"갱신설계":"갱신설계","안내준비":"안내 멘트·청약서 이미지","카드결제":"카드결제 화면 준비","증권출력":"증권 발행·출력","송장출력":"로젠택배 송장 접수","상해질병청구":"상해·질병 보험금 청구 접수","배상책임청구":"배상책임 사고접수·청구 진행","보험금검산":"실손 보험금 검산","자동차사고접수":"자동차 사고접수·보상 진행","배상책임접수":"배상책임 접수 (메일 발송)","상해질병접수":"상해·질병 청구 (PDF 출력)"};
+const CLAIM_KINDS=["상해질병청구","배상책임청구","보험금검산","자동차사고접수","배상책임접수","상해질병접수"];
+const CLAIM_FORM_LINK="https://script.google.com/macros/s/AKfycbwYo0OB6Z9ZlXPbNTyTeTdlbWuEoV4mRVbvV3fExseqeVQyhJuD7js_aM2mKDs-0xn4/exec";
 const TOOLS=[
-  {t:"보험청구방",d:"상해·질병 보험금 청구 접수 · 보험사별 접수처 · 청구 PDF · 접수 대장",u:"https://claude.ai/artifact/UA8mwA5txMDR2TXDkjVGSv",i:"🩺"},
-  {t:"배상책임 사고접수방",d:"현대해상 배상책임 사고통보서 링크 · 고객 안내문 · QR",u:"https://claude.ai/artifact/4Yq7f1Y5oVF7bRyQhBTW5y",i:"⚖️"},
+  {t:"사고접수",d:"배상책임 사고접수 · 상해·질병 보험금 청구를 한 화면에서 접수(메일 발송·청구 PDF)",u:CLAIM_FORM_LINK,i:"🚨",big:true},
   {t:"보험금 검산방",d:"실손 1~5세대 약관 기준 예상 보험금 검산 · 보고서",u:"https://claude.ai/artifact/JFhBJgSRaiHtDum3oF4ZGB",i:"🧮"},
   {t:"동의서 서명",d:"개인정보 동의서 휴대폰 서명 페이지",u:"https://hd979796.github.io/hd979796/sign/",i:"✍️"},
   {t:"하이 영업포탈",d:"현대해상 설계·청약·보상 포탈",u:"https://sp.hi.co.kr",i:"🏢"}];
-const CLAIM_FORM_LINK="https://script.google.com/macros/s/AKfycbwYo0OB6Z9ZlXPbNTyTeTdlbWuEoV4mRVbvV3fExseqeVQyhJuD7js_aM2mKDs-0xn4/exec";
-const LIAB_LINK="https://parkmc-claim.blogspot.com/";
+const STUDY_TOOLS=[
+  {t:"보험 공부방 · 약관 질문",d:"약관을 학습한 Claude에게 상담 중 바로 질문",u:"https://claude.ai/artifact/S6grncxvSnN47riuAdZcxX",i:"📖",big:true},
+  {t:"AI 사무실",d:"매뉴얼 · 통화 정리 · 사무실 DB",u:"https://claude.ai/artifact/UwS7YRZJcwGMfo2q7JhbBm",i:"🏠"},
+  {t:"자동차 갱신설계 매뉴얼",d:"만기명세 → 가설계 → 청약서 순서와 특약 규칙",u:"https://claude.ai/artifact/ShBURvuEzjhAwe6RpjPsJS",i:"🚗"},
+  {t:"하이 영업포탈",d:"담보 조회 · 설계",u:"https://sp.hi.co.kr",i:"🏢"}];
+const CLAIM_LOG_KINDS=["배상책임접수","상해질병접수"];
+const NAV_ALL=[["home","현황"],["long","장기"],["cases","자동차"],["gen","일반"],["claims","보상·청구"],["ship","발송"],["customers","고객"],["requests","요청함"],["pay","카드결제"],["calls","통화·할 일"],["templates","멘트"],["study","보험상담"]];
+const ROLES={"대표":{main:["home","long","claims","study","customers","calls"],lines:["장기","자동차","일반"]},"실장":{main:["home","cases","gen","ship","customers","requests","pay"],lines:["자동차","일반","장기"]}};
+const NAV_N={long:"n-long",cases:"n-cases",gen:"n-gen",claims:"n-claims",ship:"n-ship",requests:"n-req",pay:"n-pay",calls:"n-todo"};
 const GIFT_MIN=400000; const SOON_DAYS=10;
 const GEN_PRODUCTS=["기타전문인배상책임","하이기업종합플러스","승강기배상책임","생산물배상책임","화재보험","영업배상책임","기타"];
 const GEN_KEYS={"전문인":/전문인/,"기업종합":/기업종합|기업플러스/,"승강기":/승강기/,"생산물":/생산물/,"화재":/화재/};
 let db=null, sampleFn=null, cases=[], reqs=[], tpls=[], notes=[], portal=null, sender={};
 let calls=[], archive=[], todos=[], profiles={}, custRows=[], custLoaded=false;
-let who="대표", view="home", rFilter="open", curTpl=null, curNote=null, curCust="", twFilter="", crFilter="", shFilter="wait", MONTH="";
+let who="대표", view="home", rFilter="open", clFilter="", curTpl=null, curNote=null, curCust="", twFilter="", crFilter="", shFilter="wait", MONTH="";
 const LF={"장기":{s:"",p:"",q:""},"자동차":{s:"",p:"",q:""},"일반":{s:"",p:"",q:""}}; /* 줄별 필터: 상태칩·상품칩·검색 */
 const today=()=>new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);
 const won=n=>n?Number(n).toLocaleString("ko-KR")+"원":"";
@@ -510,7 +510,11 @@ const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&g
 let toastT;function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("on");clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove("on"),2200)}
 async function copy(txt){try{await navigator.clipboard.writeText(txt);toast("복사했습니다")}catch(e){const ta=document.createElement("textarea");ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");toast("복사했습니다")}catch(_){toast("복사가 막혀 있습니다. 직접 선택해 복사하세요")}ta.remove()}}
 try{who=localStorage.getItem("who")||"대표"}catch(e){}
-$$("#who button").forEach(b=>{b.setAttribute("aria-pressed",String(b.dataset.w===who));b.onclick=()=>{who=b.dataset.w;$$("#who button").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));try{localStorage.setItem("who",who)}catch(e){}}});
+$$("#who button[data-w]").forEach(b=>{b.setAttribute("aria-pressed",String(b.dataset.w===who));b.onclick=()=>{who=b.dataset.w;$$("#who button[data-w]").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));try{localStorage.setItem("who",who)}catch(e){}buildNav();render();toast((who==="대표"?"박문철 대표":"황혜정 실장")+" 업무 화면으로 바꿨습니다")}});
+/* 역할별 상단 탭: 내 업무는 크게, 나머지는 작게 */
+function buildNav(){const R=ROLES[who];const main=NAV_ALL.filter(([v])=>R.main.includes(v)).sort((a,b)=>R.main.indexOf(a[0])-R.main.indexOf(b[0]));const rest=NAV_ALL.filter(([v])=>!R.main.includes(v));
+  $("#nav").innerHTML=main.concat(rest).map(([v,l],i)=>`<a href="#${v}" data-v="${v}" class="${i>=main.length?"sub":""}" ${v===view?'aria-current="page"':""}>${l}${NAV_N[v]?` <span class="n" id="${NAV_N[v]}"></span>`:""}</a>`).join("")}
+buildNav();
 
 /* ---- 줄 화면 틀 (장기·자동차·일반 공통) ---- */
 function lineSection(line){const L=LINES[line],k=L.key;
@@ -656,28 +660,44 @@ Object.keys(LINES).forEach(line=>{const k=LINES[line].key;
   $$(`#pf-${k} .fchip`).forEach(c=>c.onclick=()=>{LF[line].p=c.dataset.p;$$(`#pf-${k} .fchip`).forEach(x=>x.setAttribute("aria-pressed",String(x===c)));renderLine(line)})});
 
 /* ---- 현황 ---- */
+function myWork(){const inM=cases.filter(inMonth);const n=(f)=>cases.filter(f).length;const openReq=reqs.filter(r=>r.status==="new"||r.status==="working");
+  if(who==="실장")return[
+    {l:"자동차 갱신설계·안내",n:inM.filter(c=>isCar(c)&&isRun(c)&&c.status!=="안내완료").length,h:"#cases:진행",c:"warn"},
+    {l:"일반 갱신설계·안내",n:cases.filter(c=>isGen(c)&&(isSoon(c)||isOver(c)||(inMonth(c)&&isRun(c)))&&c.status!=="안내완료").length,h:"#gen:진행",c:"warn"},
+    {l:"증권출력",n:n(needPolicy),h:"#cases:증권",c:"info"},{l:"송장출력",n:n(c=>isGift(c)&&!c.waybillAt),h:"#ship:gift",c:"accent"},{l:"우편발송",n:n(c=>isMail(c)&&!c.mailedAt),h:"#ship:mail",c:"mute"},{l:"카드결제",n:n(needPay),h:"#pay",c:"warn"},{l:"요청함",n:openReq.length,h:"#requests",c:"info"}];
+  return[
+    {l:"장기 진행 중",n:inM.filter(c=>isLong(c)&&isRun(c)).length,h:"#long:진행",c:"info"},{l:"장기 신규 상담",n:inM.filter(c=>isLong(c)&&c.status==="상담").length,h:"#long:신규",c:"accent"},
+    {l:"만기 지남·미갱신 상담",n:n(c=>!isLong(c)&&(isOver(c)||isFail(c))&&inMonth(c)),h:"#cases:실패",c:"bad"},{l:"보상·청구 기록",n:reqs.filter(r=>CLAIM_LOG_KINDS.includes(r.kind)&&(r.createdAt||"").startsWith(MONTH||"")).length,h:"#claims",c:"info"},
+    {l:"할 일",n:todos.filter(t=>!t.done&&t.who==="대표님").length,h:"#calls",c:"warn"},{l:"요청함",n:openReq.length,h:"#requests",c:"mute"}]}
 function renderHome(){$("#home-today").textContent=today()+" · "+(who==="대표"?"박문철 대표":"황혜정 실장");
-  $("#home-lines").innerHTML=Object.keys(LINES).map(line=>{const L=LINES[line],{all,m,t,w}=lineStats(line);const hot=w.filter(x=>x.n);
+  const R=ROLES[who];$("#home-my").innerHTML=`<div class="mywork"><span class="ttl">${who==="대표"?"박문철 대표":"황혜정 실장"} 업무</span>${myWork().map(x=>`<a class="wchip ${x.n?"on":""} c-${x.c}" href="${x.h}">${x.l} <b>${x.n}</b></a>`).join("")}<span class="note" style="margin-left:auto">${who==="대표"?"고객상담 · 고객관리 · 보상 · 장기보험 · 신규영업":"자동차·일반 갱신설계 안내 · 증권출력 · 송장·우편 발송 · 고객관리"}</span></div>`;
+  $("#home-lines").innerHTML=R.lines.map((line,i)=>{const sec=i===0?'<div class="lsec">내 업무</div>':i===1&&who==="대표"?'<div class="lsec">실장 업무 (참고)</div>':i===2&&who==="실장"?'<div class="lsec">대표 업무 (참고)</div>':"";return sec+(line=>{const L=LINES[line],{all,m,t,w}=lineStats(line);const hot=w.filter(x=>x.n);
     return `<div class="card lrow"><div class="row"><a class="lt" href="#${L.key}">${L.title}</a><em class="note">${MONTH?MONTH.replace("-","년 ")+"월":"전체"} ${m.length}건</em>${hot.length?hot.map(x=>`<button class="wchip on c-${x.c}" type="button" data-lf="${line}" data-f="${x.f}">${x.l} <b>${x.n}</b></button>`).join(""):'<span class="chip s-갱신완료">대기 업무 없음</span>'}</div>
-    <div class="kpis" style="margin-top:8px">${t.map(x=>`<button class="kpi" type="button" data-lf="${line}" data-f="${x.f}" style="text-align:left;cursor:pointer;font:inherit;color:inherit"><span>${x.l}</span><b style="color:var(--${x.c})">${x.n}</b><small class="note">${esc(x.s)}</small></button>`).join("")}</div></div>`}).join("");
+    <div class="kpis" style="margin-top:8px">${t.map(x=>`<button class="kpi" type="button" data-lf="${line}" data-f="${x.f}" style="text-align:left;cursor:pointer;font:inherit;color:inherit"><span>${x.l}</span><b style="color:var(--${x.c})">${x.n}</b><small class="note">${esc(x.s)}</small></button>`).join("")}</div></div>`})(line)}).join("");
   const due=cases.filter(isDue).sort((a,b)=>a.due.localeCompare(b.due));
   $("#due-list").innerHTML=due.length?due.map(c=>`<li><span class="w">${fmtD(c.due)}</span><span><span class="chip l-${lineOf(c)}">${lineOf(c)}</span> <span class="t">${esc(c.name)}</span> <span class="d">${esc(isCar(c)?c.car:(c.prevNo||""))} · ${esc(c.product||"")}</span></span><span class="chip s-${c.status}">${c.status}</span></li>`).join(""):'<li class="empty" style="display:block">7일 이내 만기 건이 없습니다</li>';
   const open=reqs.filter(r=>r.status==="new"||r.status==="working").slice(0,6);
   $("#home-req").innerHTML=open.length?open.map(r=>`<li><span class="chip r-${r.status}">${r.status==="new"?"대기":"진행"}</span><span><span class="t">${esc(r.name)}</span> <span class="d">${esc(r.kind)}</span></span><span class="w">${ago(r.createdAt)}</span></li>`).join(""):'<li class="empty" style="display:block">대기 중인 요청이 없습니다</li>';
-  $("#home-tools").innerHTML=TOOLS.slice(0,3).map(t=>`<a class="tool" href="${t.u}" target="_blank" rel="noopener"><span class="ti">${t.i}</span><span><b>${esc(t.t)}</b><small>${esc(t.d)}</small></span></a>`).join("")+`<a class="tool" href="#claims"><span class="ti">📂</span><span><b>보상·청구 화면</b><small>고객 링크 복사 · 청구 요청 · 진행 목록 ${reqs.filter(r=>CLAIM_KINDS.includes(r.kind)&&r.status!=="done").length}건</small></span></a>`;
+  const logs=reqs.filter(r=>CLAIM_LOG_KINDS.includes(r.kind));$("#home-tools").innerHTML=toolHtml(TOOLS.slice(0,2))+`<a class="tool" href="#claims"><span class="ti">📂</span><span><b>보상청구 기록</b><small>접수 완료 고객 확인 · 이달 ${logs.filter(r=>(r.createdAt||"").startsWith(MONTH||"")).length}건 · 전체 ${logs.length}건</small></span></a>`;
   if(portal){const r=portal.renewal||{},k=portal.contracts||{};$("#k1").textContent=(r.targetCount??"—")+"건";$("#k2").textContent=(r.renewedCount??"—")+"건";$("#k3").textContent=(r.renewRate??"—")+"%";$("#k4").textContent=`${k.car?.count??0}·${k.gen?.count??0}·${k.long?.count??0}건`;$("#kpi-when").textContent=(portal.month||"")+" · "+(portal.updatedAt||"")}}
 
 /* ---- 보상·청구 ---- */
-function renderClaims(){$("#claims-tools").innerHTML=TOOLS.map(t=>`<a class="tool" href="${t.u}" target="_blank" rel="noopener"><span class="ti">${t.i}</span><span><b>${esc(t.t)}</b><small>${esc(t.d)}</small></span></a>`).join("");
-  const rows=reqs.filter(r=>CLAIM_KINDS.includes(r.kind)).sort((a,b)=>(b.createdAt||"").localeCompare(a.createdAt||""));const open=rows.filter(r=>r.status!=="done");
-  $("#cl-count").textContent=`진행 ${open.length} · 완료 ${rows.length-open.length}`;const Lb={new:"대기",working:"진행",done:"완료",hold:"보류"};
-  $("#cl-list").innerHTML=rows.slice(0,60).map(r=>`<li data-rid="${r.id}"><span class="chip r-${r.status}">${Lb[r.status]||r.status}</span><span><span class="t">${esc(r.name)}</span> <span class="d">${esc(KINDS[r.kind]||r.kind)}${r.detail?" · "+esc(r.detail):""}</span><br><span class="w">${esc(r.from||"")} · ${ago(r.createdAt)}</span></span><span class="acts">${r.status!=="done"?`<button class="btn" type="button" data-rdone="${r.id}">완료</button>`:""}<button class="btn danger" type="button" data-rdel="${r.id}">삭제</button></span>${r.result?`<div class="r">${esc(r.result)}</div>`:""}</li>`).join("")||'<li class="empty" style="display:block">진행 중인 청구가 없습니다. 위에서 요청을 올리거나 보험청구방 대장을 보세요.</li>'}
-$("#cl-form").onsubmit=async e=>{e.preventDefault();if(!db)return toast("데이터 연결이 안 됐습니다");const fd=new FormData(e.target);const name=String(fd.get("name")||"").trim(),kind=String(fd.get("kind")),detail=String(fd.get("detail")||"").trim();if(!name)return toast("고객명을 적어 주세요");
-  try{await db.collection("requests").doc("r"+Date.now()).set({kind,name,detail,status:"new",from:who,createdAt:new Date().toISOString()});e.target.reset();toast(`${name} ${KINDS[kind]} 요청을 올렸습니다`)}catch(err){toast("요청 실패")}};
-const insName=()=>{const s=$("#cl-ins");return s.value?s.options[s.selectedIndex].textContent:""};
-$("#cl-copy-claim").onclick=()=>{const id=$("#cl-ins").value;const link=id?CLAIM_FORM_LINK+"?ins="+id:CLAIM_FORM_LINK;const ins=insName()||"보험";
-  copy(`[박문철보험대리점] ${ins} 보험금 청구서 작성 안내\n\n아래 링크를 누르시면 휴대폰에서 바로 보험금 청구서를 작성·서명하실 수 있습니다. 작성하신 청구서는 저희 대리점으로 접수되어 보험사에 전달됩니다. (출력·수기 작성 불필요)\n\n▶ 청구서 작성 링크\n${link}\n\n준비해 주실 것\n1. 주민등록번호, 보험금 받으실 본인 계좌번호\n2. 서류 사진: 진료비 영수증·세부내역서, 진단서(또는 소견서·입퇴원확인서), 신분증·통장 사본\n\n작성 중 막히는 부분은 010-8796-3959 로 연락 주세요.`)};
-$("#cl-copy-liab").onclick=()=>copy(`[박문철보험대리점] 현대해상 배상책임 사고접수 안내\n\n아래 링크를 누르시면 휴대폰에서 바로 사고통보서를 작성·서명하실 수 있고, 작성 즉시 배상센터로 접수됩니다. (출력·수기 작성 불필요)\n\n▶ 사고접수 링크\n${LIAB_LINK}\n\n함께 올려 주실 서류 사진\n1. 최초 입고 내역서(작업지시서 등)\n2. 사업자등록증 사본\n3. 작업하신 분의 재직증명서 (운전 중 사고는 운전면허증)\n\n작성 중 막히는 부분은 010-8796-3959 로 연락 주세요.`);
+const toolHtml=list=>list.map(t=>`<a class="tool ${t.big?"big":""}" href="${t.u}" target="_blank" rel="noopener"><span class="ti">${t.i}</span><span><b>${esc(t.t)}</b><small>${esc(t.d)}</small></span></a>`).join("");
+function renderClaims(){$("#claims-tools").innerHTML=toolHtml(TOOLS);
+  const q=norm($("#cl-q").value||"");let rows=reqs.filter(r=>CLAIM_LOG_KINDS.includes(r.kind)||CLAIM_KINDS.includes(r.kind)).sort((a,b)=>(b.at||b.createdAt||"").localeCompare(a.at||a.createdAt||""));
+  const all=rows.length;if(clFilter)rows=rows.filter(r=>r.kind===clFilter);if(q)rows=rows.filter(r=>norm(r.name).includes(q));
+  $("#cl-count").textContent=`${rows.length}건${clFilter||q?` / 전체 ${all}건`:""} · 배상책임 ${reqs.filter(r=>r.kind==="배상책임접수").length} · 상해질병 ${reqs.filter(r=>r.kind==="상해질병접수").length}`;
+  const K={"배상책임접수":"배상책임","상해질병접수":"상해·질병"};
+  $("#cl-body").innerHTML=rows.length?rows.slice(0,200).map(r=>`<tr data-rid="${r.id}"><td>${esc((r.at||r.createdAt||"").slice(0,10))}</td><td><span class="chip ${r.kind==="배상책임접수"?"k-갱신":"k-신규"}">${K[r.kind]||esc(r.kind)}</span></td><td><button class="nm" type="button" data-cust="${esc(r.name)}">${esc(r.name)}</button></td><td style="white-space:normal;min-width:200px">${esc(r.detail||"")}${r.result?`<br><span class="note">${esc(r.result)}</span>`:""}</td><td>${r.status==="done"?`<span class="chip s-갱신완료">${r.from==="사고접수"?"자동 기록":"완료"}</span>`:`<button class="btn sm" type="button" data-rdone="${r.id}">완료</button>`}</td><td><button class="btn sm danger" type="button" data-rdel="${r.id}">삭제</button></td></tr>`).join(""):`<tr><td colspan="6"><div class="empty">${q||clFilter?"해당 기록이 없습니다":"아직 기록이 없습니다. 사고접수 화면에서 접수하면 자동으로 남습니다."}</div></td></tr>`}
+$("#cl-q").oninput=renderClaims;
+$$("#clf .fchip").forEach(c=>c.onclick=()=>{clFilter=c.dataset.ck;$$("#clf .fchip").forEach(x=>x.setAttribute("aria-pressed",String(x===c)));renderClaims()});
+$("#cl-add").onclick=()=>{const f=$("#cl-form");f.hidden=!f.hidden;if(!f.hidden){f.at.value=today();f.name.focus()}};
+$("#cl-form").onsubmit=async e=>{e.preventDefault();if(!db)return toast("데이터 연결이 안 됐습니다");const f=e.target;const name=f.name.value.trim();if(!name)return;const at=f.at.value||today();
+  try{await db.collection("requests").doc("cl"+Date.now()).set({kind:f.kind.value,name,detail:f.detail.value.trim(),at,status:"done",from:who,createdAt:new Date(at+"T09:00:00").toISOString(),doneAt:new Date().toISOString(),result:""});f.reset();f.hidden=true;toast(`${name} ${KINDS[f.kind.value]} 기록했습니다`)}catch(err){toast("기록 실패")}};
+
+/* ---- 보험상담 ---- */
+let tagFilter="";
+function renderStudyTools(){$("#study-tools").innerHTML=toolHtml(STUDY_TOOLS)}
 
 function renderCust(){if(view!=="customers")return;const q=($("#cust-q").value||"").trim();const nq=norm(q);const ents=new Map();
   const add=(name,src,extra)=>{if(!name)return;const k=name.trim();if(!ents.has(k))ents.set(k,{name:k,dir:[],calls:0,cases:0,last:""});const e=ents.get(k);if(src==="dir")e.dir.push(extra);if(src==="case")e.cases++;if(src==="call"){e.calls++;if(extra>e.last)e.last=extra}};
@@ -789,8 +809,11 @@ function renderTplPanel(){const t=tpls.find(x=>x.id===curTpl);$("#tpl-copy").dis
   out=out.split("\n").filter(l=>!/\{[^{}]+\}/.test(l)||l.trim()==="").join("\n");$("#tpl-prev").textContent=out;$("#tpl-note").textContent=vars.some(v=>!varVals[v])?"비어 있는 칸이 들어간 줄은 복사할 때 빠집니다":""}
 function fillFromCase(id){const c=cases.find(x=>x.id===id);if(!c)return;const diff=(Number(c.prevPremium||0)-Number(c.premium||0));
   Object.assign(varVals,{"고객명":c.name,"차량번호":c.car,"차명":c.carName||"","만기일":c.due?`${Number(c.due.slice(5,7))}월 ${Number(c.due.slice(8,10))}일`:"","보험료":c.premium?Number(c.premium).toLocaleString("ko-KR"):"","작년보험료":c.prevPremium?Number(c.prevPremium).toLocaleString("ko-KR"):"","차액":diff>0?diff.toLocaleString("ko-KR"):"","상품명":c.product||""});renderTplPanel()}
-function renderNotes(){const q=($("#note-q").value||"").trim().toLowerCase();const rows=notes.filter(n=>!q||`${n.title} ${n.body} ${n.tag}`.toLowerCase().includes(q)).sort((a,b)=>(b.updatedAt||"").localeCompare(a.updatedAt||""));
-  $("#note-list").innerHTML=rows.length?rows.map(n=>`<li data-nid="${n.id}"><div class="row" style="justify-content:space-between"><span class="t">${esc(n.title)} <span class="g">${esc(n.tag||"")}</span></span><span class="acts"><button class="btn" type="button" data-nedit="${n.id}">수정</button><button class="btn danger" type="button" data-ndel="${n.id}">삭제</button></span></div><div class="b">${esc(n.body)}</div></li>`).join(""):'<li class="empty" style="display:block">메모가 없습니다</li>'}
+function renderNotes(){if(view==="study")renderStudyTools();const q=($("#note-q").value||"").trim();const nq=q.toLowerCase();const tags=[...new Set(notes.map(n=>n.tag).filter(Boolean))].sort();
+  $("#note-tags").innerHTML=tags.length?`<span class="note">분류</span><button class="fchip" data-tag="" aria-pressed="${tagFilter===""}">전체</button>`+tags.map(t=>`<button class="fchip" data-tag="${esc(t)}" aria-pressed="${tagFilter===t}">${esc(t)}</button>`).join(""):"";
+  $$("#note-tags .fchip").forEach(c=>c.onclick=()=>{tagFilter=c.dataset.tag;renderNotes()});
+  const rows=notes.filter(n=>(!tagFilter||n.tag===tagFilter)&&(!nq||`${n.title} ${n.body} ${n.tag}`.toLowerCase().includes(nq))).sort((a,b)=>(b.updatedAt||"").localeCompare(a.updatedAt||""));
+  $("#note-list").innerHTML=rows.length?rows.map(n=>`<li data-nid="${n.id}"><div class="row" style="justify-content:space-between"><span class="t">${hl(n.title,q)} <span class="g">${esc(n.tag||"")}</span></span><span class="acts"><button class="btn" type="button" data-nedit="${n.id}">수정</button><button class="btn danger" type="button" data-ndel="${n.id}">삭제</button></span></div><div class="b">${hl(n.body,q)}</div></li>`).join(""):`<li class="empty" style="display:block">${nq||tagFilter?"찾는 정보가 없습니다. 보험 공부방에서 물어보고 답을 「정보 메모」로 남겨 두세요":"상담 중 다시 찾을 정보를 「정보 메모」로 남겨 두세요 (예: 대장용종 제거 시 퍼펙트플러스 종합보험 수술비 최대 200만원)"}</li>`}
 
 /* ---- drawer (case edit) ---- */
 function openCase(id,line){let c=id?cases.find(x=>x.id===id):null;if(id&&!c)return;const ln=c?lineOf(c):(LINES[line]?line:"자동차");const L=LINES[ln];
