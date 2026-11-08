@@ -197,6 +197,17 @@ tr.over td:first-child{box-shadow:inset 3px 0 var(--bad)}
 .preview{white-space:pre-wrap;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:13.5px;line-height:1.6;min-height:120px}
 .prof-hd{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px;margin-bottom:10px}
 .prof-hd h3{margin:0;font-size:20px}
+.pinfo{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px 14px;font-size:13.5px}
+.pinfo div{min-width:0;display:flex;flex-direction:column;gap:1px}
+.pinfo span{font-size:11px;color:var(--dim)}
+.pinfo b{font-weight:600;word-break:break-all;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.pinfo .mono{font-family:var(--f-mono);font-size:13px;letter-spacing:.02em}
+.pinfo a{color:var(--accent);text-decoration:none}
+.pinfo .tiny{font:inherit;font-size:11px;border:1px solid var(--line);background:var(--panel);color:var(--mute);border-radius:999px;padding:0 7px;cursor:pointer}
+.pinfo .tiny:hover{border-color:var(--accent);color:var(--accent)}
+.pacts{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.pacts a,.pacts button{font:inherit;font-size:12.5px;font-weight:600;text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:4px 12px;background:var(--panel);color:var(--fg);cursor:pointer}
+.pacts a:hover,.pacts button:hover{border-color:var(--accent);color:var(--accent)}
 .kv{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px 12px;font-size:12.5px}
 .kv div span{display:block;font-size:11px;color:var(--dim)}
 .psec{border-top:1px solid var(--line2);padding-top:10px;margin-top:12px}
@@ -386,9 +397,17 @@ tr.over td:first-child{box-shadow:inset 3px 0 var(--bad)}
   <div class="tpl-grid">
     <div class="card">
       <h2>고객 검색 <em id="cust-meta"></em></h2>
-      <input class="in" id="cust-q" type="search" placeholder="이름 · 전화번호 · 업체명 · 차량번호" aria-label="고객 검색" style="width:100%">
+      <input class="in" id="cust-q" type="search" placeholder="이름 · 전화번호 · 주민번호 앞자리 · 주소 · 업체명 · 차량번호" aria-label="고객 검색" style="width:100%">
       <ul class="tpls" id="cust-list" style="margin-top:10px"></ul>
-      <p class="note" style="margin-top:8px">보유고객 명부, 갱신·계약 명단, 통화 기록을 한 번에 찾습니다. 생년월일·성별만 두고 주민번호는 없습니다.</p>
+      <div class="row" style="margin-top:10px"><button class="btn" type="button" id="cust-new">+ 고객 카드 추가</button><button class="btn" type="button" id="cimp-open">고객 명부 붙여넣기</button></div>
+      <p class="note" style="margin-top:8px">보유고객 명부, 갱신·계약 명단, 고객 카드, 통화 기록을 한 번에 찾습니다. 전화번호는 숫자만 쳐도 됩니다.</p>
+      <div id="cimp-card" hidden style="margin-top:10px;border-top:1px dashed var(--line);padding-top:10px">
+        <p class="note" style="margin-bottom:6px">영업포탈 고객 조회 표(고객명 · 주민번호 · 휴대폰 · 주소 · 이메일 · 직업 …)를 드래그 복사해서 붙여넣으면 칸을 알아서 찾아 고객 카드에 넣습니다. 머리글 줄이 있으면 더 정확합니다.</p>
+        <textarea class="in" id="cimp-in" rows="5" placeholder="고객명	주민등록번호	휴대폰	주소
+홍길동	800101-1234567	010-1234-5678	경기 의정부시 …"></textarea>
+        <div class="row" style="margin-top:6px"><button class="btn" type="button" id="cimp-parse">미리보기</button><button class="btn pri" type="button" id="cimp-save" disabled>고객 카드에 저장</button><span class="note" id="cimp-note"></span></div>
+        <div class="tw" id="cimp-prev" hidden><table><thead><tr><th>고객명</th><th>주민번호</th><th>휴대폰</th><th>주소</th><th>이메일</th><th>직업·직장</th></tr></thead><tbody id="cimp-body"></tbody></table></div>
+      </div>
     </div>
     <div class="card" id="prof" ><div class="empty">고객을 고르면 기본 정보, 가족관계, 진행 상황, 통화 기록이 여기에 나옵니다.</div></div>
   </div>
@@ -700,26 +719,70 @@ let tagFilter="";
 function renderStudyTools(){$("#study-tools").innerHTML=toolHtml(STUDY_TOOLS)}
 
 function renderCust(){if(view!=="customers")return;const q=($("#cust-q").value||"").trim();const nq=norm(q);const ents=new Map();
-  const add=(name,src,extra)=>{if(!name)return;const k=name.trim();if(!ents.has(k))ents.set(k,{name:k,dir:[],calls:0,cases:0,last:""});const e=ents.get(k);if(src==="dir")e.dir.push(extra);if(src==="case")e.cases++;if(src==="call"){e.calls++;if(extra>e.last)e.last=extra}};
+  const add=(name,src,extra)=>{if(!name)return;const k=name.trim();if(!ents.has(k))ents.set(k,{name:k,dir:[],calls:0,cases:0,last:"",prof:null});const e=ents.get(k);if(src==="dir")e.dir.push(extra);if(src==="prof")e.prof=extra;if(src==="case")e.cases++;if(src==="call"){e.calls++;if(extra>e.last)e.last=extra}};
+  const dq=q.replace(/\D/g,"");
   if(nq){custRows.forEach(r=>{if(norm(r.name).includes(nq)||norm(r.addr).includes(nq)||norm(r.job).includes(nq))add(r.name,"dir",r)});
-    cases.forEach(c=>{if(norm(c.name).includes(nq)||norm(c.car).includes(nq))add(c.name,"case")});
+    Object.values(profiles).forEach(pf=>{if(!pf.name)return;const hit=norm(pf.name).includes(nq)||norm(pf.addr).includes(nq)||norm(pf.company).includes(nq)||norm(pf.job).includes(nq)||norm(pf.email).includes(nq)||(dq.length>=3&&(String(pf.phone||"").replace(/\D/g,"").includes(dq)||String(pf.phone2||"").replace(/\D/g,"").includes(dq)||String(pf.rrn||"").replace(/\D/g,"").startsWith(dq)));if(hit)add(pf.name,"prof",pf)});
+    cases.forEach(c=>{if(norm(c.name).includes(nq)||norm(c.car).includes(nq)||(dq.length>=3&&String(c.phone||"").replace(/\D/g,"").includes(dq)))add(c.name,"case")});
     allCalls().forEach(c=>{if(isPersonal(c))return;if(norm(c.who).includes(nq)||norm(c.summary).includes(nq)){add(kname(c.who)||c.who,"call",c.at||"")}})}
   else{allCalls().slice(0,40).forEach(c=>{if(!isPersonal(c)&&c.who)add(kname(c.who)||c.who,"call",c.at||"")});cases.filter(isDue).forEach(c=>add(c.name,"case"))}
   const list=[...ents.values()].sort((a,b)=>(b.last||"").localeCompare(a.last||"")||a.name.localeCompare(b.name)).slice(0,40);
-  $("#cust-list").innerHTML=list.length?list.map(e=>`<li data-cn="${esc(e.name)}" aria-selected="${e.name===curCust}"><div class="t">${hl(e.name,q)} <span class="g">${e.dir.length?e.dir.map(d=>d.type).join("·"):""}</span></div><div class="g">${e.calls?`통화 ${e.calls}건 · 마지막 ${fmtD(e.last.slice(0,10))}`:"통화 없음"}${e.cases?` · 갱신 ${e.cases}건`:""}${e.dir.length?` · 계약 ${e.dir.reduce((s,d)=>s+Number(d.all||0),0)}건`:""}</div></li>`).join(""):`<li class="empty" style="display:block;cursor:default">${nq?"찾는 고객이 없습니다":"최근 통화한 고객이 여기에 나옵니다"}</li>`;
+  $("#cust-list").innerHTML=list.length?list.map(e=>`<li data-cn="${esc(e.name)}" aria-selected="${e.name===curCust}"><div class="t">${hl(e.name,q)} <span class="g">${e.dir.length?e.dir.map(d=>d.type).join("·"):""}</span></div><div class="g">${e.prof&&e.prof.phone?esc(e.prof.phone)+" · ":""}${e.calls?`통화 ${e.calls}건 · 마지막 ${fmtD(e.last.slice(0,10))}`:"통화 없음"}${e.cases?` · 갱신 ${e.cases}건`:""}${e.dir.length?` · 계약 ${e.dir.reduce((s,d)=>s+Number(d.all||0),0)}건`:""}</div></li>`).join(""):`<li class="empty" style="display:block;cursor:default">${nq?"찾는 고객이 없습니다":"최근 통화한 고객이 여기에 나옵니다"}</li>`;
   renderProfile()}
-function renderProfile(){const box=$("#prof");if(!curCust){box.innerHTML='<div class="empty">고객을 고르면 기본 정보, 가족관계, 진행 상황, 통화 기록이 여기에 나옵니다.</div>';return}
-  const name=curCust,nq=norm(name);const dir=custRows.filter(r=>norm(r.name)===nq);const cs=callsOf(name);const myCases=cases.filter(c=>norm(c.name)===nq);const myTodos=todos.filter(t=>!t.done&&(norm(t.text).includes(nq)||norm(t.customer)===nq));const myReqs=reqs.filter(r=>norm(r.name)===nq&&r.status!=="done");
-  const p=profiles[pkey(name)]||{};const last=cs[0];const fam=Array.isArray(p.family)?p.family:[];
+function maskRrn(r){const d=String(r||"").replace(/\D/g,"");if(d.length<7)return r||"";return d.slice(0,6)+"-"+d.slice(6,7)+"******"}
+function fmtRrn(r){const d=String(r||"").replace(/\D/g,"").slice(0,13);return d.length>6?d.slice(0,6)+"-"+d.slice(6):d}
+function ageOf(rrn,birth){let y,m,dd;const d=String(rrn||"").replace(/\D/g,"");if(d.length>=7){const c=/[12]/.test(d[6])?1900:/[34]/.test(d[6])?2000:/[9]/.test(d[6])?1800:null;if(!c)return"";y=c+Number(d.slice(0,2));m=Number(d.slice(2,4));dd=Number(d.slice(4,6))}else if(/^\d{8}$/.test(birth||"")){y=+birth.slice(0,4);m=+birth.slice(4,6);dd=+birth.slice(6)}else return"";const t=new Date(today());let age=t.getFullYear()-y;if(t.getMonth()+1<m||(t.getMonth()+1===m&&t.getDate()<dd))age--;return age>0&&age<120?`만 ${age}세`:""}
+const telHref=p=>"tel:"+String(p||"").replace(/[^\d+]/g,"");
+let rrnShow=false,rrnT=null;
+function renderProfile(){const box=$("#prof");if(!curCust){box.innerHTML='<div class="empty">고객을 고르면 기본 정보(주민번호·연락처·주소), 계약 현황, 가족관계, 진행 상황, 통화 기록이 여기에 나옵니다.</div>';return}
+  const name=curCust,nq=norm(name);const dir=custRows.filter(r=>norm(r.name)===nq);const cs=callsOf(name);const myCases=cases.filter(c=>norm(c.name)===nq);const myTodos=todos.filter(t=>!t.done&&(norm(t.text).includes(nq)||norm(t.customer)===nq));const myReqs=reqs.filter(r=>norm(r.name)===nq&&r.status!=="done");const myClaims=reqs.filter(r=>norm(r.name)===nq&&CLAIM_LOG_KINDS.includes(r.kind));
+  const p=profiles[pkey(name)]||{};const last=cs[0];const fam=Array.isArray(p.family)?p.family:[];const d0=dir[0]||{};
   const d8=s=>s&&/^\d{8}$/.test(s)?`${s.slice(0,4)}.${s.slice(4,6)}.${s.slice(6)}`:(s||"");
-  box.innerHTML=`<div class="prof-hd"><h3>${esc(name)}</h3>${p.stage?`<span class="chip s-안내완료">${esc(p.stage)}</span>`:""}<span class="note">${last?`마지막 통화 ${fmtAt(last.at)} · 통화 ${cs.length}건`:"통화 기록 없음"}</span>${p.nextDate?`<span class="chip s-설계완료">다음 연락 ${esc(p.nextDate)}</span>`:""}<button class="btn sm" type="button" id="prof-call" style="margin-left:auto">통화 메모 추가</button></div>
-  ${dir.length?dir.map(r=>`<div class="kv"><div><span>생년월일</span>${esc(d8(r.birth))||"—"} ${esc(r.sex||"")}</div><div><span>구분</span>${esc(r.type||"")}</div><div><span>계약</span>총 ${r.all||0} · 자동차 ${r.car||0} · 장기 ${r.long||0} · 일반 ${r.gen||0}</div><div><span>직업</span>${esc(r.job||"—")}</div><div style="grid-column:span 2"><span>주소</span>${esc(r.addr||"—")}</div><div><span>개인정보 동의</span>${esc(d8(r.privacyEnd))||"—"}</div><div><span>마케팅 동의</span>${esc(d8(r.marketingEnd))||"—"}</div></div>`).join('<hr style="border:0;border-top:1px dashed var(--line);margin:8px 0">'):'<p class="note">보유고객 명부에 같은 이름이 없습니다 (타사 고객이거나 업체일 수 있습니다).</p>'}
+  const phone=p.phone||myCases.map(c=>c.phone).find(Boolean)||"",addr=p.addr||d0.addr||myCases.map(c=>c.address).find(Boolean)||"",sex=p.sex||d0.sex||(p.rrn?(/[13579]/.test(String(p.rrn).replace(/\D/g,"")[6]||"")?"남":"여"):"");
+  const age=ageOf(p.rrn,p.birth||d0.birth);const birth=p.birth?d8(p.birth):d0.birth?d8(d0.birth):(p.rrn?`${String(p.rrn).slice(0,2)}년생`:"");
+  const consent=(k,lab)=>{const v=d0[k];if(!v)return"";const over=/^\d{8}$/.test(v)&&v<today().replace(/-/g,"");return `<div><span>${lab}</span><b>${esc(d8(v))} ${over?'<span class="chip s-미갱신">만료</span>':""}</b></div>`};
+  const rrnCell=p.rrn?`<b class="mono">${esc(rrnShow?fmtRrn(p.rrn):maskRrn(p.rrn))} <button class="tiny" type="button" id="rrn-tg">${rrnShow?"가리기":"보기"}</button>${rrnShow?`<button class="tiny" type="button" data-copy="${esc(fmtRrn(p.rrn))}">복사</button>`:""}</b>`:'<b style="color:var(--dim)">— <button class="tiny" type="button" id="p-edit2">입력</button></b>';
+  box.innerHTML=`<div class="prof-hd"><h3>${esc(name)}</h3>${sex||age?`<span class="note">${esc(sex)}${sex&&age?" · ":""}${esc(age)}</span>`:""}${d0.type?`<span class="chip l-자동차">${esc(d0.type)}</span>`:""}${p.stage?`<span class="chip s-안내완료">${esc(p.stage)}</span>`:""}${p.nextDate?`<span class="chip s-설계완료">다음 연락 ${esc(p.nextDate)}</span>`:""}<span class="note" style="margin-left:auto">${last?`마지막 통화 ${fmtAt(last.at)} · ${cs.length}건`:"통화 기록 없음"}</span></div>
+  <div class="pacts">${phone?`<a href="${telHref(phone)}">📞 전화</a><a href="sms:${esc(phone.replace(/[^\d+]/g,""))}">💬 문자</a>`:""}${addr?`<button type="button" data-copy="${esc(addr)}">주소 복사</button>`:""}${phone?`<button type="button" data-copy="${esc(phone)}">번호 복사</button>`:""}<button type="button" id="prof-call">통화 메모 추가</button><button type="button" id="p-edit">기본 정보 수정</button></div>
+  <div class="psec"><h4>기본 정보 <em>${p.updatedAt?"카드 수정 "+fmtAt(p.updatedAt):""}${dir.length?(p.updatedAt?" · ":"")+"보유고객 명부":""}</em></h4>
+   <div class="pinfo">
+    <div><span>주민등록번호</span>${rrnCell}</div>
+    <div><span>생년월일 · 성별</span><b>${esc(birth)||"—"} ${esc(sex)}</b></div>
+    <div><span>휴대폰</span><b>${phone?`<a href="${telHref(phone)}">${esc(phone)}</a>`:"—"}</b></div>
+    <div><span>다른 연락처</span><b>${p.phone2?`<a href="${telHref(p.phone2)}">${esc(p.phone2)}</a>`:"—"}</b></div>
+    <div><span>이메일</span><b>${p.email?`<a href="mailto:${esc(p.email)}">${esc(p.email)}</a>`:"—"}</b></div>
+    <div><span>직업 · 직장</span><b>${esc([p.job||d0.job,p.company].filter(Boolean).join(" · "))||"—"}</b></div>
+    <div style="grid-column:1/-1"><span>주소</span><b>${p.zip?`<span class="mono">(${esc(p.zip)})</span> `:""}${esc(addr)||"—"}</b></div>
+    ${dir.length?`<div><span>계약 현황 (명부)</span><b>총 ${d0.all||0} · 자동차 ${d0.car||0} · 장기 ${d0.long||0} · 일반 ${d0.gen||0}${d0.transfer?` · 이관 ${d0.transfer}`:""}</b></div>`:""}
+    ${consent("privacyEnd","개인정보 동의 만료")}${consent("marketingEnd","마케팅 동의 만료")}
+    ${p.bank?`<div><span>계좌 (보험금 수령)</span><b>${esc(p.bank)}</b></div>`:""}
+   </div>
+   ${dir.length>1?`<p class="note" style="margin-top:6px">명부에 같은 이름이 ${dir.length}명 있습니다: ${dir.map(r=>esc(d8(r.birth))+" "+esc(r.sex||"")).join(" / ")}</p>`:dir.length?"":'<p class="note" style="margin-top:6px">보유고객 명부에 같은 이름이 없습니다 (타사 고객이거나 업체일 수 있습니다).</p>'}
+   <form class="fg" id="p-form" hidden style="margin-top:10px;border-top:1px dashed var(--line);padding-top:10px">
+    <label>주민등록번호<input class="in" name="rrn" value="${esc(p.rrn||"")}" inputmode="numeric" maxlength="14" placeholder="000000-0000000" autocomplete="off"></label>
+    <label>휴대폰<input class="in" name="phone" value="${esc(p.phone||"")}" inputmode="tel" maxlength="20" placeholder="010-0000-0000"></label>
+    <label>다른 연락처<input class="in" name="phone2" value="${esc(p.phone2||"")}" inputmode="tel" maxlength="20"></label>
+    <label>이메일<input class="in" name="email" value="${esc(p.email||"")}" type="email" maxlength="60"></label>
+    <label>직업<input class="in" name="job" value="${esc(p.job||d0.job||"")}" maxlength="30"></label>
+    <label>직장·업체<input class="in" name="company" value="${esc(p.company||"")}" maxlength="40"></label>
+    <label>우편번호<input class="in" name="zip" value="${esc(p.zip||"")}" inputmode="numeric" maxlength="7"></label>
+    <label>성별<select class="in" name="sex"><option value="">—</option><option ${sex==="남"?"selected":""}>남</option><option ${sex==="여"?"selected":""}>여</option></select></label>
+    <label class="full">주소<input class="in" name="addr" value="${esc(p.addr||d0.addr||"")}" maxlength="120"></label>
+    <label class="full">계좌 (보험금 수령 · 은행 계좌번호 예금주)<input class="in" name="bank" value="${esc(p.bank||"")}" maxlength="60"></label>
+    <div class="full row"><button class="btn pri sm" type="submit">저장</button><button class="btn sm" type="button" id="p-cancel">취소</button><span class="note">주민번호는 화면에서 가려지고 「보기」를 눌렀을 때만 15초 보입니다.</span></div>
+   </form></div>
   <div class="psec"><h4>가족관계 <em>통화에서 나온 가족은 자동으로 추가됩니다</em></h4><div class="fam" id="fam">${fam.map((f,i)=>`<span><b>${esc(f.rel)}</b>${esc(f.name||"")}${f.note?` · ${esc(f.note)}`:""}<button type="button" data-famdel="${i}" title="삭제">×</button></span>`).join("")}${fam.length?"":'<span class="note">없음</span>'}</div>
    <form class="row" id="fam-form" style="margin-top:6px"><input class="in" id="fam-rel" placeholder="관계 (배우자·자녀·부모)" maxlength="10" style="width:130px"><input class="in" id="fam-name" placeholder="이름" maxlength="20" style="width:110px"><input class="in" id="fam-note" placeholder="메모 (예: 12월 면허 취득)" maxlength="60" style="flex:1"><button class="btn sm" type="submit">추가</button></form></div>
-  <div class="psec"><h4>메모·진행 단계</h4><div class="fg"><label>진행 단계<input class="in" id="p-stage" value="${esc(p.stage||"")}" maxlength="60" placeholder="예: 갱신 견적 안내 대기"></label><label>다음 연락일<input class="in" id="p-next" type="date" value="${esc(p.nextDate||"")}"></label><label class="full">고객 메모<textarea class="in" id="p-memo" rows="3" maxlength="1000" placeholder="성향, 선호 연락 시간, 주의할 점">${esc(p.memo||"")}</textarea></label></div><div class="row" style="margin-top:6px"><button class="btn pri sm" type="button" id="p-save">저장</button><span class="note">${p.updatedAt?"마지막 수정 "+fmtAt(p.updatedAt):""}</span></div></div>
-  <div class="psec"><h4>진행 중 <em>갱신 명단 · 할 일 · 요청</em></h4><ul class="list">${myCases.map(c=>`<li><span class="chip s-${c.status}">${c.status}</span><span><span class="t">${esc(c.car)} ${esc(c.carName||"")}</span> <span class="d">${esc(c.product||"")} · 만기 ${c.due||""}${c.premium?" · "+won(c.premium):""}</span></span><button class="btn sm" type="button" data-open="${c.id}">상세</button></li>`).join("")}${myTodos.map(t=>`<li class="todo"><input type="checkbox" data-tdone="${t.id}"><span><span class="t">${esc(t.text)}</span> <span class="d">${esc(t.who||"")} · ${esc(t.src||"")}</span></span><span class="w">${ago(t.createdAt)}</span></li>`).join("")}${myReqs.map(r=>`<li><span class="chip r-${r.status}">${r.status==="new"?"대기":"진행"}</span><span class="t">${esc(r.kind)}</span><span class="w">${ago(r.createdAt)}</span></li>`).join("")}${myCases.length+myTodos.length+myReqs.length?"":'<li class="empty" style="display:block">진행 중인 건이 없습니다</li>'}</ul></div>
+  <div class="psec"><h4>메모·진행 단계</h4><div class="fg"><label>진행 단계<input class="in" id="p-stage" value="${esc(p.stage||"")}" maxlength="60" placeholder="예: 갱신 견적 안내 대기"></label><label>다음 연락일<input class="in" id="p-next" type="date" value="${esc(p.nextDate||"")}"></label><label class="full">고객 메모<textarea class="in" id="p-memo" rows="3" maxlength="1000" placeholder="성향, 선호 연락 시간, 주의할 점">${esc(p.memo||"")}</textarea></label></div><div class="row" style="margin-top:6px"><button class="btn pri sm" type="button" id="p-save">저장</button></div></div>
+  <div class="psec"><h4>계약·진행 <em>장기·자동차·일반 명단 · 할 일 · 요청 · 보상청구</em></h4><ul class="list">${myCases.sort((a,b)=>(b.due||"").localeCompare(a.due||"")).map(c=>`<li><span class="chip l-${lineOf(c)}">${lineOf(c)}</span><span><span class="t">${esc(isCar(c)?`${c.car||""} ${c.carName||""}`:(c.product||""))}</span> <span class="d">${esc(isCar(c)?(c.product||""):(c.prevNo||""))} · ${L_(c).dateLabel} ${c.due||""}${c.premium?" · "+won(c.premium):""}</span></span><span class="acts"><span class="chip s-${c.status}">${c.status}</span><button class="btn sm" type="button" data-open="${c.id}">상세</button></span></li>`).join("")}${myTodos.map(t=>`<li class="todo"><input type="checkbox" data-tdone="${t.id}"><span><span class="t">${esc(t.text)}</span> <span class="d">${esc(t.who||"")} · ${esc(t.src||"")}</span></span><span class="w">${ago(t.createdAt)}</span></li>`).join("")}${myReqs.map(r=>`<li><span class="chip r-${r.status}">${r.status==="new"?"대기":"진행"}</span><span class="t">${esc(KINDS[r.kind]||r.kind)}</span><span class="w">${ago(r.createdAt)}</span></li>`).join("")}${myClaims.map(r=>`<li><span class="chip k-갱신">${r.kind==="배상책임접수"?"배상책임":"상해·질병"}</span><span><span class="t">접수 ${esc((r.at||r.createdAt||"").slice(0,10))}</span> <span class="d">${esc(r.detail||"")}</span></span><span class="w">${r.from==="사고접수"?"자동 기록":esc(r.from||"")}</span></li>`).join("")}${myCases.length+myTodos.length+myReqs.length+myClaims.length?"":'<li class="empty" style="display:block">진행 중인 건이 없습니다</li>'}</ul></div>
   <div class="psec"><h4>통화 기록 <em>${cs.length}건 · 최신순</em></h4><ul class="list">${cs.slice(0,50).map(c=>callLi(c,"")).join("")||'<li class="empty" style="display:block">통화 기록이 없습니다</li>'}</ul></div>`;
   $("#prof-call").onclick=()=>{location.hash="calls";setTimeout(()=>{$("#call-in").value=name+" 고객 통화. ";$("#call-in").focus()},50)};
+  const openEdit=()=>{$("#p-form").hidden=false;$("#p-form").scrollIntoView({block:"nearest"});$("#p-form [name=rrn]").focus()};
+  $("#p-edit").onclick=openEdit;const e2=$("#p-edit2");if(e2)e2.onclick=openEdit;$("#p-cancel").onclick=()=>{$("#p-form").hidden=true};
+  const tg=$("#rrn-tg");if(tg)tg.onclick=()=>{rrnShow=!rrnShow;clearTimeout(rrnT);if(rrnShow)rrnT=setTimeout(()=>{rrnShow=false;renderProfile()},15000);renderProfile()};
+  box.querySelectorAll("[data-copy]").forEach(b=>b.onclick=()=>copy(b.dataset.copy));
+  $("#p-form").oninput=e=>{const el=e.target;if(el.name==="rrn")el.value=fmtRrn(el.value);if(el.name==="phone"||el.name==="phone2"){const d=el.value.replace(/\D/g,"").slice(0,11);el.value=d.replace(/^(\d{2,3})(\d{3,4})(\d{4})$/,"$1-$2-$3")}};
+  $("#p-form").onsubmit=async e=>{e.preventDefault();const fd=new FormData(e.target);const d={};for(const[k,v]of fd.entries())d[k]=String(v).trim();if(d.rrn&&!/^\d{6}-\d{7}$/.test(d.rrn))return toast("주민등록번호는 13자리여야 합니다");rrnShow=false;await saveProfile(name,d)};
   $("#fam-form").onsubmit=async e=>{e.preventDefault();const rel=$("#fam-rel").value.trim(),nm=$("#fam-name").value.trim(),note=$("#fam-note").value.trim();if(!rel)return;await saveProfile(name,{family:[...fam,{rel,name:nm,note}]})};
   $("#p-save").onclick=()=>saveProfile(name,{stage:$("#p-stage").value.trim(),nextDate:$("#p-next").value,memo:$("#p-memo").value.trim()});
   box.querySelectorAll("[data-famdel]").forEach(b=>b.onclick=()=>saveProfile(name,{family:fam.filter((_,i)=>i!==+b.dataset.famdel)}))}
@@ -768,8 +831,9 @@ function giftCsv(list){const s=senderInfo();const H=["받는분성명","받는�
   const q=v=>'"'+String(v??"").replace(/"/g,'""')+'"';const csv="\ufeff"+[H,...rows].map(r=>r.map(q).join(",")).join("\r\n");
   const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));a.download=`로젠_일괄등록_${today()}.csv`;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);toast(`${list.length}건 CSV를 내려받았습니다`)}
 async function fillAddresses(){if(!db)return toast("데이터 연결이 안 됐습니다");await loadCustomers();if(!custRows.length)return toast("보유고객 명부를 불러오지 못했습니다");
-  const need=cases.filter(c=>c.status==="갱신완료"&&!c.address);const writes=[];const now=new Date().toISOString();
-  for(const c of need){const hits=custRows.filter(r=>norm(r.name)===norm(c.name)&&r.addr);if(hits.length===1)writes.push({op:"update",col:"cases",id:c.id,data:{address:hits[0].addr,updatedAt:now}})}
+  const need=cases.filter(c=>isDone(c)&&!c.address);const writes=[];const now=new Date().toISOString();
+  for(const c of need){const pf=profiles[pkey(c.name)]||{};const d={updatedAt:now};if(pf.addr)d.address=pf.addr;else{const hits=custRows.filter(r=>norm(r.name)===norm(c.name)&&r.addr);if(hits.length===1)d.address=hits[0].addr}
+    if(d.address){if(pf.phone&&!c.phone)d.phone=pf.phone;if(pf.zip&&!c.zip)d.zip=pf.zip;writes.push({op:"update",col:"cases",id:c.id,data:d})}}
   if(!writes.length)return toast(need.length?`주소를 못 찾았습니다 (명부에 없거나 동명이인 ${need.length}건). 상세에서 직접 적어 주세요`:"주소가 비어 있는 갱신 완료 건이 없습니다");
   try{await db.batch(writes);toast(`${writes.length}건 주소를 채웠습니다 (동명이인·명부에 없는 ${need.length-writes.length}건은 직접 입력)`)}catch(e){toast("저장 실패")}}
 function loadSenderForm(){const s=sender||{};$("#sd-name").value=s.name||"";$("#sd-phone").value=s.phone||"";$("#sd-zip").value=s.zip||"";$("#sd-addr").value=s.addr||"";$("#sd-item").value=s.item||"";$("#sd-msg").value=s.msg||""}
@@ -925,6 +989,29 @@ $("#tpl-del").onclick=async()=>{const b=$("#tpl-del");if(b.dataset.sure!=="1"){b
 
 /* ---- customers · calls · todos ---- */
 $("#cust-q").oninput=()=>{renderCust()};
+$("#cust-new").onclick=()=>{const v=($("#cust-q").value||"").trim();const nm=/^[가-힣A-Za-z()\s]{2,20}$/.test(v)?v:"";if(!nm){toast("검색칸에 고객 이름을 적고 누르세요");$("#cust-q").focus();return}curCust=nm;history.replaceState(null,"","#customers:"+encodeURIComponent(nm));renderCust();setTimeout(()=>{const b=$("#p-edit");if(b)b.click()},50)};
+$("#cimp-open").onclick=()=>{const c=$("#cimp-card");c.hidden=!c.hidden;if(!c.hidden)$("#cimp-in").focus()};
+let cImported=[];
+function parseCustomers(txt){const lines=txt.split(/\r?\n/).map(l=>l.replace(/\s+$/,"")).filter(l=>l.trim());if(!lines.length)return[];
+  const split=l=>(/\t/.test(l)?l.split("\t"):l.split(/\s{2,}|,(?!\d{3})/)).map(x=>x.trim());
+  const H={name:/성명|고객명|계약자|피보험자|이름/,rrn:/주민/,phone:/휴대|핸드폰|전화|연락처|모바일/,addr:/주소/,email:/메일/,job:/직업|직장|업종/,zip:/우편/,birth:/생년|생일/};
+  let map=null;const first=split(lines[0]);if(first.some(c=>Object.values(H).some(re=>re.test(c)))){map={};first.forEach((c,i)=>{for(const k in H)if(H[k].test(c)&&map[k]==null){map[k]=i;break}});lines.shift()}
+  const out=[];for(const l of lines){const cells=split(l);const r={};
+    if(map){for(const k in map)r[k]=cells[map[k]]||""}
+    else if(cells.length<=2&&!/\t/.test(l)){let rest=l;const take=(re,k)=>{const m=rest.match(re);if(m){r[k]=m[0];rest=rest.replace(m[0]," ")}};take(/\d{6}-?\d{7}/,"rrn");take(/0\d{1,2}-?\d{3,4}-?\d{4}/,"phone");take(/\S+@\S+/,"email");take(/(^|\s)\d{5}(?=\s|$)/,"zip");r.zip=(r.zip||"").trim();
+      const toks=rest.trim().split(/\s+/).filter(Boolean);const ni=toks.findIndex(t=>/^[가-힣]{2,5}$|^\(주\)/.test(t));if(ni>=0)r.name=toks.splice(ni,1)[0];
+      if(toks.length>=3&&/^[가-힣()·]{2,8}$/.test(toks[toks.length-1])&&!/[시군구동로길]$/.test(toks[toks.length-1]))r.job=toks.pop();r.addr=toks.join(" ")}
+    else{for(const c of cells){if(!r.rrn&&/^\d{6}-?\d{7}$/.test(c.replace(/\s/g,"")))r.rrn=c;else if(!r.phone&&/^0\d{1,2}-?\d{3,4}-?\d{4}$/.test(c.replace(/\s/g,"")))r.phone=c;else if(!r.email&&/@/.test(c))r.email=c;else if(!r.addr&&/(시|도|군|구)\s|로\s?\d|길\s?\d|동\s?\d/.test(c)&&c.length>8)r.addr=c;else if(!r.zip&&/^\d{5}$/.test(c))r.zip=c;else if(!r.name&&/^[가-힣]{2,5}$|^\(주\)|^[가-힣A-Za-z()\s]{2,20}$/.test(c)&&!/남|여|자점|타점|개인|법인/.test(c))r.name=c;else if(!r.job&&/[가-힣]/.test(c)&&c.length<=20)r.job=c}}
+    r.name=String(r.name||"").replace(/\(\d{6}.*$/,"").trim();if(!r.name)continue;
+    if(r.rrn){const d=String(r.rrn).replace(/\D/g,"");r.rrn=d.length===13?d.slice(0,6)+"-"+d.slice(6):""}
+    if(r.phone){const d=String(r.phone).replace(/\D/g,"");r.phone=d.length>=10?d.replace(/^(\d{2,3})(\d{3,4})(\d{4})$/,"$1-$2-$3"):r.phone}
+    if(r.birth){const d=String(r.birth).replace(/\D/g,"");r.birth=d.length===8?d:""}
+    out.push(r)}return out}
+$("#cimp-parse").onclick=()=>{cImported=parseCustomers($("#cimp-in").value);$("#cimp-prev").hidden=!cImported.length;$("#cimp-save").disabled=!cImported.length;$("#cimp-note").textContent=cImported.length?`${cImported.length}명 인식. 이미 카드가 있는 고객은 비어 있는 칸만 채웁니다(기존 값은 유지)`:"인식된 줄이 없습니다";
+  $("#cimp-body").innerHTML=cImported.map(r=>`<tr><td>${esc(r.name)}</td><td class="mono">${esc(maskRrn(r.rrn))}</td><td>${esc(r.phone||"")}</td><td style="white-space:normal">${esc(r.addr||"")}</td><td>${esc(r.email||"")}</td><td>${esc(r.job||"")}</td></tr>`).join("")};
+$("#cimp-save").onclick=async()=>{if(!db)return toast("데이터 연결이 안 됐습니다");const now=new Date().toISOString();const writes=[];
+  for(const r of cImported){const k=pkey(r.name);const cur=profiles[k]||{};const d={name:r.name,updatedAt:now};for(const f of ["rrn","phone","email","addr","job","zip","birth"]){if(r[f]&&!cur[f])d[f]=r[f]}if(Object.keys(d).length<=2&&cur.name)continue;writes.push({op:"update",col:"profiles",id:k,data:d})}
+  if(!writes.length)return toast("새로 채울 정보가 없습니다");try{await db.batch(writes);toast(`${writes.length}명 고객 카드에 저장했습니다`);$("#cimp-in").value="";cImported=[];$("#cimp-prev").hidden=true;$("#cimp-save").disabled=true;$("#cimp-note").textContent=""}catch(e){toast("저장 실패")}};
 $("#cust-list").addEventListener("click",e=>{const li=e.target.closest("li[data-cn]");if(!li)return;curCust=li.dataset.cn;history.replaceState(null,"","#customers:"+encodeURIComponent(curCust));renderCust()});
 $("#call-q").oninput=renderCalls;$("#call-hidep").onchange=renderCalls;
 $$("[data-cr]").forEach(c=>c.onclick=()=>{crFilter=c.dataset.cr;$$("[data-cr]").forEach(x=>x.setAttribute("aria-pressed",String(x===c)));renderCalls()});
