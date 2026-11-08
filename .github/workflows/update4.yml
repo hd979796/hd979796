@@ -1,0 +1,35 @@
+name: update4 자동 기록
+
+on:
+  schedule:
+    - cron: "30 14 * * *"   # 매일 23:30 KST
+  workflow_dispatch:         # Actions 탭에서 수동 실행도 가능
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update4
+  cancel-in-progress: false
+
+jobs:
+  log:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 포탈 사용 기록 받아 update4.md 에 덧붙이기
+        env:
+          PORTAL_API: ${{ secrets.PORTAL_API }}
+          PORTAL_KEY: ${{ secrets.PORTAL_KEY }}
+          UPDATE4_PATH: update4.md        # 파일이 다른 폴더에 있으면 여기만 고치세요
+        run: python3 scripts/update4_log.py
+
+      - name: 커밋
+        run: |
+          git config user.name "portal-bot"
+          git config user.email "portal-bot@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet && echo "변경 없음" && exit 0
+          git commit -m "update4: $(TZ=Asia/Seoul date '+%Y-%m-%d') 포탈 사용 기록"
+          git push
