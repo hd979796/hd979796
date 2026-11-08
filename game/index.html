@@ -80,8 +80,17 @@ h3{font-size:16px;margin:14px 0 8px}
 .tray{display:flex;flex-wrap:wrap;gap:8px;padding:10px;border-radius:12px;background:#f3f3ef;min-height:70px;margin-top:10px}
 .tray .empty{color:var(--muted);font-size:13px;align-self:center}
 .legend-g{display:flex;gap:10px;flex-wrap:wrap;font-size:13px;margin-top:8px;color:var(--muted)}
-details.members{margin-top:12px}
-details.members summary{cursor:pointer;font-weight:700;padding:6px 0}
+.toolbar{display:flex;gap:8px;margin-top:12px}
+.toolbar button{flex:1;background:#fff;box-shadow:0 2px 0 var(--line)}
+.modal{position:fixed;inset:0;background:rgba(30,20,10,.5);display:flex;align-items:flex-end;justify-content:center;z-index:20}
+.sheet{background:var(--card);width:100%;max-width:640px;max-height:88vh;overflow:auto;border-radius:20px 20px 0 0;padding:16px 16px 28px}
+@media(min-width:640px){.modal{align-items:center}.sheet{border-radius:20px}}
+.sheet-head{display:flex;justify-content:space-between;align-items:center;position:sticky;top:-16px;background:var(--card);padding:4px 0 8px;z-index:1}
+.rules ul{margin:0 0 6px;padding-left:20px}
+.rules li{margin:5px 0;font-size:15px}
+.rules h3{margin:16px 0 4px}
+.t-blue{color:var(--blue)} .t-red{color:var(--red)}
+.ex svg{width:30px;height:30px;vertical-align:middle;background:#f2f8f6;border-radius:4px}
 .mrow{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--line)}
 .mrow b{flex:1}
 /* 화이트보드 */
@@ -97,7 +106,9 @@ details.members summary{cursor:pointer;font-weight:700;padding:6px 0}
   background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 44' width='44' height='44'%3E%3Cpath d='M6 7H34M20 7V33M20 20H31M10 18V33M4 33H36' stroke='%23d6ebe6' stroke-width='4.5' stroke-linecap='round' fill='none'/%3E%3C/svg%3E") 6px 6px/44px 44px repeat;border:1px solid #e3efec}
 .tally svg{width:40px;height:40px}
 .tally .none{color:var(--muted);font-size:13px;align-self:center;padding:2px 6px;background:rgba(255,255,255,.85);border-radius:6px}
-.pl-btns{display:grid;grid-template-columns:1fr 1fr auto;gap:6px}
+.pl-btns{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:6px}
+.pl-btns button{padding:10px 6px;font-size:15px}
+.pl-btns .deuce{background:#fff0d6;color:#9a5b00}
 .board{gap:8px}
 .prize{grid-column:2;justify-self:start;font-weight:800;font-size:15px;padding:2px 10px;border-radius:999px}
 .prize.minus{background:#e3f6ea;color:#16794a}
@@ -186,6 +197,11 @@ td.n{text-align:left;font-weight:700}
     </svg>
   </div>
 
+  <div class="toolbar">
+    <button data-open="rulesModal">📖 게임룰</button>
+    <button data-open="memberModal">⚙️ 멤버설정 (<span id="memberCount">0</span>명)</button>
+  </div>
+
   <!-- 달력 -->
   <section class="card">
     <div class="cal-head">
@@ -201,29 +217,13 @@ td.n{text-align:left;font-weight:700}
 
     <!-- 참석자 -->
     <section class="card">
-      <h2>🙋 참석 <span class="muted" id="dayLabel"></span></h2>
-      <form id="addForm" class="row">
-        <input id="nameInput" placeholder="이름 (예: 박문철)" autocomplete="off" style="flex:1" list="memberList">
-        <select id="gradeInput" class="gsel" aria-label="급수">
-          <option value="S">S조</option><option value="A">A조</option><option value="B">B조</option><option value="C" selected>C조</option><option value="D">D조</option>
-        </select>
-        <button class="primary" type="submit">참석</button>
-      </form>
-      <datalist id="memberList"></datalist>
+      <div class="row" style="justify-content:space-between;margin-bottom:4px">
+        <h2 style="margin:0">🙋 참석 <span class="muted" id="dayLabel"></span></h2>
+        <button class="small" data-open="memberModal">⚙️ 멤버설정</button>
+      </div>
       <div class="legend-g" id="gradeLegend"></div>
-      <p class="muted" style="margin:10px 0 0">아래 자석을 누르면 오늘 참석으로 보드판에 붙습니다.</p>
+      <p class="muted" style="margin:10px 0 0">자석을 누르면 참석 명단에 들어가 보드판에 붙습니다.</p>
       <div class="tray" id="tray"></div>
-      <details class="members">
-        <summary>📋 멤버 명단 · 급수 관리 (<span id="memberCount">0</span>명)</summary>
-        <div class="row" style="margin:6px 0">
-          <input id="bulkNames" placeholder="이름 여러 명 (띄어쓰기로 구분)" style="flex:1">
-          <select id="bulkGrade" class="gsel" aria-label="급수">
-            <option value="S">S조</option><option value="A">A조</option><option value="B">B조</option><option value="C" selected>C조</option><option value="D">D조</option>
-          </select>
-          <button class="small" id="bulkAdd">명단 추가</button>
-        </div>
-        <div id="memberRows"></div>
-      </details>
     </section>
 
     <!-- 자석 보드판 -->
@@ -238,10 +238,10 @@ td.n{text-align:left;font-weight:700}
         <span class="muted" id="rateNow"></span>
       </div>
       <div class="legend">
-        <span><i style="background:var(--blue)"></i>2,000원</span>
-        <span><i style="background:var(--orange)"></i>3,000원</span>
-        <span><i style="background:var(--red)"></i>4,000원</span>
-        <span>더블패 = 21점에 10점 미만 / 25점에 13점 미만 (+1,000원)</span>
+        <span>짝대기 1개 = 1,000원</span>
+        <span><i style="background:var(--blue)"></i>7시 전 패 (2개)</span>
+        <span><i style="background:var(--red)"></i>7시 후 패 (3개) · 더블/듀스 추가 (1개)</span>
+        <button class="small ghost" data-open="rulesModal" style="padding:2px 8px;font-size:13px">게임룰 보기</button>
       </div>
       <div class="wb">
         <div class="wb-title">우당탕탕 요절복통</div>
@@ -300,6 +300,55 @@ td.n{text-align:left;font-weight:700}
   </div>
 </div>
 <div class="toast" id="toast"></div>
+
+<!-- 멤버설정 -->
+<div class="modal hidden" id="memberModal" role="dialog" aria-modal="true" aria-labelledby="mmTitle">
+  <div class="sheet">
+    <div class="sheet-head"><h2 id="mmTitle" style="margin:0">⚙️ 멤버설정</h2><button class="small ghost" data-close aria-label="닫기">✕</button></div>
+    <p class="muted" style="margin:4px 0 10px">이름과 급수를 넣고 자석을 만들어 두세요. 여러 명은 띄어쓰기로 구분합니다.</p>
+    <form id="memberForm" class="row">
+      <input id="bulkNames" placeholder="이름 (예: 박문철 서용)" autocomplete="off" style="flex:1">
+      <select id="bulkGrade" class="gsel" aria-label="급수">
+        <option value="S">S조</option><option value="A">A조</option><option value="B">B조</option><option value="C" selected>C조</option><option value="D">D조</option>
+      </select>
+      <button class="primary" type="submit">자석 만들기</button>
+    </form>
+    <div id="memberRows" style="margin-top:10px"></div>
+  </div>
+</div>
+
+<!-- 게임룰 -->
+<div class="modal hidden" id="rulesModal" role="dialog" aria-modal="true" aria-labelledby="rlTitle">
+  <div class="sheet rules">
+    <div class="sheet-head"><h2 id="rlTitle" style="margin:0">📖 게임룰</h2><button class="small ghost" data-close aria-label="닫기">✕</button></div>
+    <h3>🙋 참석</h3>
+    <ul>
+      <li>멤버설정에서 이름과 급수로 자석을 만들어 둡니다.</li>
+      <li>급수 색: <i class="dot g-S"></i>S조 황금 · <i class="dot g-A"></i>A조 빨강 · <i class="dot g-B"></i>B조 주황 · <i class="dot g-C"></i>C조 녹색 · <i class="dot g-D"></i>D조 흰색</li>
+      <li>자석을 누르면 오늘 참석 명단에 들어갑니다.</li>
+    </ul>
+    <h3>✏️ 바를 정(正) 표시 — 짝대기 1개 = 1,000원</h3>
+    <ul>
+      <li><b class="t-blue">7시 전</b> 한 게임 지면 <b>2,000원</b> → <span class="t-blue">파란 짝대기 2개</span> <span class="ex" data-ex="b,b"></span></li>
+      <li><b class="t-red">7시부터</b> 한 게임 지면 <b>3,000원</b> → <span class="t-red">빨간 짝대기 3개</span> <span class="ex" data-ex="r,r,r"></span></li>
+      <li><b>더블패</b>(두 배 점수 차): 21점 게임에서 10점 미만, 25점 게임에서 13점 미만으로 지면 <b>+1,000원</b> → <span class="t-red">빨간 짝대기 1개 추가</span> <span class="ex" data-ex="b,b,r"></span></li>
+      <li><b>듀스패</b>: 듀스(21점 게임 20:20, 25점 게임 24:24)까지 가서 지면 <b>+1,000원</b> → <span class="t-red">빨간 짝대기 1개 추가</span> <span class="ex" data-ex="r,r,r,r"></span></li>
+      <li>正 한 글자 = 5,000원</li>
+    </ul>
+    <h3>🎲 랜덤 리그</h3>
+    <ul>
+      <li>참석자끼리 모두 한 번씩 붙도록 무작위로 대진표를 만듭니다. 사람이 많으면 코트를 2개로 나눕니다.</li>
+      <li>리그에서 지면 <b>3,000원</b>(빨간 짝대기 3개), 더블패·듀스패는 +1,000원.</li>
+      <li>순위: 득실차가 큰 사람이 위. 득실이 같으면 승자승(맞대결)으로 정합니다.</li>
+      <li>리그가 끝나면 <b>1등 −3,000원</b>, <b>꼴등 +3,000원</b> (꼴등이 1등에게 주는 셈). 사람이 많으면 1등·꼴등 2명씩.</li>
+    </ul>
+    <h3>💰 정산</h3>
+    <ul>
+      <li>보드판 비용과 리그 비용을 합쳐 사람마다 입금할 금액이 나옵니다.</li>
+      <li>「카카오톡으로 결과 공유」로 단톡방에 보냅니다.</li>
+    </ul>
+  </div>
+</div>
 
 <script>
 (() => {
@@ -380,23 +429,19 @@ function openDay(d) {
   const [y, m, dd] = d.split('-');
   $('#dayLabel').textContent = `${+m}월 ${+dd}일${d === today ? ' (오늘)' : ''}`;
   renderAll();
-  if (d === today) setTimeout(() => $('#nameInput').focus(), 50);
   $('#dayArea').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 /* ---------- 참석자 ---------- */
-$('#addForm').addEventListener('submit', e => {
-  e.preventDefault();
-  const names = $('#nameInput').value.split(/[,\s]+/).map(s => s.trim()).filter(Boolean);
-  const g = $('#gradeInput').value;
-  names.forEach(n => { setMember(n, g); addPlayer(n); });
-  $('#nameInput').value = '';
-  renderAll();
+// 창 열기/닫기 (멤버설정, 게임룰)
+document.addEventListener('click', e => {
+  const o = e.target.closest('[data-open]');
+  if (o) { $('#' + o.dataset.open).classList.remove('hidden'); document.body.style.overflow = 'hidden'; return; }
+  const m = e.target.closest('.modal');
+  if (m && (e.target === m || e.target.closest('[data-close]'))) closeModal(m);
 });
-// 명단에 있는 이름을 치면 급수를 자동으로 맞춰 줌
-$('#nameInput').addEventListener('input', e => {
-  const m = member(e.target.value.trim()); if (m) $('#gradeInput').value = m.grade;
-});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.modal:not(.hidden)').forEach(closeModal); });
+function closeModal(m) { m.classList.add('hidden'); document.body.style.overflow = ''; }
 function addPlayer(name) {
   const D = day();
   if (D.players.includes(name)) { toast(`${name}님은 이미 참석`); return; }
@@ -408,13 +453,15 @@ $('#tray').addEventListener('click', e => {
   addPlayer(b.dataset.name); renderAll();
   toast(`${b.dataset.name} 참석!`);
 });
-$('#bulkAdd').onclick = () => {
+$('#memberForm').addEventListener('submit', e => {
+  e.preventDefault();
   const names = $('#bulkNames').value.split(/[,\s]+/).map(s => s.trim()).filter(Boolean);
   if (!names.length) return;
   names.forEach(n => setMember(n, $('#bulkGrade').value));
   $('#bulkNames').value = ''; save(); renderAll();
-  toast(`${names.length}명 명단 추가`);
-};
+  toast(`자석 ${names.length}개 만들었어요`);
+  $('#bulkNames').focus();
+});
 $('#memberRows').addEventListener('change', e => {
   const sel = e.target.closest('select[data-m]'); if (!sel) return;
   setMember(sel.dataset.m, sel.value); save(); renderAll();
@@ -429,9 +476,8 @@ function renderMembers() {
   const sorted = [...db.members].sort((a, b) => GRADES.indexOf(a.grade) - GRADES.indexOf(b.grade) || a.name.localeCompare(b.name, 'ko'));
   const away = sorted.filter(m => !D.players.includes(m.name));
   $('#tray').innerHTML = away.length ? away.map(m => magnet(m.name)).join('')
-    : `<span class="empty">${db.members.length ? '모두 참석했어요 🎉' : '이름과 급수를 넣고 참석을 누르면 자석이 생깁니다.'}</span>`;
+    : `<span class="empty">${db.members.length ? '모두 참석했어요 🎉' : '⚙️ 멤버설정에서 자석을 먼저 만들어 주세요.'}</span>`;
   $('#memberCount').textContent = db.members.length;
-  $('#memberList').innerHTML = db.members.map(m => `<option value="${esc(m.name)}">`).join('');
   $('#gradeLegend').innerHTML = GRADES.map(g => `<span><i class="dot g-${g}"></i>${GRADE_NAME[g]}</span>`).join('');
   const opts = g => GRADES.map(x => `<option value="${x}" ${x === g ? 'selected' : ''}>${x}조</option>`).join('');
   $('#memberRows').innerHTML = sorted.map(m => `<div class="mrow">
@@ -453,7 +499,7 @@ function charges(D = day()) {
   D.leagues.forEach((L, li) => L.matches.forEach(mt => {
     const r = result(mt, L.target);
     if (!r || !L.fee) return;
-    out.push({ name: r.loser, amount: L.fee + (r.dbl ? 1000 : 0), dbl: r.dbl, src: 'league', label: `리그${li + 1}` });
+    out.push({ name: r.loser, amount: L.fee + (r.dbl || r.deuce ? 1000 : 0), base: L.fee, dbl: r.dbl, deuce: r.deuce, src: 'league', label: `리그${li + 1}` });
   }));
   D.leagues.forEach((L, li) => {
     const pz = prizes(L); if (!pz) return;
@@ -491,23 +537,33 @@ function totals(D = day()) {
 const STROKES = [
   'M6 7 H34', 'M20 7 V33', 'M20 20 H31', 'M10 18 V33', 'M4 33 H36'
 ];
-const color = a => a >= 4000 ? 'var(--red)' : a >= 3000 ? 'var(--orange)' : 'var(--blue)';
-function tallySvg(list) {
-  if (!list.length) return '<span class="none">아직 깨끗! ✨</span>';
+const BLUE = 'var(--blue)', RED = 'var(--red)';
+// 1,000원 = 짝대기 1개. 2,000원 패는 파랑, 3,000원 이상 패는 빨강, 더블·듀스 추가분은 빨강
+function strokesOf(c) {
+  const base = c.base ?? (c.amount - (c.dbl || c.deuce ? 1000 : 0));
+  const out = Array(Math.max(0, Math.round(base / 1000))).fill(base <= 2000 ? BLUE : RED);
+  for (let k = Math.round((c.amount - base) / 1000); k > 0; k--) out.push(RED);
+  return out;
+}
+function drawStrokes(cols) {
   let h = '';
-  for (let i = 0; i < list.length; i += 5) {
-    const grp = list.slice(i, i + 5);
-    h += '<svg viewBox="0 0 40 40" aria-hidden="true">' + grp.map((c, k) =>
-      `<path d="${STROKES[k]}" stroke="${color(c.amount)}" stroke-width="4.5" stroke-linecap="round" fill="none"/>`
+  for (let i = 0; i < cols.length; i += 5) {
+    h += '<svg viewBox="0 0 40 40" aria-hidden="true">' + cols.slice(i, i + 5).map((col, k) =>
+      `<path d="${STROKES[k]}" stroke="${col}" stroke-width="4.5" stroke-linecap="round" fill="none"/>`
     ).join('') + '</svg>';
   }
   return h;
 }
+function tallySvg(list) {
+  if (!list.length) return '<span class="none">아직 깨끗! ✨</span>';
+  return drawStrokes(list.flatMap(strokesOf));
+}
+document.querySelectorAll('.ex').forEach(el => el.innerHTML = drawStrokes(el.dataset.ex.split(',').map(x => x === 'b' ? BLUE : RED)));
 
 function renderRate() {
   document.querySelectorAll('#rateBtns button').forEach(b => b.classList.toggle('on', b.dataset.rate === (db.rate || 'auto')));
   const r = currentRate();
-  $('#rateNow').textContent = `지금 1패 = ${won(r)} · 더블패 = ${won(r + 1000)}`;
+  $('#rateNow').textContent = `지금 1패 = ${won(r)} (${r <= 2000 ? '파란' : '빨간'} 짝대기 ${r / 1000}개)`;
 }
 $('#rateBtns').addEventListener('click', e => {
   const b = e.target.closest('[data-rate]'); if (!b) return;
@@ -533,6 +589,7 @@ function renderBoard() {
       <div class="pl-btns">
         <button class="lose" data-act="lose" data-p="${esc(p)}">패 +${(r / 1000)}천</button>
         <button class="dbl" data-act="dbl" data-p="${esc(p)}">더블패 +${((r + 1000) / 1000)}천</button>
+        <button class="deuce" data-act="deuce" data-p="${esc(p)}">듀스패 +${((r + 1000) / 1000)}천</button>
         <button class="small ghost" data-act="undo" data-p="${esc(p)}" title="마지막 표시 지우기">↶</button>
       </div>
     </div>`;
@@ -552,15 +609,16 @@ $('#board').addEventListener('click', e => {
   const p = b.dataset.p, act = b.dataset.act;
   if (!p) return;
   const r = currentRate();
-  if (act === 'lose') D.marks.push({ id: uid(), name: p, amount: r, dbl: false, at: Date.now() });
-  if (act === 'dbl') D.marks.push({ id: uid(), name: p, amount: r + 1000, dbl: true, at: Date.now() });
+  if (act === 'lose') D.marks.push({ id: uid(), name: p, amount: r, base: r, at: Date.now() });
+  if (act === 'dbl') D.marks.push({ id: uid(), name: p, amount: r + 1000, base: r, dbl: true, at: Date.now() });
+  if (act === 'deuce') D.marks.push({ id: uid(), name: p, amount: r + 1000, base: r, deuce: true, at: Date.now() });
   if (act === 'undo') {
     let i = -1; D.marks.forEach((m, k) => { if (m.name === p) i = k; });
     if (i < 0) { toast('지울 보드 표시가 없어요 (리그 패는 점수를 지우세요)'); return; }
     D.marks.splice(i, 1);
   }
   save(); renderAll();
-  if (act !== 'undo') toast(`${p} +${won(act === 'dbl' ? r + 1000 : r)}`);
+  if (act !== 'undo') toast(`${p} +${won(act === 'lose' ? r : r + 1000)}${act === 'dbl' ? ' (더블패)' : act === 'deuce' ? ' (듀스패)' : ''}`);
 });
 
 /* ---------- 리그 ---------- */
@@ -633,7 +691,8 @@ function result(mt, target) {
   const winner = a > b ? mt.a : mt.b, loser = a > b ? mt.b : mt.a;
   const ls = Math.min(a, b);
   const line = DBL_LINE[target] ?? Math.ceil(target / 2);
-  return { winner, loser, ws: Math.max(a, b), ls, dbl: ls < line };
+  // 듀스: 진 사람도 (목표점수 − 1)점 이상 냈으면 듀스까지 간 경기
+  return { winner, loser, ws: Math.max(a, b), ls, dbl: ls < line, deuce: ls >= target - 1 };
 }
 
 // 순위: 득실차 → 동률이면 승자승(동률자끼리 승수 → 동률자끼리 득실) → 득점 → 승수
@@ -709,7 +768,7 @@ function renderLeagues() {
     return `<div class="league" data-li="${li}">
       <div class="lg-head">
         <b>리그 ${li + 1} · ${L.players.length}명 · ${L.matches.length}경기</b>
-        <span class="muted">${L.target}점 · 패 ${L.fee ? won(L.fee) : '무료'} · 더블패 ${DBL_LINE[L.target]}점 미만${(L.prize ?? 3000) ? ` · 1등/꼴등 ${L.prizeN || 1}명 ±${won(L.prize ?? 3000)}` : ''}</span>
+        <span class="muted">${L.target}점 · 패 ${L.fee ? won(L.fee) : '무료'} · 더블패 ${DBL_LINE[L.target]}점 미만 · 듀스패 +1,000${(L.prize ?? 3000) ? ` · 1등/꼴등 ${L.prizeN || 1}명 ±${won(L.prize ?? 3000)}` : ''}</span>
       </div>
       <div class="courts c${L.courts}">
         ${byCourt.map((list, ci) => `<div class="court">
@@ -717,7 +776,7 @@ function renderLeagues() {
           ${list.map(mt => {
             const r = result(mt, L.target);
             const ca = r ? (r.winner === mt.a ? 'win' : 'lose') : '', cb = r ? (r.winner === mt.b ? 'win' : 'lose') : '';
-            return `<div class="match${r && r.dbl ? ' dbl' : ''}" id="m-${mt.id}">
+            return `<div class="match${r && (r.dbl || r.deuce) ? ' dbl' : ''}" id="m-${mt.id}">
               <span class="no">${mt.no}</span>
               <span class="a ${ca}">${esc(mt.a)} ${dot(mt.a)}</span>
               <input inputmode="numeric" pattern="[0-9]*" data-mid="${mt.id}" data-side="sa" value="${esc(mt.sa)}" aria-label="${esc(mt.a)} 점수">
@@ -746,7 +805,7 @@ $('#leagues').addEventListener('input', e => {
     mt[i.dataset.side] = i.value;
     // 이 경기 줄과 순위표만 갱신
     const r = result(mt, L.target), row = document.getElementById('m-' + mt.id);
-    row.classList.toggle('dbl', !!(r && r.dbl));
+    row.classList.toggle('dbl', !!(r && (r.dbl || r.deuce)));
     row.querySelector('.a').className = 'a ' + (r ? (r.winner === mt.a ? 'win' : 'lose') : '');
     row.querySelector('.b').className = 'b ' + (r ? (r.winner === mt.b ? 'win' : 'lose') : '');
     document.getElementById('st-' + L.id).innerHTML = standingsHtml(L);
