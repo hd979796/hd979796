@@ -23,6 +23,8 @@ jobs:
           mkdir -p _site/sign
           cp -r sign/. _site/sign/
           cp -r sign/. _site/
+          mkdir -p _site/game
+          cp -r game/. _site/game/
       - uses: actions/configure-pages@v5
         with:
           enablement: true
