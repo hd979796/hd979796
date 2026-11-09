@@ -1,12 +1,10 @@
 /* ===================== 구글 시트 연결 (앱스크립트 전용) ===================== */
 /**
- * 직책 미리 정하기: 이 이름으로 가입하면 해당 직책이 자동으로 붙습니다.
- * 웹페이지의 운영 메뉴에서 언제든 바꿀 수 있습니다.
+ * 관리자: 화면에 표시되지 않고 권한만 갖습니다 (직책 임명, 관리 권한 주기, 비밀번호 초기화, 탈퇴 처리).
+ * 여기 적힌 이름은 가입하면 늘 관리자입니다. 다른 사람은 웹페이지 운영 메뉴에서 관리 권한을 줄 수 있습니다.
+ * 회장·부회장·총무 같은 직책은 가입 후 관리자가 웹페이지에서 정합니다.
  */
-/* 기록을 저장할 구글 시트 (우당탕탕 명부) */
-var SHEET_ID = '18BouDAq7u4MmJEDXXWdTc6wR6icXR-p03eUoeeDq33g';
-
-var PRESETS = { '도민구': '회장', '지승욱': '총무', '박문철': '관리자' };
+var ADMINS = ['박문철'];
 
 /* 탭 구성. members 탭은 명부로 바로 볼 수 있게 칸을 나눕니다. */
 var TABS = {
@@ -32,7 +30,7 @@ function run(action, body) {
       now: function () { return Date.now(); },
       uuid: function () { return Utilities.getUuid(); },
       hash: function (s) { return Utilities.base64Encode(Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, s, Utilities.Charset.UTF_8)); },
-      config: { presets: PRESETS }
+      config: { admins: ADMINS }
     };
     var res = WDTT.handle(action, body, store, env);
     res.ok = true;

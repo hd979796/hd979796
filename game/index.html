@@ -65,7 +65,8 @@ h3{font-size:16px;margin:14px 0 8px}
 .role{display:inline-block;font-size:11px;font-weight:800;border-radius:6px;padding:1px 6px;margin-left:4px;vertical-align:2px}
 .role.회장{background:linear-gradient(#ffe08a,#e2a91f);color:#3a2800}
 .role.총무{background:#dff0ff;color:#1c4fb8}
-.role.관리자{background:#eee6ff;color:#5b34b5}
+.role.부회장{background:linear-gradient(#f2f4f7,#cfd5dd);color:#3b4350}
+.admin-tag{font-size:11px;color:#5b34b5;background:#eee6ff;border-radius:6px;padding:1px 6px;margin-left:4px}
 
 /* 로그인 */
 .auth{max-width:440px;margin:0 auto}
@@ -302,7 +303,7 @@ td.n{text-align:left;font-weight:700;white-space:nowrap}
       <label class="f">아이디 (이름)</label><input id="lName" autocomplete="username" placeholder="예: 박문철" required>
       <label class="f">비밀번호</label><input id="lPw" type="password" autocomplete="current-password" required>
       <button class="primary" style="width:100%;margin-top:14px;padding:14px">입장하기</button>
-      <p class="muted" style="margin:10px 0 0">비밀번호를 잊으면 회장이나 관리자에게 초기화를 부탁하세요.</p>
+      <p class="muted" style="margin:10px 0 0">비밀번호를 잊으면 운영진에게 말해 주세요. 관리자가 초기화해 드립니다.</p>
     </form>
     <form id="signupForm" class="hidden">
       <label class="f">이름 (아이디로 씁니다)</label><input id="sName" placeholder="예: 박문철" required maxlength="12">
@@ -318,7 +319,7 @@ td.n{text-align:left;font-weight:700;white-space:nowrap}
         · 목적: 우당탕탕 요절복통 멤버 명부 작성, 모임 연락<br>
         · 항목: 이름, 전화번호, 생년월일, 주소<br>
         · 보관: 탈퇴할 때까지 (탈퇴하면 지웁니다)<br>
-        · 전화번호·생년월일·주소는 회장·총무·관리자만 볼 수 있습니다.<br>
+        · 전화번호·생년월일·주소는 회장·부회장·총무·관리자만 볼 수 있습니다.<br>
         <label style="display:flex;gap:8px;align-items:center;margin-top:8px;font-weight:700;color:var(--ink)"><input type="checkbox" id="sAgree" style="width:auto"> 위 내용에 동의합니다</label>
       </div>
       <button class="primary" style="width:100%;margin-top:14px;padding:14px">가입하고 자석 받기</button>
@@ -575,8 +576,8 @@ const SESSION_KEY = 'wdtt-session';
 const GRADES = ['S', 'A', 'B', 'C', 'D'];
 const GRADE_NAME = { S: '황금', A: '빨강', B: '주황', C: '녹색', D: '흰색' };
 const DBL_LINE = { 21: 10, 25: 13 };
-const OFFICER = { '회장': 1, '총무': 1, '관리자': 1 };
-const BOSS = { '회장': 1, '관리자': 1 };
+const ROLES = ['회장', '부회장', '총무', '일반'];
+const OFFICER = { '회장': 1, '부회장': 1, '총무': 1 }; // 운영진 (관리자는 표시 없이 권한만)
 
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -592,8 +593,9 @@ const S = {
   token: '', meName: '', me: null, members: [], notices: [], settings: {}, today: kstNow().date,
   view: null, sel: null, days: {}, payments: {}, loadedMonths: {}, unpicked: new Set()
 };
-const isOff = () => !!(S.me && OFFICER[S.me.role]);
-const isBoss = () => !!(S.me && BOSS[S.me.role]);
+const isAdmin = () => !!(S.me && S.me.admin);
+const isOff = () => !!(S.me && (OFFICER[S.me.role] || S.me.admin));
+const isBoss = () => !!(S.me && (S.me.role === '회장' || S.me.admin)); // 공지 쓰기
 const member = n => S.members.find(m => m.name === n);
 const gradeOf = n => (member(n) || {}).grade || 'none';
 const gIdx = n => { const i = GRADES.indexOf(gradeOf(n)); return i < 0 ? 9 : i; };
@@ -642,13 +644,14 @@ function demoStore() {
   };
 }
 function demoHash(s) { let h1 = 0x811c9dc5, h2 = 0x1234567; for (let i = 0; i < s.length; i++) { const c = s.charCodeAt(i); h1 = Math.imul(h1 ^ c, 16777619); h2 = Math.imul(h2 ^ c, 2246822507); } return (h1 >>> 0).toString(36) + (h2 >>> 0).toString(36); }
-const demoEnv = { now: () => Date.now(), uuid: () => uid() + uid(), hash: demoHash, config: { presets: { '도민구': '회장', '지승욱': '총무', '박문철': '관리자' } } };
+const demoEnv = { now: () => Date.now(), uuid: () => uid() + uid(), hash: demoHash, config: { admins: ['박문철'] } };
 function demoCall(action, payload) {
   const store = demoStore();
   if (!store.list('members').length) {
     // 연습용 멤버
     [['도민구', 'S'], ['지승욱', 'A'], ['박문철', 'S'], ['최현민', 'S'], ['서용', 'A'], ['문교훈', 'A'], ['이진섭', 'B'], ['김재용', 'B'], ['김한얼', 'C'], ['한창환', 'D']].forEach(([n, g], i) =>
       WDTT.handle('signup', { name: n, phone: '0101234' + String(1000 + i), birth: '1985-0' + (1 + i % 9) + '-1' + i % 10, addr: '경기 화성시 동탄 연습동 ' + (i + 1), grade: g, password: '1234', agree: true }, store, demoEnv));
+    [['도민구', '회장'], ['지승욱', '총무'], ['최현민', '부회장']].forEach(([n, r]) => { const m = store.get('members', n); m.role = r; store.put('members', n, m); });
   }
   try { return { ok: true, ...WDTT.handle(action, JSON.parse(JSON.stringify(payload)), store, demoEnv) }; }
   catch (e) { return { ok: false, error: e.message, code: e.code }; }
@@ -1313,11 +1316,11 @@ function renderOps() {
       ${rows.map(r => `<div class="settle-row"><div>${dot(r.n)}<b>${esc(r.n)}</b> <span class="muted">${+r.date.slice(5, 7)}/${+r.date.slice(8)}</span> <span class="pst ${r.p.status}">${PST[r.p.status]}</span></div>
         <div class="row" style="gap:6px;flex-wrap:nowrap"><b class="num">${won(r.amt)}</b><button class="small forest" data-opspay="${r.date}|${esc(r.n)}" data-amt="${r.amt}">✅ 확인</button></div></div>`).join('') || '<p class="muted">모두 확인됐어요 👏</p>'}`;
   } else if (opsTab === 'members') {
-    const roles = ['회장', '총무', '관리자', '일반'];
-    body.innerHTML = `<p class="muted">${isBoss() ? '직책은 회장·관리자가 임명합니다. 회장·총무는 한 명씩입니다.' : '급수(자석 색)는 운영진이 바꿀 수 있습니다. 직책 임명은 회장·관리자만 가능합니다.'}</p>` +
-      [...S.members].sort((a, b) => byGrade(a.name, b.name)).map(m => `<div class="mrow">${magnet(m.name, 'sm')}<b>${esc(m.name)}${roleTag(m.role)}</b>
+    body.innerHTML = `<p class="muted">${isAdmin() ? '직책(회장·부회장·총무)은 한 명씩 정할 수 있습니다. 🔑 관리 권한은 다른 멤버에게 보이지 않습니다.' : '급수(자석 색)는 운영진이 바꿀 수 있습니다. 직책은 관리자가 정합니다.'}</p>` +
+      [...S.members].sort((a, b) => ROLES.indexOf(a.role) - ROLES.indexOf(b.role) || byGrade(a.name, b.name)).map(m => `<div class="mrow">${magnet(m.name, 'sm')}<b>${esc(m.name)}${roleTag(m.role)}${isAdmin() && m.admin ? '<span class="admin-tag">🔑 관리</span>' : ''}</b>
         <select data-grade-of="${esc(m.name)}" aria-label="급수">${GRADES.map(g => `<option value="${g}" ${g === m.grade ? 'selected' : ''}>${g}조</option>`).join('')}</select>
-        ${isBoss() ? `<select data-role-of="${esc(m.name)}" aria-label="직책">${roles.map(r => `<option ${r === m.role ? 'selected' : ''}>${r}</option>`).join('')}</select>
+        ${isAdmin() ? `<select data-role-of="${esc(m.name)}" aria-label="직책">${ROLES.map(r => `<option ${r === m.role ? 'selected' : ''}>${r}</option>`).join('')}</select>
+        ${m.adminFixed ? '' : `<label style="display:flex;gap:4px;align-items:center;font-size:13px"><input type="checkbox" data-admin-of="${esc(m.name)}" ${m.admin ? 'checked' : ''} style="width:auto">관리 권한</label>`}
         <button class="small ghost" data-resetpw="${esc(m.name)}">비번 초기화</button>${m.name !== S.me.name ? `<button class="small ghost" data-kick="${esc(m.name)}" style="color:var(--red)">탈퇴</button>` : ''}` : ''}</div>`).join('');
   } else if (opsTab === 'roster') {
     const list = [...S.members].sort((a, b) => a.name.localeCompare(b.name, 'ko'));
@@ -1360,6 +1363,7 @@ $('#opsBody').addEventListener('change', async e => {
   try {
     if (s.dataset.gradeOf) { const before = gradeOf(s.dataset.gradeOf); await api('setGrade', { name: s.dataset.gradeOf, grade: s.value }); if (GRADES.indexOf(s.value) < GRADES.indexOf(before)) toast(`🎉 ${s.dataset.gradeOf} 승급!`); }
     if (s.dataset.roleOf) { await api('setRole', { name: s.dataset.roleOf, role: s.value }); toast(`${s.dataset.roleOf} → ${s.value}`); }
+    if (s.dataset.adminOf) { await api('setAdmin', { name: s.dataset.adminOf, admin: s.checked }); toast(`${s.dataset.adminOf} 관리 권한 ${s.checked ? '줌' : '뺌'}`); }
     await refreshBoot(); renderOps(); renderDay();
   } catch (err) { toast(err.message, true); await refreshBoot(); renderOps(); }
 });

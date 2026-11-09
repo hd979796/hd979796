@@ -2,14 +2,15 @@
  * 우당탕탕 요절복통 — 서버 규칙
  * 구글 앱스크립트(Code.gs)와 화면의 체험 모드가 같은 코드를 씁니다.
  * store: get(col,id) / put(col,id,obj) / del(col,id) / list(col)
- * env:   now() 밀리초, uuid(), hash(문자열), config { presets: {이름: 직책} }
+ * env:   now() 밀리초, uuid(), hash(문자열), config { admins: [관리 권한을 늘 갖는 이름] }
+ * 직책(회장·부회장·총무)은 화면에 표시되고, 관리자는 표시 없이 권한만 있습니다.
  * 앱스크립트 호환을 위해 ?. 와 ?? 는 쓰지 않습니다.
  */
 var WDTT = (function () {
   var GRADES = ['S', 'A', 'B', 'C', 'D'];
-  var ROLES = ['회장', '총무', '관리자', '일반'];
-  var OFFICER = { '회장': 1, '총무': 1, '관리자': 1 };
-  var BOSS = { '회장': 1, '관리자': 1 }; // 공지·직책 임명
+  var ROLES = ['회장', '부회장', '총무', '일반'];
+  var OFFICER = { '회장': 1, '부회장': 1, '총무': 1 }; // 운영진: 입금 확인·결석·급수·마감
+  var ADMIN_NAMES = []; // 코드에 적힌 관리자 (handle에서 채움)
   var LATE_MIN = 18 * 60 + 15; // 18:15 이후 입장은 지각
   var STATUS = ['rsvp', 'present', 'late', 'absent'];
 
@@ -19,11 +20,14 @@ var WDTT = (function () {
     var ms = env.now(), d = new Date(ms + 9 * 3600 * 1000);
     return { date: d.toISOString().slice(0, 10), h: d.getUTCHours(), m: d.getUTCMinutes(), iso: new Date(ms).toISOString() };
   }
-  function isOff(m) { return !!OFFICER[m.role]; }
-  function isBoss(m) { return !!BOSS[m.role]; }
+  function roleOf(m) { return ROLES.indexOf(m.role) >= 0 ? m.role : '일반'; }
+  function isAdmin(m) { return !!m.admin || ADMIN_NAMES.indexOf(m.name) >= 0; }
+  function isOff(m) { return !!OFFICER[roleOf(m)] || isAdmin(m); }
+  function canNotice(m) { return roleOf(m) === '회장' || isAdmin(m); } // 공지: 회장·관리자
   function pub(m, full) {
-    var o = { name: m.name, grade: m.grade, role: m.role, joinedAt: m.joinedAt, gradeHistory: m.gradeHistory || [] };
+    var o = { name: m.name, grade: m.grade, role: roleOf(m), joinedAt: m.joinedAt, gradeHistory: m.gradeHistory || [] };
     if (full) { o.phone = m.phone; o.birth = m.birth; o.addr = m.addr || ''; }
+    if (full === 'admin') { o.admin = isAdmin(m); o.adminFixed = ADMIN_NAMES.indexOf(m.name) >= 0; }
     return o;
   }
   function newDay(date) { return { date: date, att: {}, marks: [], leagues: [], rate: 'auto', closed: false, ver: 0 }; }
@@ -53,10 +57,7 @@ var WDTT = (function () {
     if (GRADES.indexOf(b.grade) < 0) fail('급수를 골라 주세요');
     if (!b.agree) fail('개인정보 수집에 동의해 주세요');
     if (store.get('members', name)) fail('이미 가입된 이름입니다. 로그인해 주세요');
-    var t = kst(env), all = store.list('members');
-    var presets = (env.config && env.config.presets) || {};
-    var role = presets[name] || '일반';
-    if (role === '일반' && !all.some(function (m) { return isBoss(m); })) role = '관리자'; // 첫 가입자는 관리자
+    var t = kst(env), role = '일반'; // 직책은 가입 후 관리자가 정합니다
     var salt = env.uuid();
     var m = {
       name: name, phone: phone, birth: birth, addr: addr, grade: b.grade, role: role, joinedAt: t.iso, agreeAt: t.iso,
@@ -64,13 +65,13 @@ var WDTT = (function () {
       gradeHistory: [{ to: b.grade, at: t.iso, by: name, note: '가입' }]
     };
     store.put('members', name, m);
-    return { token: m.token, me: pub(m, true) };
+    return { token: m.token, me: pub(m, 'admin') };
   }
   function login(b, store, env) {
     var m = store.get('members', cleanName(b.name));
     if (!m || hashPw(env, m.salt, String(b.password || '')) !== m.pw) fail('이름 또는 비밀번호가 맞지 않습니다');
     if (!m.token) { m.token = env.uuid(); store.put('members', m.name, m); }
-    return { token: m.token, me: pub(m, true) };
+    return { token: m.token, me: pub(m, 'admin') };
   }
   function authed(b, store) {
     var m = b.me ? store.get('members', cleanName(b.me)) : null;
@@ -80,9 +81,9 @@ var WDTT = (function () {
 
   /* ---------- 조회 ---------- */
   function bootstrap(me, b, store, env) {
-    var full = isOff(me);
+    var full = isAdmin(me) ? 'admin' : isOff(me);
     return {
-      me: pub(me, true),
+      me: pub(me, 'admin'),
       members: store.list('members').map(function (m) { return pub(m, full); }),
       notices: store.list('notices').sort(function (a, c) { return (c.pinned ? 1 : 0) - (a.pinned ? 1 : 0) || String(c.at).localeCompare(String(a.at)); }),
       settings: settingsOf(store),
@@ -193,45 +194,51 @@ var WDTT = (function () {
 
   /* ---------- 공지 ---------- */
   function noticeSave(me, b, store, env) {
-    if (!isBoss(me)) fail('공지는 회장·관리자만 쓸 수 있어요');
+    if (!canNotice(me)) fail('공지는 회장·관리자만 쓸 수 있어요');
     var title = String(b.title || '').trim().slice(0, 80), body = String(b.body || '').trim().slice(0, 3000);
     if (!title) fail('제목을 넣어 주세요');
     var t = kst(env), id = b.id || env.uuid(), old = store.get('notices', id) || {};
-    var n = { id: id, kind: 'notice', title: title, body: body, pinned: !!b.pinned, author: old.author || me.name, authorRole: old.authorRole || me.role, at: old.at || t.iso, editedAt: b.id ? t.iso : undefined };
+    var n = { id: id, kind: 'notice', title: title, body: body, pinned: !!b.pinned, author: old.author || me.name, authorRole: old.authorRole || roleOf(me), at: old.at || t.iso, editedAt: b.id ? t.iso : undefined };
     store.put('notices', id, n);
     return { notice: n };
   }
   function noticeDelete(me, b, store) {
-    if (!isBoss(me)) fail('공지는 회장·관리자만 지울 수 있어요');
+    if (!canNotice(me)) fail('공지는 회장·관리자만 지울 수 있어요');
     store.del('notices', b.id); return {};
   }
 
   /* ---------- 멤버 관리 ---------- */
   function setRole(me, b, store) {
-    if (!isBoss(me)) fail('직책은 회장·관리자만 임명할 수 있어요');
+    if (!isAdmin(me)) fail('직책은 관리자만 정할 수 있어요');
     if (ROLES.indexOf(b.role) < 0) fail('직책이 올바르지 않습니다');
     var m = store.get('members', cleanName(b.name)); if (!m) fail('멤버를 찾을 수 없습니다');
-    var all = store.list('members');
-    if (BOSS[m.role] && !BOSS[b.role] && all.filter(function (x) { return BOSS[x.role]; }).length <= 1) fail('회장·관리자가 한 명은 있어야 해요');
-    if (b.role === '회장' || b.role === '총무') {
-      all.forEach(function (x) { if (x.role === b.role && x.name !== m.name) { x.role = '일반'; store.put('members', x.name, x); } });
+    if (b.role !== '일반') { // 회장·부회장·총무는 한 명씩
+      store.list('members').forEach(function (x) { if (x.role === b.role && x.name !== m.name) { x.role = '일반'; store.put('members', x.name, x); } });
     }
     m.role = b.role; store.put('members', m.name, m);
-    return { member: pub(m, true) };
+    return { member: pub(m, 'admin') };
+  }
+  function setAdmin(me, b, store) {
+    if (!isAdmin(me)) fail('관리 권한은 관리자만 줄 수 있어요');
+    var m = store.get('members', cleanName(b.name)); if (!m) fail('멤버를 찾을 수 없습니다');
+    if (!b.admin && ADMIN_NAMES.indexOf(m.name) >= 0) fail('서버 코드에 적힌 관리자는 여기서 뺄 수 없어요');
+    if (!b.admin && store.list('members').filter(isAdmin).length <= 1) fail('관리자가 한 명은 있어야 해요');
+    m.admin = !!b.admin; store.put('members', m.name, m);
+    return { member: pub(m, 'admin') };
   }
   function setGrade(me, b, store, env) {
     if (!isOff(me)) fail('급수는 운영진만 바꿀 수 있어요');
     if (GRADES.indexOf(b.grade) < 0) fail('급수가 올바르지 않습니다');
     var m = store.get('members', cleanName(b.name)); if (!m) fail('멤버를 찾을 수 없습니다');
-    if (m.grade === b.grade) return { member: pub(m, true) };
+    if (m.grade === b.grade) return { member: pub(m, 'admin') };
     var t = kst(env), from = m.grade, up = GRADES.indexOf(b.grade) < GRADES.indexOf(from);
     m.grade = b.grade; m.gradeHistory = (m.gradeHistory || []).concat([{ from: from, to: b.grade, at: t.iso, by: me.name }]);
     store.put('members', m.name, m);
     if (up) {
       var id = env.uuid();
-      store.put('notices', id, { id: id, kind: 'promo', title: '🎉 ' + m.name + ' 승급! ' + from + '조 → ' + b.grade + '조', body: m.name + '님의 자석 색이 바뀌었습니다. 축하해 주세요!', pinned: false, author: me.name, authorRole: me.role, at: t.iso, who: m.name, grade: b.grade });
+      store.put('notices', id, { id: id, kind: 'promo', title: '🎉 ' + m.name + ' 승급! ' + from + '조 → ' + b.grade + '조', body: m.name + '님의 자석 색이 바뀌었습니다. 축하해 주세요!', pinned: false, author: me.name, authorRole: roleOf(me), at: t.iso, who: m.name, grade: b.grade });
     }
-    return { member: pub(m, true) };
+    return { member: pub(m, 'admin') };
   }
   function updateMe(me, b, store, env) {
     if (b.phone !== undefined) { var ph = String(b.phone).replace(/\D/g, ''); if (!/^01\d{8,9}$/.test(ph)) fail('전화번호를 확인해 주세요'); me.phone = ph; }
@@ -243,17 +250,17 @@ var WDTT = (function () {
       me.salt = env.uuid(); me.pw = hashPw(env, me.salt, String(b.newPassword)); me.token = env.uuid();
     }
     store.put('members', me.name, me);
-    return { me: pub(me, true), token: me.token };
+    return { me: pub(me, 'admin'), token: me.token };
   }
   function resetPassword(me, b, store, env) {
-    if (!isBoss(me)) fail('회장·관리자만 비밀번호를 초기화할 수 있어요');
+    if (!isAdmin(me)) fail('관리자만 비밀번호를 초기화할 수 있어요');
     var m = store.get('members', cleanName(b.name)); if (!m) fail('멤버를 찾을 수 없습니다');
     if (String(b.password || '').length < 4) fail('임시 비밀번호는 4자 이상');
     m.salt = env.uuid(); m.pw = hashPw(env, m.salt, String(b.password)); m.token = env.uuid();
     store.put('members', m.name, m); return {};
   }
   function deleteMember(me, b, store) {
-    if (!isBoss(me)) fail('회장·관리자만 멤버를 내보낼 수 있어요');
+    if (!isAdmin(me)) fail('관리자만 멤버를 내보낼 수 있어요');
     var name = cleanName(b.name); if (name === me.name) fail('본인은 내보낼 수 없어요');
     store.del('members', name); return {};
   }
@@ -266,6 +273,7 @@ var WDTT = (function () {
 
   function handle(action, b, store, env) {
     b = b || {};
+    ADMIN_NAMES = (env.config && env.config.admins) || [];
     if (action === 'ping') return { name: '우당탕탕 요절복통', time: kst(env).iso };
     if (action === 'signup') return signup(b, store, env);
     if (action === 'login') return login(b, store, env);
@@ -279,6 +287,7 @@ var WDTT = (function () {
       case 'noticeSave': return noticeSave(me, b, store, env);
       case 'noticeDelete': return noticeDelete(me, b, store);
       case 'setRole': return setRole(me, b, store);
+      case 'setAdmin': return setAdmin(me, b, store);
       case 'setGrade': return setGrade(me, b, store, env);
       case 'updateMe': return updateMe(me, b, store, env);
       case 'resetPassword': return resetPassword(me, b, store, env);
