@@ -1279,11 +1279,11 @@ function renderSettle(D) {
       <div class="acct"><span>${esc(st.bank)} ${esc(st.number)}<br><small style="font-weight:500;opacity:.85">예금주 ${esc(st.holder)} · 입금자명 <b>${esc(me)}${m}${d}</b></small></span>
         <button class="small white" data-copy="${esc(st.bank + ' ' + st.number)}">복사</button></div>
       <div class="btns">
-        <button class="kpay" data-kbank="${mine.amount}">카카오뱅크로 보내기</button>
+        ${st.kakaopay ? `<button class="kpay" data-ktalk="${mine.amount}">💛 카카오톡 송금</button>` : `<button class="kpay" data-copy="${esc(st.bank + ' ' + st.number)}">계좌 복사</button>`}
         <button class="white" data-copy="${mine.amount}" data-what="금액">금액 복사</button>
         ${p.status === 'confirmed' ? `<button class="done" disabled>✅ 총무 확인 완료</button>` : p.status === 'claimed' ? `<button class="done" data-claim>⏳ 총무 확인 기다리는 중 (다시 알리기)</button>` : `<button class="done" data-claim>💸 입금했어요</button>`}
       </div>
-      <div style="font-size:12px;opacity:.85;margin-top:8px">「카카오뱅크로 보내기」를 누르면 모임통장 계좌가 복사되고 카카오뱅크 앱이 열립니다. 앱에 뜨는 <b>복사한 계좌로 보내기</b>를 누르고 금액 ${won(mine.amount)}을 넣으세요.</div>
+      <div style="font-size:12px;opacity:.85;margin-top:8px">${st.kakaopay ? `「카카오톡 송금」을 누르면 금액 ${won(mine.amount)}이 복사되고 카카오톡 송금 화면(총무 ${esc(st.holder)})이 열립니다. 금액 칸에 붙여넣고 보내세요.` : `계좌를 복사한 뒤 쓰시는 은행 앱이나 카카오톡 송금(+ → 송금 → 계좌)에서 붙여넣어 보내세요.`}</div>
     </div>`;
   } else if (mine) box = `<div class="paybox"><div class="game" style="font-size:22px">🎉 오늘 벌금 없음!</div><div style="font-size:14px;opacity:.9">${mine.amount < 0 ? `1등 보너스 ${won(mine.amount)}` : '깨끗한 하루'}</div></div>`;
   $('#payBox').innerHTML = box;
@@ -1305,12 +1305,11 @@ $('#payBox').addEventListener('click', async e => {
   const b = e.target.closest('button'); if (!b) return;
   const st = S.settings;
   if (b.dataset.copy) { const w = b.dataset.what || '계좌'; toast(await copyText(b.dataset.copy) ? `${w}를 복사했어요` : '복사하지 못했어요', !1); }
-  else if (b.dataset.kbank) {
-    // 카카오뱅크는 금액까지 채워 여는 공개 방법이 없어, 계좌를 복사해 두고 앱을 엽니다
-    await copyText(st.bank + ' ' + st.number);
-    const android = /Android/i.test(navigator.userAgent);
-    if (android) location.href = 'intent://#Intent;package=com.kakaobank.channel;end';
-    toast(android ? '계좌를 복사했어요. 카카오뱅크에서 「복사한 계좌로 보내기」를 누르세요' : '계좌를 복사했어요. 카카오뱅크 앱을 열면 「복사한 계좌로 보내기」가 떠요');
+  else if (b.dataset.ktalk) {
+    // 총무가 등록한 카카오페이 송금 링크: 카카오톡 송금 화면이 열림 (금액은 복사해 두고 붙여넣기)
+    await copyText(b.dataset.ktalk);
+    toast(`금액 ${won(+b.dataset.ktalk)}을 복사했어요. 송금 화면에 붙여넣으세요`);
+    setTimeout(() => { location.href = st.kakaopay; }, 400);
   } else if (b.dataset.claim !== undefined) {
     const amt = totals(dayOf(S.sel))[S.me.name].amount;
     try { const r = await api('pay', { op: 'claim', date: S.sel, amount: amt }); r.payments.forEach(p => S.payments[p.id] = p); renderSettle(dayOf(S.sel)); toast('총무에게 알렸어요. 확인되면 ✅로 바뀝니다'); } catch (err) { toast(err.message, true); }
@@ -1512,7 +1511,8 @@ function renderOps() {
     body.innerHTML = `<form id="acctForm"><label class="f">은행 (모임통장)</label><input id="aBank" value="${esc(st.bank)}">
       <label class="f">계좌번호</label><input id="aNum" inputmode="numeric" value="${esc(st.number)}">
       <label class="f">예금주</label><input id="aHolder" value="${esc(st.holder)}">
-      <p class="muted">벌금은 카카오뱅크 모임통장으로 받습니다 (회칙 제14조). 회원 화면의 「카카오뱅크로 보내기」가 이 계좌를 복사해 카카오뱅크 앱을 엽니다.</p>
+      <label class="f">카카오톡 송금 링크 (선택)</label><input id="aKpay" placeholder="https://qr.kakaopay.com/..." value="${esc(st.kakaopay)}">
+      <p class="muted">넣으면 회원 화면에 「💛 카카오톡 송금」 버튼이 생깁니다. 만드는 법: 카카오톡 → 더보기(…) → 페이 → 송금 → 「송금코드」(또는 QR) → 링크 복사. <b>이 링크로 보낸 돈은 총무 본인 카카오페이로 들어가니</b>, 모임통장으로 옮겨 주세요. 비워 두면 계좌 복사 버튼만 보입니다.</p>
       <button class="primary" style="width:100%">저장</button></form>`;
   }
 }
@@ -1569,7 +1569,8 @@ $('#opsBody').addEventListener('change', async e => {
 });
 $('#opsBody').addEventListener('submit', async e => {
   if (e.target.id !== 'acctForm') return; e.preventDefault();
-  try { const r = await api('settingsSave', { bank: $('#aBank').value, number: $('#aNum').value, holder: $('#aHolder').value, kakaopay: '' }); S.settings = r.settings; renderSettle(dayOf(S.sel)); toast('계좌 정보를 저장했어요'); }
+  const kp = $('#aKpay').value.trim(); if (kp && !/^https:\/\/qr\.kakaopay\.com\//.test(kp)) return toast('카카오톡 송금 링크는 https://qr.kakaopay.com/ 으로 시작해야 해요', true);
+  try { const r = await api('settingsSave', { bank: $('#aBank').value, number: $('#aNum').value, holder: $('#aHolder').value, kakaopay: $('#aKpay').value.trim() }); S.settings = r.settings; renderSettle(dayOf(S.sel)); toast('계좌 정보를 저장했어요'); }
   catch (err) { toast(err.message, true); }
 });
 
