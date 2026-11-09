@@ -4,62 +4,44 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>우당탕탕 요절복통</title>
-<meta name="description" content="참석자 기록, 바를 정(正) 패배 보드, 랜덤 리그 대진표, 오늘 입금액 정산">
-<meta name="theme-color" content="#ff6b35">
+<meta name="description" content="우당탕탕 요절복통 배드민턴 모임: 참석 자석판, 벌금 정산, 활동 기록, 공지">
+<meta name="theme-color" content="#1d6b4c">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#fff8ef; --card:#ffffff; --ink:#2b2118; --muted:#8a7a6a; --line:#f0e2d0;
-  --brand:#ff6b35; --brand2:#ffc93c; --blue:#2f7cf6; --orange:#ff8a00; --red:#e5383b; --green:#1f9d55;
+  --bg:#fff8ef; --card:#ffffff; --ink:#2b2118; --muted:#857565; --line:#f0e2d0;
+  --brand:#ff6b35; --gold:#d9a62e; --gold2:#fff4cf; --mint:#bfe1da; --forest:#1d6b4c;
+  --blue:#2f7cf6; --red:#e5383b; --black:#2a2a2a; --green:#1f9d55;
   --radius:16px;
 }
 *{box-sizing:border-box}
 html,body{margin:0}
 body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;font-size:16px;line-height:1.45;-webkit-tap-highlight-color:transparent}
-.wrap{max-width:760px;margin:0 auto;padding:12px 16px 80px}
-button{font:inherit;border:0;border-radius:12px;padding:10px 14px;cursor:pointer;background:#f3e9dc;color:var(--ink);font-weight:600}
-button:active{transform:scale(.97)}
-button.primary{background:var(--brand);color:#fff}
-button.ghost{background:transparent;border:1px solid var(--line)}
+.wrap{max-width:760px;margin:0 auto;padding:10px 16px 90px}
+.game{font-family:'Black Han Sans',"Apple SD Gothic Neo",sans-serif;font-weight:400;letter-spacing:.5px}
+button{font:inherit;border:0;border-radius:12px;padding:10px 14px;cursor:pointer;background:#f3e9dc;color:var(--ink);font-weight:700;box-shadow:0 3px 0 rgba(0,0,0,.12);transition:transform .06s}
+button:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(0,0,0,.12)}
+button.primary{background:var(--brand);color:#fff;box-shadow:0 3px 0 #c84b1d}
+button.gold{background:linear-gradient(#ffd863,#e8b02f);color:#3a2800;box-shadow:0 3px 0 #a87a10}
+button.forest{background:var(--forest);color:#fff;box-shadow:0 3px 0 #0f4632}
+button.ghost{background:transparent;border:1px solid var(--line);box-shadow:none}
 button.small{padding:6px 10px;font-size:14px;border-radius:10px}
-button:disabled{opacity:.4}
-input,select{font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--ink);min-width:0}
-.card{background:var(--card);border-radius:var(--radius);padding:16px;margin:14px 0;box-shadow:0 2px 0 var(--line)}
+button:disabled{opacity:.45}
+input,select,textarea{font:inherit;padding:10px 12px;border:1px solid #e6d5bf;border-radius:12px;background:#fff;color:var(--ink);min-width:0;width:100%}
+textarea{min-height:120px;resize:vertical}
+label.f{display:block;font-size:14px;color:var(--muted);margin:10px 0 4px;font-weight:600}
+.card{background:var(--card);border-radius:var(--radius);padding:16px;margin:14px 0;box-shadow:0 3px 0 var(--line)}
 h2{font-size:19px;margin:0 0 12px;display:flex;align-items:center;gap:8px}
 h3{font-size:16px;margin:14px 0 8px}
 .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.between{justify-content:space-between}
 .muted{color:var(--muted);font-size:14px}
 .hidden{display:none!important}
+.num{font-variant-numeric:tabular-nums}
 
-/* hero */
-.hero{border-radius:22px;overflow:hidden;margin-top:4px;box-shadow:0 4px 0 #e9d3b8}
-.hero svg{display:block;width:100%;height:auto}
-
-/* calendar */
-.cal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-.cal-head b{font-size:18px}
-.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
-.cal .dow{text-align:center;font-size:13px;color:var(--muted);padding:4px 0}
-.cal .dow:first-child{color:var(--red)} .cal .dow:last-child{color:var(--blue)}
-.day{aspect-ratio:1/1;border-radius:12px;background:#fbf4ea;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:600;position:relative;padding:0;font-size:15px}
-.day.empty{background:transparent;pointer-events:none}
-.day.today{background:var(--brand);color:#fff;box-shadow:0 0 0 3px #ffd9c7}
-.day.sel{outline:3px solid var(--brand2)}
-.day .cnt{font-size:10px;font-weight:700;color:var(--brand);line-height:1}
-.day.today .cnt{color:#fff}
-.day.sun{color:var(--red)} .day.sat{color:var(--blue)}
-.day.today.sun,.day.today.sat{color:#fff}
-
-/* players */
-.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-.chip{background:#fff3e0;border:1px dashed #f5c48f;border-radius:999px;padding:5px 12px;font-size:14px;font-weight:600}
-.rate{display:flex;gap:6px;flex-wrap:wrap}
-.rate button.on{background:var(--ink);color:#fff}
-.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-top:8px}
-.legend i{display:inline-block;width:14px;height:4px;border-radius:2px;vertical-align:middle;margin-right:4px}
-
-.board{display:grid;gap:10px}
 /* 급수 자석: S 황금 · A 빨강 · B 주황 · C 녹색 · D 흰색 */
 .g-S{--c:#dcb043;--c2:#8f6b17;--ring:#b88d22}
 .g-A{--c:#d3262f;--c2:#86121a;--ring:#d3262f}
@@ -67,95 +49,212 @@ h3{font-size:16px;margin:14px 0 8px}
 .g-C{--c:#1f8045;--c2:#0e4d27;--ring:#1f8045}
 .g-D{--c:#f6f6f3;--c2:#b9b9b2;--ring:#f6f6f3}
 .g-none{--c:#bdb6ab;--c2:#857d72;--ring:#bdb6ab}
-.mag{width:60px;height:60px;border-radius:50%;flex:none;display:grid;place-items:center;padding:0;border:0;position:relative;
+.mag{width:60px;height:60px;border-radius:50%;flex:none;display:grid;place-items:center;padding:0;border:0;position:relative;cursor:pointer;
   background:radial-gradient(circle at 32% 26%,rgba(255,255,255,.6),rgba(255,255,255,0) 40%),var(--c);
   box-shadow:inset 0 0 0 4px var(--ring),inset 0 0 0 5px rgba(0,0,0,.12),inset 0 -5px 0 var(--c2),0 3px 6px rgba(0,0,0,.28)}
 .mag.g-S{box-shadow:inset 0 0 0 3px #f3d47a,inset 0 0 0 6px var(--ring),inset 0 -5px 0 var(--c2),0 3px 6px rgba(0,0,0,.28)}
-.mag span{background:#fff;color:#111;font-size:12px;font-weight:800;padding:2px 4px;border-radius:3px;max-width:54px;white-space:nowrap;overflow:hidden;text-overflow:clip;box-shadow:0 0 0 1px rgba(0,0,0,.18);letter-spacing:-.5px}
+.mag span{background:#fff;color:#111;font-size:12px;font-weight:800;padding:2px 4px;border-radius:3px;max-width:54px;white-space:nowrap;overflow:hidden;box-shadow:0 0 0 1px rgba(0,0,0,.18);letter-spacing:-.5px}
 .mag.long span{font-size:9.5px;letter-spacing:-.8px}
-.mag.sm.long span{font-size:8.5px}
-.mag.sm{width:46px;height:46px}.mag.sm span{font-size:10.5px;max-width:42px;padding:1px 3px}
+.mag.sm{width:44px;height:44px}.mag.sm span{font-size:10px;max-width:40px;padding:1px 3px}
+.mag.xl{width:110px;height:110px}.mag.xl span{font-size:20px;max-width:96px;padding:3px 8px}
+.mag.me::after{content:"나";position:absolute;top:-4px;right:-4px;background:var(--brand);color:#fff;font-size:10px;font-weight:800;border-radius:999px;padding:1px 5px;border:2px solid #fff}
+.mag.ghosted{opacity:.45;filter:grayscale(.4)}
+.mag.pop{animation:pop .35s ease-out}
+@keyframes pop{0%{transform:scale(.4)}70%{transform:scale(1.12)}100%{transform:scale(1)}}
 .dot{display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--c);box-shadow:inset 0 -2px 0 var(--c2),0 0 0 1px rgba(0,0,0,.15);vertical-align:-1px;margin-right:4px;flex:none}
-.gsel{width:auto}
-.tray{display:flex;flex-wrap:wrap;gap:8px;padding:10px;border-radius:12px;background:#f3f3ef;min-height:70px;margin-top:10px}
-.tray .empty{color:var(--muted);font-size:13px;align-self:center}
-.legend-g{display:flex;gap:10px;flex-wrap:wrap;font-size:13px;margin-top:8px;color:var(--muted)}
-.toolbar{display:flex;gap:8px;margin-top:12px}
-.toolbar button{flex:1;background:#fff;box-shadow:0 2px 0 var(--line)}
-.modal{position:fixed;inset:0;background:rgba(30,20,10,.5);display:flex;align-items:flex-end;justify-content:center;z-index:20}
-.sheet{background:var(--card);width:100%;max-width:640px;max-height:88vh;overflow:auto;border-radius:20px 20px 0 0;padding:16px 16px 28px}
-@media(min-width:640px){.modal{align-items:center}.sheet{border-radius:20px}}
-.sheet-head{display:flex;justify-content:space-between;align-items:center;position:sticky;top:-16px;background:var(--card);padding:4px 0 8px;z-index:1}
-.rules ul{margin:0 0 6px;padding-left:20px}
-.rules li{margin:5px 0;font-size:15px}
-.rules h3{margin:16px 0 4px}
-.t-blue{color:var(--blue)} .t-red{color:var(--red)}
-.ex svg{width:30px;height:30px;vertical-align:middle;background:#f2f8f6;border-radius:4px}
-.mrow{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--line)}
-.mrow b{flex:1}
-/* 화이트보드 */
-.wb{background:#bfe1da;border:7px solid #fbfbf8;outline:3px solid #1d6b4c;border-radius:8px;padding:10px;margin-top:12px}
-.wb-title{font-family:'Black Han Sans','Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-weight:900;font-size:28px;letter-spacing:2px;text-align:center;color:#111;margin:2px 0 10px}
+.role{display:inline-block;font-size:11px;font-weight:800;border-radius:6px;padding:1px 6px;margin-left:4px;vertical-align:2px}
+.role.회장{background:linear-gradient(#ffe08a,#e2a91f);color:#3a2800}
+.role.총무{background:#dff0ff;color:#1c4fb8}
+.role.관리자{background:#eee6ff;color:#5b34b5}
+
+/* 로그인 */
+.auth{max-width:440px;margin:0 auto}
+.tabs{display:flex;gap:6px;margin-bottom:10px}
+.tabs button{flex:1;background:#f3e9dc}
+.tabs button.on{background:var(--ink);color:#fff;box-shadow:0 3px 0 #000}
+.grades{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.grades label{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 2px;border-radius:12px;border:2px solid transparent;cursor:pointer;font-weight:800;font-size:14px}
+.grades input{display:none}
+.grades label:has(input:checked){border-color:var(--ink);background:#fff7ea}
+.grades .mag{width:40px;height:40px;pointer-events:none}
+.consent{font-size:13px;background:#faf3e8;border-radius:10px;padding:10px;margin-top:10px;color:#5d4f42}
+.demo{background:#e8f4ff;color:#1c4fb8;border-radius:12px;padding:10px 12px;font-size:14px;margin:10px 0}
+
+/* HUD */
+.hud{position:sticky;top:0;z-index:5;background:rgba(255,248,239,.94);backdrop-filter:blur(6px);margin:0 -16px;padding:8px 16px;border-bottom:1px solid var(--line)}
+.hud-in{display:flex;align-items:center;gap:10px}
+.hud .who{flex:1;min-width:0}
+.hud .who b{font-size:17px}
+.hud .xp{height:8px;border-radius:99px;background:#efe3d2;overflow:hidden;margin-top:4px}
+.hud .xp i{display:block;height:100%;background:linear-gradient(90deg,#58c48b,#1f9d55)}
+.hud .stat{font-size:12px;color:var(--muted);margin-top:2px}
+.icons{display:flex;gap:6px;margin-top:8px;overflow-x:auto;padding-bottom:2px}
+.icons button{flex:none;font-size:14px;padding:7px 11px;position:relative}
+.badge{position:absolute;top:-6px;right:-6px;background:var(--red);color:#fff;border-radius:999px;font-size:11px;padding:1px 6px;border:2px solid #fff}
+.sync{width:10px;height:10px;border-radius:50%;background:#c9bba9;flex:none}
+.sync.on{background:var(--green);animation:blink 1s infinite}
+@keyframes blink{50%{opacity:.3}}
+
+/* 공지 배너 */
+.notice-banner{display:block;width:100%;text-align:left;margin-top:12px;border-radius:16px;padding:12px 14px;background:linear-gradient(135deg,#fff4cf,#ffe08a);border:2px solid var(--gold);box-shadow:0 3px 0 #b88d22;color:#3a2800}
+.notice-banner .t{font-size:16px;font-weight:800;display:flex;gap:6px;align-items:center}
+.notice-banner .b{font-size:14px;margin-top:4px;white-space:pre-wrap;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-weight:500}
+
+.hero{border-radius:20px;overflow:hidden;margin-top:12px;box-shadow:0 4px 0 #e9d3b8}
+.hero svg{display:block;width:100%;height:auto}
+
+/* 달력 */
+.cal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:6px}
+.cal-head b{font-size:18px}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal .dow{text-align:center;font-size:13px;color:var(--muted);padding:4px 0}
+.cal .dow:first-child{color:var(--red)} .cal .dow:last-child{color:var(--blue)}
+.day{aspect-ratio:1/1;border-radius:12px;background:#fbf4ea;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:700;position:relative;padding:0;font-size:15px;box-shadow:none}
+.day.empty{background:transparent;pointer-events:none}
+.day.today{background:var(--brand);color:#fff;box-shadow:0 0 0 3px #ffd9c7}
+.day.sel{outline:3px solid var(--forest)}
+.day .cnt{font-size:10px;font-weight:800;color:var(--forest);line-height:1}
+.day.today .cnt{color:#fff}
+.day.mine::after{content:"";position:absolute;top:5px;right:5px;width:7px;height:7px;border-radius:50%;background:var(--forest)}
+.day.today.mine::after{background:#fff}
+.day.sun{color:var(--red)} .day.sat{color:var(--blue)}
+.day.today.sun,.day.today.sat{color:#fff}
+
+/* 현황판 */
+.wb{background:var(--mint);border:7px solid #fbfbf8;outline:3px solid var(--forest);border-radius:8px;padding:10px;margin-top:10px}
+.wb-title{font-size:28px;letter-spacing:2px;text-align:center;color:#111;margin:2px 0 4px}
+.wb-sub{text-align:center;font-size:13px;color:#3d5f55;margin-bottom:8px}
+.board{display:grid;gap:8px}
 .pl{background:#fff;border-radius:6px;padding:8px;display:grid;grid-template-columns:62px 1fr;gap:4px 10px;align-items:center}
-.pl .mag{grid-row:span 2;cursor:pointer}
-.pl-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.pl .mag{grid-row:span 2}
+.pl-top{display:flex;justify-content:space-between;align-items:center;gap:6px;flex-wrap:wrap}
 .pl-name{font-size:17px;font-weight:800}
-.pl-sum{font-weight:800;color:var(--brand);font-variant-numeric:tabular-nums}
-.pl-btns{grid-column:1/-1}
+.pl-sum{font-weight:800;color:var(--brand)}
+.st{font-size:12px;font-weight:800;border-radius:999px;padding:2px 8px;margin-left:6px;vertical-align:2px}
+.st.rsvp{background:#eef0f3;color:#56606b}
+.st.present{background:#e3f6ea;color:#16794a}
+.st.late{background:#fff0d6;color:#9a5b00}
+.st.absent{background:#3a3a3a;color:#fff}
+.pl-btns{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:6px}
+.pl-btns button{padding:9px 4px;font-size:14px}
+.pl-btns .lose{background:#e8f0ff;color:#1c4fb8;box-shadow:0 3px 0 #c5d6f7}
+.pl-btns .dbl{background:#ffe5e5;color:#b3261e;box-shadow:0 3px 0 #f3c2c2}
+.pl-btns .deuce{background:#fff0d6;color:#9a5b00;box-shadow:0 3px 0 #f0d7a8}
+.pl-off{grid-column:1/-1;display:flex;gap:4px;flex-wrap:wrap;align-items:center;font-size:13px;color:var(--muted)}
+.pl-off button{font-size:12px;padding:4px 8px;box-shadow:none;border:1px solid var(--line);background:#fff}
+.pl-off button.on{background:var(--ink);color:#fff}
 .tally{display:flex;flex-wrap:wrap;gap:4px;min-height:52px;padding:6px;border-radius:4px;
   background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 44' width='44' height='44'%3E%3Cpath d='M6 7H34M20 7V33M20 20H31M10 18V33M4 33H36' stroke='%23d6ebe6' stroke-width='4.5' stroke-linecap='round' fill='none'/%3E%3C/svg%3E") 6px 6px/44px 44px repeat;border:1px solid #e3efec}
 .tally svg{width:40px;height:40px}
 .tally .none{color:var(--muted);font-size:13px;align-self:center;padding:2px 6px;background:rgba(255,255,255,.85);border-radius:6px}
-.pl-btns{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:6px}
-.pl-btns button{padding:10px 6px;font-size:15px}
-.pl-btns .deuce{background:#fff0d6;color:#9a5b00}
-.board{gap:8px}
-.prize{grid-column:2;justify-self:start;font-weight:800;font-size:15px;padding:2px 10px;border-radius:999px}
+.prize{grid-column:2;justify-self:start;font-weight:800;font-size:14px;padding:2px 10px;border-radius:999px}
 .prize.minus{background:#e3f6ea;color:#16794a}
 .prize.plus{background:#ffe5e5;color:#b3261e}
-.prize-line{margin:8px 0 0;padding:8px 10px;border-radius:10px;background:#fff7e0;font-size:14px;font-weight:600}
-.pl-btns .lose{background:#e8f0ff;color:#1c4fb8}
-.pl-btns .dbl{background:#ffe5e5;color:#b3261e}
+.tray{display:flex;flex-wrap:wrap;gap:8px;padding:10px;border-radius:12px;background:#f3f3ef;min-height:70px;margin-top:10px}
+.tray .empty{color:var(--muted);font-size:13px;align-self:center}
+.myact{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.myact button{padding:14px 8px;font-size:16px}
+.closed{background:#2b2118;color:#fff;border-radius:12px;padding:10px 12px;font-weight:700;margin-top:10px}
+.legend{display:flex;gap:10px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-top:8px}
+.legend i{display:inline-block;width:14px;height:4px;border-radius:2px;vertical-align:middle;margin-right:4px}
+.rate{display:flex;gap:6px;flex-wrap:wrap}
+.rate button{box-shadow:none}
+.rate button.on{background:var(--ink);color:#fff}
 
-/* league */
+/* 리그 */
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.grid2 label{font-size:13px;color:var(--muted);font-weight:600}
 .pick{display:flex;flex-wrap:wrap;gap:6px}
-.pick label{display:flex;align-items:center;gap:6px;background:#fbf4ea;padding:6px 10px;border-radius:10px;font-weight:600;font-size:15px}
+.pick label{display:flex;align-items:center;gap:6px;background:#fbf4ea;padding:6px 10px;border-radius:10px;font-weight:700;font-size:15px}
+.pick input{width:auto}
 .league{border:2px solid var(--line);border-radius:14px;padding:12px;margin-top:12px}
-.lg-head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
 .courts{display:grid;gap:10px;margin-top:8px}
 @media(min-width:640px){.courts.c2{grid-template-columns:1fr 1fr}.courts.c3{grid-template-columns:1fr 1fr 1fr}}
 .court{background:#fbf4ea;border-radius:12px;padding:8px}
 .court h4{margin:2px 4px 6px;font-size:14px}
-.match{display:grid;grid-template-columns:22px 1fr 52px 10px 52px 1fr;gap:4px;align-items:center;background:#fff;border-radius:10px;padding:6px;margin-bottom:6px;font-size:15px}
+.match{display:grid;grid-template-columns:22px 1fr 50px 10px 50px 1fr;gap:4px;align-items:center;background:#fff;border-radius:10px;padding:6px;margin-bottom:6px;font-size:15px}
 .match .no{font-size:12px;color:var(--muted);text-align:center}
-.match .a{text-align:right;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.match .b{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.match input{width:52px;padding:6px 2px;text-align:center;font-variant-numeric:tabular-nums}
+.match .a{text-align:right;font-weight:700;overflow:hidden;white-space:nowrap}
+.match .b{font-weight:700;overflow:hidden;white-space:nowrap}
+.match input{width:50px;padding:6px 2px;text-align:center}
 .match .win{color:var(--green)} .match .lose{color:var(--muted);font-weight:500}
 .match.dbl{box-shadow:inset 0 0 0 2px #ffb4b4}
 table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:14px}
 th,td{padding:7px 4px;text-align:center;border-bottom:1px solid var(--line)}
 th{color:var(--muted);font-weight:600;font-size:13px}
-td.n{text-align:left;font-weight:700}
-.medal{font-size:16px}
+td.n{text-align:left;font-weight:700;white-space:nowrap}
 .scroll{overflow-x:auto}
+.prize-line{margin:8px 0 0;padding:8px 10px;border-radius:10px;background:#fff7e0;font-size:14px;font-weight:600}
 
-/* settle */
-.settle-row{display:flex;justify-content:space-between;align-items:center;padding:10px 4px;border-bottom:1px dashed var(--line)}
-.settle-row b{font-size:17px}
-.settle-row .amt{font-size:19px;font-weight:800;color:var(--brand);font-variant-numeric:tabular-nums}
-.settle-total{display:flex;justify-content:space-between;padding:12px 4px 4px;font-weight:800;font-size:18px}
-.kakao{background:#fee500;color:#191600;width:100%;padding:14px;font-size:17px;margin-top:12px}
-.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:12px;font-size:15px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:9;max-width:90vw}
+/* 정산 · 입금 */
+.paybox{border-radius:16px;padding:14px;background:linear-gradient(135deg,#1d6b4c,#2b8a63);color:#fff;margin-bottom:12px}
+.paybox .big{font-size:30px}
+.paybox .acct{background:rgba(255,255,255,.14);border-radius:10px;padding:8px 10px;margin:10px 0;font-weight:700;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.paybox .btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.paybox button{box-shadow:0 3px 0 rgba(0,0,0,.25)}
+.paybox .toss{background:#0064ff;color:#fff}
+.paybox .kpay{background:#fee500;color:#191600}
+.paybox .white{background:#fff;color:var(--forest)}
+.paybox .done{grid-column:1/-1;background:#ffd863;color:#3a2800}
+.settle-row{display:flex;justify-content:space-between;align-items:center;padding:9px 4px;border-bottom:1px dashed var(--line);gap:8px}
+.settle-row .amt{font-size:18px;font-weight:800;color:var(--brand)}
+.settle-row.mine{background:#fff7ea;border-radius:10px}
+.pst{font-size:12px;font-weight:800;border-radius:999px;padding:2px 8px;white-space:nowrap}
+.pst.none{background:#f1ece5;color:#7a6c5d}
+.pst.claimed{background:#fff0d6;color:#9a5b00}
+.pst.confirmed{background:#e3f6ea;color:#16794a}
+.settle-total{display:flex;justify-content:space-between;padding:12px 4px 4px;font-weight:800;font-size:17px}
+.kakao{background:#fee500;color:#191600;width:100%;padding:14px;font-size:17px;margin-top:12px;box-shadow:0 3px 0 #c9b500}
+
+/* 모달 */
+.modal{position:fixed;inset:0;background:rgba(30,20,10,.5);display:flex;align-items:flex-end;justify-content:center;z-index:20}
+.sheet{background:var(--card);width:100%;max-width:640px;max-height:90vh;overflow:auto;border-radius:20px 20px 0 0;padding:0 16px 28px}
+@media(min-width:640px){.modal{align-items:center}.sheet{border-radius:20px}}
+.sheet-head{display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--card);padding:14px 0 8px;z-index:1}
+.sheet-head h2{margin:0}
+.rules ul{margin:0 0 6px;padding-left:20px}
+.rules li{margin:5px 0;font-size:15px}
+.t-blue{color:var(--blue)} .t-red{color:var(--red)} .t-black{color:var(--black)}
+.ex svg{width:28px;height:28px;vertical-align:middle;background:#f2f8f6;border-radius:4px}
+.ntc{border:1px solid var(--line);border-radius:14px;padding:12px;margin:10px 0}
+.ntc.pinned{background:linear-gradient(135deg,#fff8e1,#fff0b8);border:2px solid var(--gold)}
+.ntc.promo{background:linear-gradient(135deg,#f0fff6,#d9f7e6);border-color:#8fd3ad}
+.ntc .t{font-weight:800;font-size:16px}
+.ntc .meta{font-size:12px;color:var(--muted);margin-top:2px}
+.ntc .b{white-space:pre-wrap;margin-top:6px;font-size:15px}
+.subtabs{display:flex;gap:6px;overflow-x:auto;margin-bottom:10px}
+.subtabs button{flex:none;box-shadow:none}
+.subtabs button.on{background:var(--ink);color:#fff}
+.bar{height:10px;border-radius:99px;background:#efe3d2;overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:99px}
+.act-row{display:grid;grid-template-columns:44px 1fr auto;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.act-row .lbl{font-size:12px;color:var(--muted);display:flex;justify-content:space-between;margin-top:3px}
+.profile{text-align:center}
+.profile .mag.xl{margin:4px auto 0}
+.path{display:flex;justify-content:center;gap:6px;margin:12px 0}
+.path .step{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:12px;font-weight:800;color:var(--muted)}
+.path .step .dot{width:22px;height:22px;margin:0;opacity:.35}
+.path .step.on .dot{opacity:1;box-shadow:inset 0 -2px 0 var(--c2),0 0 0 3px var(--ink)}
+.path .step.done .dot{opacity:1}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+.stats div{background:#faf3e8;border-radius:12px;padding:10px 4px}
+.stats b{display:block;font-size:20px}
+.stats span{font-size:12px;color:var(--muted)}
+.badges{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.badges span{background:#fff4cf;border:1px solid #f0d27a;border-radius:999px;padding:4px 10px;font-size:13px;font-weight:700}
+.mrow{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.mrow b{flex:1;min-width:80px}
+.mrow select{width:auto}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:12px;font-size:15px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:40;max-width:90vw;text-align:center}
 .toast.on{opacity:1}
-.notice{background:#fff3e0;border-radius:12px;padding:10px 12px;font-size:14px}
+.toast.err{background:var(--red)}
+.loading{text-align:center;padding:40px 0;color:var(--muted)}
 </style>
 </head>
 <body>
-<div class="wrap">
 
-  <!-- 메인 이미지 -->
+<!-- ============ 로그인 · 가입 ============ -->
+<div class="wrap hidden" id="authView">
   <div class="hero" aria-label="우당탕탕 요절복통">
     <svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" role="img">
       <title>우당탕탕 요절복통</title>
@@ -196,40 +295,123 @@ td.n{text-align:left;font-weight:700}
       <text x="704" y="290" text-anchor="end" font-family="sans-serif" font-size="16" font-weight="700" fill="#2b2118" opacity=".7">진 사람이 낸다!</text>
     </svg>
   </div>
+  <div class="auth card">
+    <div id="demoNote" class="demo hidden">체험 모드입니다. 이 휴대폰에만 저장됩니다. 연습용 계정: <b>도민구 / 1234</b> (회장), <b>지승욱 / 1234</b> (총무), <b>서용 / 1234</b> (일반)</div>
+    <div class="tabs"><button data-tab="login" class="on">로그인</button><button data-tab="signup">처음이에요 (가입)</button></div>
+    <form id="loginForm">
+      <label class="f">아이디 (이름)</label><input id="lName" autocomplete="username" placeholder="예: 박문철" required>
+      <label class="f">비밀번호</label><input id="lPw" type="password" autocomplete="current-password" required>
+      <button class="primary" style="width:100%;margin-top:14px;padding:14px">입장하기</button>
+      <p class="muted" style="margin:10px 0 0">비밀번호를 잊으면 회장이나 관리자에게 초기화를 부탁하세요.</p>
+    </form>
+    <form id="signupForm" class="hidden">
+      <label class="f">이름 (아이디로 씁니다)</label><input id="sName" placeholder="예: 박문철" required maxlength="12">
+      <label class="f">전화번호</label><input id="sPhone" inputmode="numeric" placeholder="01012345678" required>
+      <label class="f">생년월일</label><input id="sBirth" type="date" required min="1930-01-01" max="2015-12-31">
+      <label class="f">주소</label><input id="sAddr" placeholder="예: 경기 화성시 동탄대로 123" required maxlength="120" autocomplete="street-address">
+      <label class="f">내 급수 (자석 색)</label>
+      <div class="grades" id="sGrades"></div>
+      <label class="f">비밀번호 (4자 이상, 직접 정하기)</label><input id="sPw" type="password" autocomplete="new-password" required minlength="4">
+      <label class="f">비밀번호 한 번 더</label><input id="sPw2" type="password" autocomplete="new-password" required minlength="4">
+      <div class="consent">
+        <b>개인정보 수집·이용 동의</b><br>
+        · 목적: 우당탕탕 요절복통 멤버 명부 작성, 모임 연락<br>
+        · 항목: 이름, 전화번호, 생년월일, 주소<br>
+        · 보관: 탈퇴할 때까지 (탈퇴하면 지웁니다)<br>
+        · 전화번호·생년월일·주소는 회장·총무·관리자만 볼 수 있습니다.<br>
+        <label style="display:flex;gap:8px;align-items:center;margin-top:8px;font-weight:700;color:var(--ink)"><input type="checkbox" id="sAgree" style="width:auto"> 위 내용에 동의합니다</label>
+      </div>
+      <button class="primary" style="width:100%;margin-top:14px;padding:14px">가입하고 자석 받기</button>
+    </form>
+  </div>
+</div>
 
-  <div class="toolbar">
-    <button data-open="rulesModal">📖 게임룰</button>
-    <button data-open="memberModal">⚙️ 멤버설정 (<span id="memberCount">0</span>명)</button>
+<!-- ============ 앱 ============ -->
+<div class="wrap hidden" id="appView">
+  <div class="hud">
+    <div class="hud-in">
+      <span id="hudMag"></span>
+      <div class="who">
+        <div><b id="hudName"></b><span id="hudRole"></span> <span class="muted" id="hudGrade"></span></div>
+        <div class="xp"><i id="hudXp" style="width:0"></i></div>
+        <div class="stat" id="hudStat"></div>
+      </div>
+      <span class="sync" id="sync" title="동기화"></span>
+    </div>
+    <div class="icons">
+      <button data-open="noticeModal">📢 게시판<span class="badge hidden" id="noticeBadge"></span></button>
+      <button data-open="activityModal">📊 활동</button>
+      <button data-open="rulesModal">📖 게임룰</button>
+      <button data-open="opsModal" id="opsBtn" class="gold hidden">🛡️ 운영</button>
+      <button data-open="meModal">⚙️ 내 정보</button>
+    </div>
+  </div>
+
+  <div id="pinned"></div>
+  <div class="hero" aria-label="우당탕탕 요절복통">
+    <svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" role="img">
+      <title>우당탕탕 요절복통</title>
+      <defs>
+        <linearGradient id="sky2" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#ffcf3c"/><stop offset="1" stop-color="#ff6b35"/>
+        </linearGradient>
+        <pattern id="dots2" width="18" height="18" patternUnits="userSpaceOnUse">
+          <circle cx="4" cy="4" r="2.2" fill="#fff" opacity=".22"/>
+        </pattern>
+      </defs>
+      <rect width="720" height="300" fill="url(#sky2)"/>
+      <rect width="720" height="300" fill="url(#dots2)"/>
+      <!-- 폭발 말풍선 -->
+      <polygon fill="#fff" stroke="#2b2118" stroke-width="5" stroke-linejoin="round"
+        points="360,22 398,62 452,34 456,86 520,74 494,120 560,140 500,166 536,214 470,206 466,262 420,226 382,278 352,226 300,268 296,214 226,226 254,178 180,156 248,128 214,78 280,92 290,38 330,72"/>
+      <text x="370" y="146" text-anchor="middle" font-family="'Black Han Sans','Jua','Apple SD Gothic Neo','Malgun Gothic',sans-serif" font-size="62" font-weight="900" fill="#ff6b35" stroke="#2b2118" stroke-width="3" paint-order="stroke" transform="rotate(-6 370 130)">우당탕탕</text>
+      <text x="372" y="214" text-anchor="middle" font-family="'Black Han Sans','Jua','Apple SD Gothic Neo','Malgun Gothic',sans-serif" font-size="56" font-weight="900" fill="#2f7cf6" stroke="#2b2118" stroke-width="3" paint-order="stroke" transform="rotate(4 372 200)">요절복통</text>
+      <!-- 셔틀콕 -->
+      <g transform="translate(96 90) rotate(-30)">
+        <path d="M0 40 L-26 -30 L26 -30 Z" fill="#fff" stroke="#2b2118" stroke-width="4" stroke-linejoin="round"/>
+        <path d="M-13 -30 L-4 36 M13 -30 L4 36 M0 -30 L0 36" stroke="#2b2118" stroke-width="2"/>
+        <circle cx="0" cy="48" r="14" fill="#e5383b" stroke="#2b2118" stroke-width="4"/>
+      </g>
+      <path d="M140 150 q20 10 30 30 M150 132 q24 4 40 18" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round"/>
+      <!-- 라켓 -->
+      <g transform="translate(628 176) rotate(28)">
+        <ellipse cx="0" cy="-50" rx="38" ry="48" fill="none" stroke="#2b2118" stroke-width="7"/>
+        <path d="M-26 -82 L26 -18 M-36 -56 L20 -6 M-14 -96 L34 -36 M26 -82 L-26 -18 M36 -56 L-20 -6 M14 -96 L-34 -36" stroke="#2b2118" stroke-width="2" opacity=".5"/>
+        <rect x="-5" y="-2" width="10" height="70" rx="4" fill="#2b2118"/>
+        <rect x="-8" y="44" width="16" height="34" rx="6" fill="#2f7cf6" stroke="#2b2118" stroke-width="3"/>
+      </g>
+      <!-- 반짝이 -->
+      <g fill="#fff" stroke="#2b2118" stroke-width="3" stroke-linejoin="round">
+        <path d="M600 40 l8 18 18 8 -18 8 -8 18 -8 -18 -18 -8 18 -8z"/>
+        <path d="M70 230 l6 13 13 6 -13 6 -6 13 -6 -13 -13 -6 13 -6z"/>
+      </g>
+      <text x="704" y="290" text-anchor="end" font-family="sans-serif" font-size="16" font-weight="700" fill="#2b2118" opacity=".7">진 사람이 낸다!</text>
+    </svg>
   </div>
 
   <!-- 달력 -->
   <section class="card">
     <div class="cal-head">
       <button class="small ghost" id="prevM" aria-label="이전 달">◀</button>
-      <b id="monthLabel"></b>
+      <b id="monthLabel" class="game"></b>
       <button class="small ghost" id="nextM" aria-label="다음 달">▶</button>
+      <button class="small forest" data-open="activityModal">📊 활동</button>
     </div>
     <div class="cal" id="cal"></div>
-    <p class="muted" style="margin:10px 0 0">오늘 날짜를 눌러 참석자 이름을 넣으세요. 지난 날짜를 누르면 그날 기록을 볼 수 있습니다.</p>
+    <p class="muted" style="margin:10px 0 0">날짜를 누르면 그날 현황판이 나옵니다. 초록 점은 내가 참석한 날입니다.</p>
   </section>
 
-  <div id="dayArea" class="hidden">
-
-    <!-- 참석자 -->
+  <div id="dayArea">
+    <!-- 현황판 -->
     <section class="card">
-      <div class="row" style="justify-content:space-between;margin-bottom:4px">
-        <h2 style="margin:0">🙋 참석 <span class="muted" id="dayLabel"></span></h2>
-        <button class="small" data-open="memberModal">⚙️ 멤버설정</button>
+      <h2>🧲 현황판 <span class="muted" id="dayLabel"></span></h2>
+      <div id="myAct"></div>
+      <div class="wb">
+        <div class="wb-title game">우당탕탕 요절복통</div>
+        <div class="wb-sub" id="wbSub"></div>
+        <div class="board" id="board"></div>
       </div>
-      <div class="legend-g" id="gradeLegend"></div>
-      <p class="muted" style="margin:10px 0 0">자석을 누르면 참석 명단에 들어가 보드판에 붙습니다.</p>
-      <div class="tray" id="tray"></div>
-    </section>
-
-    <!-- 자석 보드판 -->
-    <section class="card">
-      <h2>🧲 자석 보드판</h2>
-      <div class="row" style="justify-content:space-between">
+      <div class="row between" style="margin-top:12px">
         <div class="rate" id="rateBtns">
           <button class="small" data-rate="auto">자동(시간)</button>
           <button class="small" data-rate="2000">7시 전 2,000</button>
@@ -239,14 +421,12 @@ td.n{text-align:left;font-weight:700}
       </div>
       <div class="legend">
         <span>짝대기 1개 = 1,000원</span>
-        <span><i style="background:var(--blue)"></i>7시 전 패 (2개)</span>
-        <span><i style="background:var(--red)"></i>7시 후 패 (3개) · 더블/듀스 추가 (1개)</span>
-        <button class="small ghost" data-open="rulesModal" style="padding:2px 8px;font-size:13px">게임룰 보기</button>
+        <span><i style="background:var(--blue)"></i>7시 전 패</span>
+        <span><i style="background:var(--red)"></i>7시 후 패 · 더블 · 듀스</span>
+        <span><i style="background:var(--black)"></i>지각 · 결석</span>
       </div>
-      <div class="wb">
-        <div class="wb-title">우당탕탕 요절복통</div>
-        <div class="board" id="board"></div>
-      </div>
+      <h3>자석 통 <span class="muted" id="trayHint"></span></h3>
+      <div class="tray" id="tray"></div>
     </section>
 
     <!-- 리그 -->
@@ -259,27 +439,14 @@ td.n{text-align:left;font-weight:700}
           <button class="small ghost" id="pickNone">전체 해제</button>
         </div>
         <div class="grid2">
-          <label class="muted">코트 수
-            <select id="lgCourts" style="width:100%"><option value="1">1코트</option><option value="2">2코트</option><option value="3">3코트</option></select>
-          </label>
-          <label class="muted">점수
-            <select id="lgTarget" style="width:100%"><option value="21">21점 게임</option><option value="25">25점 게임</option></select>
-          </label>
-          <label class="muted">1인당 경기 수
-            <select id="lgRounds" style="width:100%"></select>
-          </label>
-          <label class="muted">패배 비용
-            <select id="lgFee" style="width:100%"><option value="3000">3,000원</option><option value="2000">2,000원</option><option value="4000">4,000원</option><option value="0">없음</option></select>
-          </label>
-          <label class="muted">1등 −, 꼴등 + 금액
-            <select id="lgPrize" style="width:100%"><option value="3000">3,000원</option><option value="2000">2,000원</option><option value="0">없음</option></select>
-          </label>
-          <label class="muted">1등·꼴등 인원
-            <select id="lgPrizeN" style="width:100%"><option value="1">각 1명</option><option value="2">각 2명</option></select>
-          </label>
+          <label>코트 수<select id="lgCourts"><option value="1">1코트</option><option value="2">2코트</option><option value="3">3코트</option></select></label>
+          <label>점수<select id="lgTarget"><option value="21">21점 게임</option><option value="25">25점 게임</option></select></label>
+          <label>1인당 경기 수<select id="lgRounds"></select></label>
+          <label>패배 비용<select id="lgFee"><option value="3000">3,000원</option><option value="2000">2,000원</option><option value="4000">4,000원</option><option value="0">없음</option></select></label>
+          <label>1등 −, 꼴등 + 금액<select id="lgPrize"><option value="3000">3,000원</option><option value="2000">2,000원</option><option value="0">없음</option></select></label>
+          <label>1등·꼴등 인원<select id="lgPrizeN"><option value="1">각 1명</option><option value="2">각 2명</option></select></label>
         </div>
         <button class="primary" id="makeLeague" style="width:100%;margin-top:10px">🎲 랜덤 대진표 만들기</button>
-        <p class="muted" style="margin:8px 0 0">모두 한 번씩 붙는 리그(4명이면 각자 3경기)를 무작위로 만듭니다. 사람이 많으면 코트를 2개로 나누고, 1인당 경기 수를 줄일 수 있습니다. 점수를 넣으면 진 사람에게 비용이 자동으로 붙습니다. 리그가 끝나면 1등은 3,000원을 빼고 꼴등은 3,000원을 더합니다(꼴등이 1등에게 주는 셈). 사람이 많으면 1등·꼴등을 2명씩 정할 수 있습니다.</p>
       </div>
       <div id="leagues"></div>
     </section>
@@ -287,415 +454,345 @@ td.n{text-align:left;font-weight:700}
     <!-- 정산 -->
     <section class="card">
       <h2>💰 오늘 정산</h2>
+      <div id="payBox"></div>
       <div id="settle"></div>
-      <div class="row" style="margin-top:12px">
-        <input id="account" placeholder="입금 계좌 (예: 카카오뱅크 3333-00-0000000 홍길동)" style="flex:1">
-      </div>
       <button class="kakao" id="shareBtn">💬 카카오톡으로 결과 공유</button>
-      <div class="row" style="margin-top:8px">
-        <button class="small ghost" id="copyBtn" style="flex:1">📋 결과 복사</button>
-        <button class="small ghost" id="resetDay" style="flex:1;color:var(--red)">이 날짜 기록 지우기</button>
-      </div>
+      <div id="closeArea"></div>
     </section>
   </div>
 </div>
+
+<div class="loading" id="loadingView">불러오는 중…</div>
 <div class="toast" id="toast"></div>
 
-<!-- 멤버설정 -->
-<div class="modal hidden" id="memberModal" role="dialog" aria-modal="true" aria-labelledby="mmTitle">
+<!-- 게시판 -->
+<div class="modal hidden" id="noticeModal" role="dialog" aria-modal="true">
   <div class="sheet">
-    <div class="sheet-head"><h2 id="mmTitle" style="margin:0">⚙️ 멤버설정</h2><button class="small ghost" data-close aria-label="닫기">✕</button></div>
-    <p class="muted" style="margin:4px 0 10px">이름과 급수를 넣고 자석을 만들어 두세요. 여러 명은 띄어쓰기로 구분합니다.</p>
-    <form id="memberForm" class="row">
-      <input id="bulkNames" placeholder="이름 (예: 박문철 서용)" autocomplete="off" style="flex:1">
-      <select id="bulkGrade" class="gsel" aria-label="급수">
-        <option value="S">S조</option><option value="A">A조</option><option value="B">B조</option><option value="C" selected>C조</option><option value="D">D조</option>
-      </select>
-      <button class="primary" type="submit">자석 만들기</button>
+    <div class="sheet-head"><h2>📢 우당탕탕 게시판</h2><button class="small ghost" data-close aria-label="닫기">✕</button></div>
+    <div id="noticeWrite" class="hidden">
+      <button class="gold" id="newNoticeBtn" style="width:100%">✏️ 공지 쓰기</button>
+      <form id="noticeForm" class="hidden card" style="box-shadow:none;border:2px solid var(--gold);background:#fffbea">
+        <input type="hidden" id="nId">
+        <label class="f">제목</label><input id="nTitle" maxlength="80" required>
+        <label class="f">내용</label><textarea id="nBody" maxlength="3000"></textarea>
+        <label style="display:flex;gap:8px;align-items:center;margin-top:8px;font-weight:700"><input type="checkbox" id="nPin" style="width:auto" checked> 📌 맨 위에 고정 (첫 화면에 크게 표시)</label>
+        <div class="row" style="margin-top:10px"><button class="gold" style="flex:1">게시하기</button><button type="button" class="ghost" id="nCancel">취소</button></div>
+      </form>
+    </div>
+    <div id="noticeList"></div>
+  </div>
+</div>
+
+<!-- 활동 -->
+<div class="modal hidden" id="activityModal" role="dialog" aria-modal="true">
+  <div class="sheet">
+    <div class="sheet-head"><h2>📊 <span id="actTitle"></span> 활동</h2><button class="small ghost" data-close aria-label="닫기">✕</button></div>
+    <div class="subtabs"><button data-act="att" class="on">🔥 참석률</button><button data-act="share">💰 벌금 지분율</button></div>
+    <p class="muted" id="actNote"></p>
+    <div id="actList"></div>
+  </div>
+</div>
+
+<!-- 프로필 -->
+<div class="modal hidden" id="profileModal" role="dialog" aria-modal="true">
+  <div class="sheet"><div class="sheet-head"><h2>🧲 멤버 카드</h2><button class="small ghost" data-close aria-label="닫기">✕</button></div><div id="profileBody"></div></div>
+</div>
+
+<!-- 운영 -->
+<div class="modal hidden" id="opsModal" role="dialog" aria-modal="true">
+  <div class="sheet">
+    <div class="sheet-head"><h2>🛡️ 운영</h2><button class="small ghost" data-close aria-label="닫기">✕</button></div>
+    <div class="subtabs" id="opsTabs">
+      <button data-ops="pay" class="on">💳 입금 확인</button>
+      <button data-ops="members">🎖️ 직책·급수</button>
+      <button data-ops="roster">📋 명부</button>
+      <button data-ops="account">🏦 계좌</button>
+    </div>
+    <div id="opsBody"></div>
+  </div>
+</div>
+
+<!-- 내 정보 -->
+<div class="modal hidden" id="meModal" role="dialog" aria-modal="true">
+  <div class="sheet">
+    <div class="sheet-head"><h2>⚙️ 내 정보</h2><button class="small ghost" data-close aria-label="닫기">✕</button></div>
+    <form id="meForm">
+      <label class="f">전화번호</label><input id="mPhone" inputmode="numeric">
+      <label class="f">생년월일</label><input id="mBirth" type="date">
+      <label class="f">주소</label><input id="mAddr" maxlength="120">
+      <h3>비밀번호 바꾸기 (선택)</h3>
+      <label class="f">지금 비밀번호</label><input id="mOld" type="password" autocomplete="current-password">
+      <label class="f">새 비밀번호</label><input id="mNew" type="password" autocomplete="new-password">
+      <button class="primary" style="width:100%;margin-top:12px">저장</button>
     </form>
-    <div id="memberRows" style="margin-top:10px"></div>
+    <button class="ghost" id="logoutBtn" style="width:100%;margin-top:10px">로그아웃</button>
+    <p class="muted" id="serverInfo" style="margin-top:14px"></p>
   </div>
 </div>
 
 <!-- 게임룰 -->
-<div class="modal hidden" id="rulesModal" role="dialog" aria-modal="true" aria-labelledby="rlTitle">
+<div class="modal hidden" id="rulesModal" role="dialog" aria-modal="true">
   <div class="sheet rules">
-    <div class="sheet-head"><h2 id="rlTitle" style="margin:0">📖 게임룰</h2><button class="small ghost" data-close aria-label="닫기">✕</button></div>
-    <h3>🙋 참석</h3>
+    <div class="sheet-head"><h2>📖 게임룰</h2><button class="small ghost" data-close aria-label="닫기">✕</button></div>
+    <h3>🧲 참석</h3>
     <ul>
-      <li>멤버설정에서 이름과 급수로 자석을 만들어 둡니다.</li>
-      <li>급수 색: <i class="dot g-S"></i>S조 황금 · <i class="dot g-A"></i>A조 빨강 · <i class="dot g-B"></i>B조 주황 · <i class="dot g-C"></i>C조 녹색 · <i class="dot g-D"></i>D조 흰색</li>
-      <li>자석을 누르면 오늘 참석 명단에 들어갑니다.</li>
+      <li>달력에서 날짜를 누르고 <b>내 자석 붙이기</b>를 누르면 참석 신청입니다.</li>
+      <li>구장에 오면 <b>구장 도착</b>을 누릅니다. <b>6시 15분이 지나 입장</b>하면 지각입니다.</li>
+      <li>자석 색 = 배드민턴 급수: <i class="dot g-S"></i>S조 황금 · <i class="dot g-A"></i>A조 빨강 · <i class="dot g-B"></i>B조 주황 · <i class="dot g-C"></i>C조 녹색 · <i class="dot g-D"></i>D조 흰색</li>
+      <li>급수가 오르면 운영진이 자석 색을 바꿔 줍니다. 승급 소식은 게시판에 올라갑니다. 🎉</li>
     </ul>
-    <h3>✏️ 바를 정(正) 표시 — 짝대기 1개 = 1,000원</h3>
+    <h3>✏️ 바를 정(正) — 짝대기 1개 = 1,000원</h3>
     <ul>
-      <li><b class="t-blue">7시 전</b> 한 게임 지면 <b>2,000원</b> → <span class="t-blue">파란 짝대기 2개</span> <span class="ex" data-ex="b,b"></span></li>
-      <li><b class="t-red">7시부터</b> 한 게임 지면 <b>3,000원</b> → <span class="t-red">빨간 짝대기 3개</span> <span class="ex" data-ex="r,r,r"></span></li>
-      <li><b>더블패</b>(두 배 점수 차): 21점 게임에서 10점 미만, 25점 게임에서 13점 미만으로 지면 <b>+1,000원</b> → <span class="t-red">빨간 짝대기 1개 추가</span> <span class="ex" data-ex="b,b,r"></span></li>
-      <li><b>듀스패</b>: 듀스(21점 게임 20:20, 25점 게임 24:24)까지 가서 지면 <b>+1,000원</b> → <span class="t-red">빨간 짝대기 1개 추가</span> <span class="ex" data-ex="r,r,r,r"></span></li>
-      <li>正 한 글자 = 5,000원</li>
+      <li><b class="t-blue">7시 전</b> 한 게임 지면 <b>2,000원</b>, 파란 짝대기 2개 <span class="ex" data-ex="b,b"></span></li>
+      <li><b class="t-red">7시부터</b> 한 게임 지면 <b>3,000원</b>, 빨간 짝대기 3개 <span class="ex" data-ex="r,r,r"></span></li>
+      <li><b>더블패</b>: 21점 게임 10점 미만, 25점 게임 13점 미만으로 지면 <b>+1,000원</b> (빨간 짝대기 1개 추가)</li>
+      <li><b>듀스패</b>: 듀스(21점 게임 20:20, 25점 게임 24:24)까지 가서 지면 <b>+1,000원</b> (빨간 짝대기 1개 추가)</li>
+      <li><b class="t-black">지각</b> 2,000원, 검은 짝대기 2개 <span class="ex" data-ex="k,k"></span></li>
+      <li><b class="t-black">결석</b>(자석을 붙이고 안 옴) 5,000원, 검은 짝대기 5개 <span class="ex" data-ex="k,k,k,k,k"></span></li>
     </ul>
     <h3>🎲 랜덤 리그</h3>
     <ul>
       <li>참석자끼리 모두 한 번씩 붙도록 무작위로 대진표를 만듭니다. 사람이 많으면 코트를 2개로 나눕니다.</li>
-      <li>리그에서 지면 <b>3,000원</b>(빨간 짝대기 3개), 더블패·듀스패는 +1,000원.</li>
-      <li>순위: 득실차가 큰 사람이 위. 득실이 같으면 승자승(맞대결)으로 정합니다.</li>
-      <li>리그가 끝나면 <b>1등 −3,000원</b>, <b>꼴등 +3,000원</b> (꼴등이 1등에게 주는 셈). 사람이 많으면 1등·꼴등 2명씩.</li>
+      <li>리그에서 지면 3,000원, 더블패·듀스패는 +1,000원.</li>
+      <li>순위는 득실차, 같으면 승자승(맞대결). 리그가 끝나면 <b>1등 −3,000원, 꼴등 +3,000원</b>.</li>
     </ul>
     <h3>💰 정산</h3>
     <ul>
-      <li>보드판 비용과 리그 비용을 합쳐 사람마다 입금할 금액이 나옵니다.</li>
-      <li>「카카오톡으로 결과 공유」로 단톡방에 보냅니다.</li>
+      <li>그날 벌금을 합쳐 <b>총무 계좌</b>로 입금합니다. 입금하고 <b>입금했어요</b>를 누르면 총무가 확인합니다.</li>
+      <li>📊 활동에서 이번 달 참석률과 벌금 지분율을 볼 수 있습니다. 자석을 누르면 그 사람의 기록이 나옵니다.</li>
     </ul>
   </div>
 </div>
 
+<script src="server.js"></script>
 <script>
 (() => {
 'use strict';
-const KEY = 'wdtt-v1';
-const $ = s => document.querySelector(s);
-const won = n => n.toLocaleString('ko-KR') + '원';
-const pad = n => String(n).padStart(2, '0');
-const ymd = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const uid = () => Math.random().toString(36).slice(2, 9);
-// 더블패 기준: 이 점수 미만이면 +1,000원
-const DBL_LINE = { 21: 10, 25: 13 };
-
-function load() {
-  let v = null;
-  try { v = JSON.parse(localStorage.getItem(KEY)); } catch (e) {}
-  if (!v || !v.days) v = { days: {}, rate: 'auto', account: '' };
-  if (!v.members) v.members = (v.roster || []).map(name => ({ name, grade: 'C' }));
-  delete v.roster;
-  return v;
-}
-let db = load();
+/* ============ 설정 ============ */
+// 구글 앱스크립트 웹앱 주소. 비어 있으면 체험 모드(이 휴대폰에만 저장)로 동작합니다.
+const API_URL = '';
+const SESSION_KEY = 'wdtt-session';
 const GRADES = ['S', 'A', 'B', 'C', 'D'];
-const GRADE_NAME = { S: 'S조 · 황금', A: 'A조 · 빨강', B: 'B조 · 주황', C: 'C조 · 녹색', D: 'D조 · 흰색' };
-const member = name => db.members.find(m => m.name === name);
-const gradeOf = name => (member(name) || {}).grade || 'none';
-const gIdx = name => { const i = GRADES.indexOf(gradeOf(name)); return i < 0 ? 9 : i; };
-const byGrade = (a, b) => gIdx(a) - gIdx(b);
-const dot = name => `<i class="dot g-${gradeOf(name)}" title="${gradeOf(name)}조"></i>`;
-const magnet = (name, extra = '') => `<button type="button" class="mag g-${gradeOf(name)} ${extra}${name.length > 3 ? ' long' : ''}" data-name="${esc(name)}" title="${esc(name)} (${gradeOf(name)}조)"><span>${esc(name)}</span></button>`;
-function setMember(name, grade) {
-  const m = member(name);
-  if (m) m.grade = grade; else db.members.push({ name, grade });
+const GRADE_NAME = { S: '황금', A: '빨강', B: '주황', C: '녹색', D: '흰색' };
+const DBL_LINE = { 21: 10, 25: 13 };
+const OFFICER = { '회장': 1, '총무': 1, '관리자': 1 };
+const BOSS = { '회장': 1, '관리자': 1 };
+
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const won = n => (n < 0 ? '−' : '') + Math.abs(n).toLocaleString('ko-KR') + '원';
+const pad = n => String(n).padStart(2, '0');
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const uid = () => Math.random().toString(36).slice(2, 10);
+const kd = iso => iso ? new Date(Date.parse(iso) + 9 * 3600e3).toISOString().slice(0, 10) : '';
+const kstNow = () => { const d = new Date(Date.now() + 9 * 3600e3); return { date: d.toISOString().slice(0, 10), h: d.getUTCHours(), m: d.getUTCMinutes() }; };
+
+/* ============ 상태 ============ */
+const S = {
+  token: '', meName: '', me: null, members: [], notices: [], settings: {}, today: kstNow().date,
+  view: null, sel: null, days: {}, payments: {}, loadedMonths: {}, unpicked: new Set()
+};
+const isOff = () => !!(S.me && OFFICER[S.me.role]);
+const isBoss = () => !!(S.me && BOSS[S.me.role]);
+const member = n => S.members.find(m => m.name === n);
+const gradeOf = n => (member(n) || {}).grade || 'none';
+const gIdx = n => { const i = GRADES.indexOf(gradeOf(n)); return i < 0 ? 9 : i; };
+const byGrade = (a, b) => gIdx(a) - gIdx(b) || a.localeCompare(b, 'ko');
+const dot = n => `<i class="dot g-${gradeOf(n)}"></i>`;
+const roleTag = r => r && r !== '일반' ? `<span class="role ${esc(r)}">${esc(r)}</span>` : '';
+function magnet(n, extra = '') {
+  const cls = ['mag', 'g-' + gradeOf(n), extra];
+  if (n.length > 3) cls.push('long');
+  if (S.me && n === S.me.name) cls.push('me');
+  return `<button type="button" class="${cls.join(' ')}" data-mag="${esc(n)}" title="${esc(n)}"><span>${esc(n)}</span></button>`;
 }
-function save() { try { localStorage.setItem(KEY, JSON.stringify(db)); } catch (e) {} }
 
-const today = ymd(new Date());
-let view = new Date(); view.setDate(1);
-let selDate = null;
-
-function day(d = selDate) {
-  if (!db.days[d]) db.days[d] = { players: [], marks: [], leagues: [] };
-  return db.days[d];
+/* ============ 서버 통신 ============ */
+let pending = 0;
+function syncing(d) { pending += d; $('#sync').classList.toggle('on', pending > 0); }
+async function api(action, body = {}) {
+  const payload = { ...body, action, me: S.meName, token: S.token };
+  syncing(1);
+  try {
+    let j;
+    if (!API_URL) j = demoCall(action, payload);
+    else {
+      const r = await fetch(API_URL, { method: 'POST', redirect: 'follow', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) });
+      j = await r.json();
+    }
+    if (!j.ok) { const e = new Error(j.error || '오류'); e.code = j.code; throw e; }
+    return j;
+  } catch (e) {
+    if (e.code === 'auth') { logout(); toast('다시 로그인해 주세요', true); }
+    throw e;
+  } finally { syncing(-1); }
 }
-function hasDay(d) { const x = db.days[d]; return x && x.players.length; }
+/* 체험 모드: server.js 규칙을 이 휴대폰 저장소로 돌립니다 */
+const DEMO_KEY = 'wdtt-demo-v2';
+function demoStore() {
+  let db; try { db = JSON.parse(localStorage.getItem(DEMO_KEY)) || {}; } catch (e) { db = {}; }
+  const save = () => { try { localStorage.setItem(DEMO_KEY, JSON.stringify(db)); } catch (e) {} };
+  const c = col => (db[col] = db[col] || {});
+  return {
+    get: (col, id) => c(col)[id] ? JSON.parse(JSON.stringify(c(col)[id])) : null,
+    put: (col, id, o) => { c(col)[id] = JSON.parse(JSON.stringify(o)); save(); },
+    del: (col, id) => { delete c(col)[id]; save(); },
+    list: col => Object.values(c(col)).map(o => JSON.parse(JSON.stringify(o))),
+    raw: () => db
+  };
+}
+function demoHash(s) { let h1 = 0x811c9dc5, h2 = 0x1234567; for (let i = 0; i < s.length; i++) { const c = s.charCodeAt(i); h1 = Math.imul(h1 ^ c, 16777619); h2 = Math.imul(h2 ^ c, 2246822507); } return (h1 >>> 0).toString(36) + (h2 >>> 0).toString(36); }
+const demoEnv = { now: () => Date.now(), uuid: () => uid() + uid(), hash: demoHash, config: { presets: { '도민구': '회장', '지승욱': '총무', '박문철': '관리자' } } };
+function demoCall(action, payload) {
+  const store = demoStore();
+  if (!store.list('members').length) {
+    // 연습용 멤버
+    [['도민구', 'S'], ['지승욱', 'A'], ['박문철', 'S'], ['최현민', 'S'], ['서용', 'A'], ['문교훈', 'A'], ['이진섭', 'B'], ['김재용', 'B'], ['김한얼', 'C'], ['한창환', 'D']].forEach(([n, g], i) =>
+      WDTT.handle('signup', { name: n, phone: '0101234' + String(1000 + i), birth: '1985-0' + (1 + i % 9) + '-1' + i % 10, addr: '경기 화성시 동탄 연습동 ' + (i + 1), grade: g, password: '1234', agree: true }, store, demoEnv));
+  }
+  try { return { ok: true, ...WDTT.handle(action, JSON.parse(JSON.stringify(payload)), store, demoEnv) }; }
+  catch (e) { return { ok: false, error: e.message, code: e.code }; }
+}
 
-/* ---------- 달력 ---------- */
+/* ============ 로그인 · 가입 ============ */
+function loadSession() { try { const s = JSON.parse(localStorage.getItem(SESSION_KEY)); if (s && s.token) { S.token = s.token; S.meName = s.name; } } catch (e) {} }
+function saveSession() { try { localStorage.setItem(SESSION_KEY, JSON.stringify({ token: S.token, name: S.meName })); } catch (e) {} }
+function logout() { S.token = ''; S.meName = ''; S.me = null; try { localStorage.removeItem(SESSION_KEY); } catch (e) {} show('auth'); }
+function show(v) {
+  $('#authView').classList.toggle('hidden', v !== 'auth');
+  $('#appView').classList.toggle('hidden', v !== 'app');
+  $('#loadingView').classList.toggle('hidden', v !== 'loading');
+}
+$('#sGrades').innerHTML = GRADES.map(g => `<label><input type="radio" name="sg" value="${g}" ${g === 'C' ? 'checked' : ''}><span class="mag g-${g}"></span>${g}조</label>`).join('');
+$$('.tabs button').forEach(b => b.onclick = () => {
+  $$('.tabs button').forEach(x => x.classList.toggle('on', x === b));
+  $('#loginForm').classList.toggle('hidden', b.dataset.tab !== 'login');
+  $('#signupForm').classList.toggle('hidden', b.dataset.tab !== 'signup');
+});
+$('#loginForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  try {
+    const r = await api('login', { name: $('#lName').value.trim(), password: $('#lPw').value });
+    S.token = r.token; S.meName = r.me.name; saveSession(); await start();
+  } catch (err) { toast(err.message, true); }
+});
+$('#signupForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  if ($('#sPw').value !== $('#sPw2').value) return toast('비밀번호가 서로 다릅니다', true);
+  try {
+    const r = await api('signup', {
+      name: $('#sName').value.trim(), phone: $('#sPhone').value, birth: $('#sBirth').value, addr: $('#sAddr').value,
+      grade: (document.querySelector('input[name=sg]:checked') || {}).value, password: $('#sPw').value, agree: $('#sAgree').checked
+    });
+    S.token = r.token; S.meName = r.me.name; saveSession();
+    toast(`${r.me.name}님 환영합니다! 자석이 만들어졌어요 🧲`);
+    await start();
+  } catch (err) { toast(err.message, true); }
+});
+
+/* ============ 시작 ============ */
+async function start() {
+  show('loading');
+  try {
+    const r = await api('bootstrap');
+    applyBoot(r);
+    S.view = S.view || S.today.slice(0, 7);
+    S.sel = S.sel || S.today;
+    show('app');
+    renderHud(); renderPinned();
+    await loadMonth(S.view);
+    await openDay(S.sel, true);
+  } catch (e) { if (e.code !== 'auth') { show('auth'); toast('서버에 연결하지 못했어요: ' + e.message, true); } }
+}
+function applyBoot(r) {
+  S.me = r.me; S.members = r.members; S.notices = r.notices; S.settings = r.settings; S.today = r.today || kstNow().date;
+  $('#opsBtn').classList.toggle('hidden', !isOff());
+}
+async function refreshBoot() { try { applyBoot(await api('bootstrap')); renderHud(); renderPinned(); } catch (e) {} }
+async function loadMonth(mon, force) {
+  if (S.loadedMonths[mon] && !force) return;
+  const r = await api('month', { month: mon });
+  r.days.forEach(d => S.days[d.date] = d);
+  Object.keys(S.payments).forEach(k => { if (k.startsWith(mon)) delete S.payments[k]; });
+  r.payments.forEach(p => S.payments[p.id] = p);
+  S.loadedMonths[mon] = true;
+  renderCal();
+}
+function applyDay(r) {
+  S.days[r.day.date] = r.day;
+  Object.keys(S.payments).forEach(k => { if (k.startsWith(r.day.date + '|')) delete S.payments[k]; });
+  (r.payments || []).forEach(p => S.payments[p.id] = p);
+}
+const dayOf = d => S.days[d] || { date: d, att: {}, marks: [], leagues: [], rate: 'auto', closed: false, ver: 0 };
+
+/* ============ HUD · 공지 배너 ============ */
+function renderHud() {
+  const me = S.me; if (!me) return;
+  $('#hudMag').innerHTML = magnet(me.name, 'sm');
+  $('#hudName').textContent = me.name;
+  $('#hudRole').innerHTML = roleTag(me.role);
+  $('#hudGrade').textContent = `${me.grade}조 · ${GRADE_NAME[me.grade]} 자석`;
+  const st = monthStats(S.view || S.today.slice(0, 7))[me.name] || {};
+  const rate = st.rate || 0;
+  $('#hudXp').style.width = Math.round(rate * 100) + '%';
+  $('#hudStat').textContent = `이번 달 참석률 ${Math.round(rate * 100)}% · 참석 ${st.days || 0}회 · 벌금 ${won(st.charged || 0)}`;
+  const seen = localStorage.getItem('wdtt-notice-seen') || '';
+  const unread = S.notices.filter(n => String(n.at) > seen).length;
+  $('#noticeBadge').textContent = unread; $('#noticeBadge').classList.toggle('hidden', !unread);
+  $('#serverInfo').textContent = API_URL ? '서버: 구글 시트에 저장 중' : '체험 모드: 이 휴대폰에만 저장됩니다';
+}
+function renderPinned() {
+  const recent = Date.now() - 3 * 864e5;
+  const list = S.notices.filter(n => n.pinned || (n.kind === 'promo' && Date.parse(n.at) > recent)).slice(0, 2);
+  $('#pinned').innerHTML = list.map(n => `<button class="notice-banner" data-open="noticeModal">
+    <div class="t">${n.kind === 'promo' ? '🎉' : '📌'} ${esc(n.title)}</div>
+    ${n.body ? `<div class="b">${esc(n.body)}</div>` : ''}
+    <div class="muted" style="color:#7a5c00;font-size:12px;margin-top:4px">${n.kind === 'promo' ? '승급 소식' : '👑 ' + esc(n.author) + ' ' + esc(n.authorRole || '')} · ${esc(kd(n.at).slice(5).replace('-', '/'))}</div>
+  </button>`).join('');
+}
+
+/* ============ 달력 ============ */
 function renderCal() {
-  const y = view.getFullYear(), m = view.getMonth();
-  $('#monthLabel').textContent = `${y}년 ${m + 1}월`;
-  const first = new Date(y, m, 1).getDay();
-  const last = new Date(y, m + 1, 0).getDate();
+  const [y, m] = S.view.split('-').map(Number);
+  $('#monthLabel').textContent = `${y}년 ${m}월`;
+  const first = new Date(y, m - 1, 1).getDay(), last = new Date(y, m, 0).getDate();
   let h = '일월화수목금토'.split('').map(c => `<div class="dow">${c}</div>`).join('');
   for (let i = 0; i < first; i++) h += '<div class="day empty"></div>';
   for (let d = 1; d <= last; d++) {
-    const key = `${y}-${pad(m + 1)}-${pad(d)}`;
-    const dow = (first + d - 1) % 7;
+    const key = `${y}-${pad(m)}-${pad(d)}`, dow = (first + d - 1) % 7, D = S.days[key];
+    const n = D ? Object.values(D.att).filter(a => a.status !== 'absent').length : 0;
     const cls = ['day'];
-    if (key === today) cls.push('today');
-    if (key === selDate) cls.push('sel');
+    if (key === S.today) cls.push('today');
+    if (key === S.sel) cls.push('sel');
     if (dow === 0) cls.push('sun'); if (dow === 6) cls.push('sat');
-    const n = hasDay(key) ? db.days[key].players.length : 0;
+    if (D && S.me && D.att[S.me.name] && D.att[S.me.name].status !== 'absent') cls.push('mine');
     h += `<button class="${cls.join(' ')}" data-date="${key}">${d}${n ? `<span class="cnt">${n}명</span>` : ''}</button>`;
   }
   $('#cal').innerHTML = h;
 }
-$('#cal').addEventListener('click', e => {
-  const b = e.target.closest('[data-date]'); if (!b) return;
-  openDay(b.dataset.date);
-});
-$('#prevM').onclick = () => { view.setMonth(view.getMonth() - 1); renderCal(); };
-$('#nextM').onclick = () => { view.setMonth(view.getMonth() + 1); renderCal(); };
-
-function openDay(d) {
-  selDate = d;
-  $('#dayArea').classList.remove('hidden');
-  const [y, m, dd] = d.split('-');
-  $('#dayLabel').textContent = `${+m}월 ${+dd}일${d === today ? ' (오늘)' : ''}`;
-  renderAll();
-  $('#dayArea').scrollIntoView({ behavior: 'smooth', block: 'start' });
+$('#cal').addEventListener('click', e => { const b = e.target.closest('[data-date]'); if (b) openDay(b.dataset.date); });
+async function moveMonth(k) {
+  const [y, m] = S.view.split('-').map(Number), d = new Date(y, m - 1 + k, 1);
+  S.view = `${d.getFullYear()}-${pad(d.getMonth() + 1)}`;
+  renderCal(); await loadMonth(S.view); renderHud();
 }
+$('#prevM').onclick = () => moveMonth(-1);
+$('#nextM').onclick = () => moveMonth(1);
 
-/* ---------- 참석자 ---------- */
-// 창 열기/닫기 (멤버설정, 게임룰)
-document.addEventListener('click', e => {
-  const o = e.target.closest('[data-open]');
-  if (o) { $('#' + o.dataset.open).classList.remove('hidden'); document.body.style.overflow = 'hidden'; return; }
-  const m = e.target.closest('.modal');
-  if (m && (e.target === m || e.target.closest('[data-close]'))) closeModal(m);
-});
-document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.modal:not(.hidden)').forEach(closeModal); });
-function closeModal(m) { m.classList.add('hidden'); document.body.style.overflow = ''; }
-function addPlayer(name) {
-  const D = day();
-  if (D.players.includes(name)) { toast(`${name}님은 이미 참석`); return; }
-  D.players.push(name);
-  save();
-}
-$('#tray').addEventListener('click', e => {
-  const b = e.target.closest('[data-name]'); if (!b) return;
-  addPlayer(b.dataset.name); renderAll();
-  toast(`${b.dataset.name} 참석!`);
-});
-$('#memberForm').addEventListener('submit', e => {
-  e.preventDefault();
-  const names = $('#bulkNames').value.split(/[,\s]+/).map(s => s.trim()).filter(Boolean);
-  if (!names.length) return;
-  names.forEach(n => setMember(n, $('#bulkGrade').value));
-  $('#bulkNames').value = ''; save(); renderAll();
-  toast(`자석 ${names.length}개 만들었어요`);
-  $('#bulkNames').focus();
-});
-$('#memberRows').addEventListener('change', e => {
-  const sel = e.target.closest('select[data-m]'); if (!sel) return;
-  setMember(sel.dataset.m, sel.value); save(); renderAll();
-});
-$('#memberRows').addEventListener('click', e => {
-  const b = e.target.closest('[data-delm]'); if (!b) return;
-  if (!confirm(`${b.dataset.delm}님을 멤버 명단에서 지울까요? (지난 기록은 남습니다)`)) return;
-  db.members = db.members.filter(m => m.name !== b.dataset.delm); save(); renderAll();
-});
-function renderMembers() {
-  const D = day();
-  const sorted = [...db.members].sort((a, b) => GRADES.indexOf(a.grade) - GRADES.indexOf(b.grade) || a.name.localeCompare(b.name, 'ko'));
-  const away = sorted.filter(m => !D.players.includes(m.name));
-  $('#tray').innerHTML = away.length ? away.map(m => magnet(m.name)).join('')
-    : `<span class="empty">${db.members.length ? '모두 참석했어요 🎉' : '⚙️ 멤버설정에서 자석을 먼저 만들어 주세요.'}</span>`;
-  $('#memberCount').textContent = db.members.length;
-  $('#gradeLegend').innerHTML = GRADES.map(g => `<span><i class="dot g-${g}"></i>${GRADE_NAME[g]}</span>`).join('');
-  const opts = g => GRADES.map(x => `<option value="${x}" ${x === g ? 'selected' : ''}>${x}조</option>`).join('');
-  $('#memberRows').innerHTML = sorted.map(m => `<div class="mrow">
-      ${magnet(m.name, 'sm')}<b>${esc(m.name)}</b>
-      <select class="gsel" data-m="${esc(m.name)}" aria-label="${esc(m.name)} 급수">${opts(m.grade)}</select>
-      <button class="small ghost" data-delm="${esc(m.name)}" aria-label="삭제">✕</button>
-    </div>`).join('') || '<p class="muted">아직 명단이 없습니다.</p>';
+async function openDay(date, quiet) {
+  S.sel = date; renderCal(); renderDay();
+  if (!quiet) $('#dayArea').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  try { applyDay(await api('day', { date })); renderDay(); renderCal(); } catch (e) { toast(e.message, true); }
 }
 
-/* ---------- 비용 계산 ---------- */
-function currentRate() {
-  if (db.rate === '2000') return 2000;
-  if (db.rate === '3000') return 3000;
-  return new Date().getHours() >= 19 ? 3000 : 2000;
-}
-// 보드에서 누른 패 + 리그 결과에서 나온 패를 합친 목록
-function charges(D = day()) {
-  const out = D.marks.map(m => ({ ...m, src: 'board' }));
-  D.leagues.forEach((L, li) => L.matches.forEach(mt => {
-    const r = result(mt, L.target);
-    if (!r || !L.fee) return;
-    out.push({ name: r.loser, amount: L.fee + (r.dbl || r.deuce ? 1000 : 0), base: L.fee, dbl: r.dbl, deuce: r.deuce, src: 'league', label: `리그${li + 1}` });
-  }));
-  D.leagues.forEach((L, li) => {
-    const pz = prizes(L); if (!pz) return;
-    pz.top.forEach(n => out.push({ name: n, amount: -pz.amount, src: 'prize', kind: 'top', label: `리그${li + 1}` }));
-    pz.bottom.forEach(n => out.push({ name: n, amount: pz.amount, src: 'prize', kind: 'bottom', label: `리그${li + 1}` }));
-  });
-  return out;
-}
-// 리그가 모두 끝나면 1등은 −금액, 꼴등은 +금액 (같은 순위면 함께 적용)
-function prizes(L) {
-  const amount = L.prize ?? 3000;
-  if (!amount) return null;
-  const st = standings(L);
-  if (st.played < L.matches.length || st.rows.length < 2) return null;
-  const rows = st.rows, n = Math.max(1, Math.min(L.prizeN || 1, Math.floor(rows.length / 2)));
-  const topRank = rows[n - 1].rank, botRank = rows[rows.length - n].rank;
-  const top = rows.filter(x => x.rank <= topRank).map(x => x.name);
-  const bottom = rows.filter(x => x.rank >= botRank && !top.includes(x.name)).map(x => x.name);
-  return { amount, top, bottom };
-}
-function totals(D = day()) {
-  const t = {};
-  const blank = () => ({ amount: 0, count: 0, board: 0, league: 0, prize: 0, top: 0, bottom: 0 });
-  D.players.forEach(p => t[p] = blank());
-  charges(D).forEach(c => {
-    if (!t[c.name]) t[c.name] = blank();
-    t[c.name].amount += c.amount;
-    if (c.src === 'prize') { t[c.name].prize += c.amount; t[c.name][c.kind]++; }
-    else { t[c.name].count++; t[c.name][c.src]++; }
-  });
-  return t;
-}
-
-/* ---------- 바를 정(正) ---------- */
-const STROKES = [
-  'M6 7 H34', 'M20 7 V33', 'M20 20 H31', 'M10 18 V33', 'M4 33 H36'
-];
-const BLUE = 'var(--blue)', RED = 'var(--red)';
-// 1,000원 = 짝대기 1개. 2,000원 패는 파랑, 3,000원 이상 패는 빨강, 더블·듀스 추가분은 빨강
-function strokesOf(c) {
-  const base = c.base ?? (c.amount - (c.dbl || c.deuce ? 1000 : 0));
-  const out = Array(Math.max(0, Math.round(base / 1000))).fill(base <= 2000 ? BLUE : RED);
-  for (let k = Math.round((c.amount - base) / 1000); k > 0; k--) out.push(RED);
-  return out;
-}
-function drawStrokes(cols) {
-  let h = '';
-  for (let i = 0; i < cols.length; i += 5) {
-    h += '<svg viewBox="0 0 40 40" aria-hidden="true">' + cols.slice(i, i + 5).map((col, k) =>
-      `<path d="${STROKES[k]}" stroke="${col}" stroke-width="4.5" stroke-linecap="round" fill="none"/>`
-    ).join('') + '</svg>';
-  }
-  return h;
-}
-function tallySvg(list) {
-  if (!list.length) return '<span class="none">아직 깨끗! ✨</span>';
-  return drawStrokes(list.flatMap(strokesOf));
-}
-document.querySelectorAll('.ex').forEach(el => el.innerHTML = drawStrokes(el.dataset.ex.split(',').map(x => x === 'b' ? BLUE : RED)));
-
-function renderRate() {
-  document.querySelectorAll('#rateBtns button').forEach(b => b.classList.toggle('on', b.dataset.rate === (db.rate || 'auto')));
-  const r = currentRate();
-  $('#rateNow').textContent = `지금 1패 = ${won(r)} (${r <= 2000 ? '파란' : '빨간'} 짝대기 ${r / 1000}개)`;
-}
-$('#rateBtns').addEventListener('click', e => {
-  const b = e.target.closest('[data-rate]'); if (!b) return;
-  db.rate = b.dataset.rate; save(); renderAll();
-});
-
-function renderBoard() {
-  const D = day(), all = charges(D), t = totals(D);
-  const r = currentRate();
-  if (!D.players.length) { $('#board').innerHTML = '<p class="muted">참석자를 먼저 넣어 주세요.</p>'; return; }
-  $('#board').innerHTML = [...D.players].sort(byGrade).map(p => {
-    const mine = all.filter(c => c.name === p);
-    const lg = t[p].league;
-    return `<div class="pl">
-      ${magnet(p)}
-      <div class="pl-top">
-        <span class="pl-name">${esc(p)}</span>
-        <span class="pl-sum">${t[p].count}패 · ${won(t[p].amount)}</span>
-      </div>
-      <div class="tally">${tallySvg(mine.filter(c => c.src !== 'prize'))}</div>
-      ${t[p].prize ? `<div class="prize ${t[p].prize < 0 ? 'minus' : 'plus'}">${t[p].prize < 0 ? '🥇 1등' : '💀 꼴등'} ${t[p].prize < 0 ? '−' : '+'}${won(Math.abs(t[p].prize))}</div>` : ''}
-      ${lg ? `<div class="muted" style="grid-column:2">리그 패 ${lg}개 포함</div>` : ''}
-      <div class="pl-btns">
-        <button class="lose" data-act="lose" data-p="${esc(p)}">패 +${(r / 1000)}천</button>
-        <button class="dbl" data-act="dbl" data-p="${esc(p)}">더블패 +${((r + 1000) / 1000)}천</button>
-        <button class="deuce" data-act="deuce" data-p="${esc(p)}">듀스패 +${((r + 1000) / 1000)}천</button>
-        <button class="small ghost" data-act="undo" data-p="${esc(p)}" title="마지막 표시 지우기">↶</button>
-      </div>
-    </div>`;
-  }).join('') + `<p class="muted" style="margin:2px 4px 0;font-size:13px">자석을 누르면 오늘 참석에서 뺄 수 있어요.</p>`;
-}
-$('#board').addEventListener('click', e => {
-  const b = e.target.closest('button'); if (!b) return;
-  const D = day();
-  if (b.classList.contains('mag')) {
-    const name = b.dataset.name;
-    if (!confirm(`${name}님을 오늘 참석에서 뺄까요? 보드판 표시도 함께 지워집니다.`)) return;
-    D.players = D.players.filter(x => x !== name);
-    D.marks = D.marks.filter(m => m.name !== name);
-    save(); renderAll();
-    return;
-  }
-  const p = b.dataset.p, act = b.dataset.act;
-  if (!p) return;
-  const r = currentRate();
-  if (act === 'lose') D.marks.push({ id: uid(), name: p, amount: r, base: r, at: Date.now() });
-  if (act === 'dbl') D.marks.push({ id: uid(), name: p, amount: r + 1000, base: r, dbl: true, at: Date.now() });
-  if (act === 'deuce') D.marks.push({ id: uid(), name: p, amount: r + 1000, base: r, deuce: true, at: Date.now() });
-  if (act === 'undo') {
-    let i = -1; D.marks.forEach((m, k) => { if (m.name === p) i = k; });
-    if (i < 0) { toast('지울 보드 표시가 없어요 (리그 패는 점수를 지우세요)'); return; }
-    D.marks.splice(i, 1);
-  }
-  save(); renderAll();
-  if (act !== 'undo') toast(`${p} +${won(act === 'lose' ? r : r + 1000)}${act === 'dbl' ? ' (더블패)' : act === 'deuce' ? ' (듀스패)' : ''}`);
-});
-
-/* ---------- 리그 ---------- */
-function shuffle(a) { a = [...a]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
-// 원형 방식 라운드로빈: 한 라운드에 한 사람이 최대 한 경기
-function roundRobin(list) {
-  const a = [...list]; if (a.length % 2) a.push(null);
-  const n = a.length, rounds = [];
-  for (let r = 0; r < n - 1; r++) {
-    const pairs = [];
-    for (let i = 0; i < n / 2; i++) { const p = a[i], q = a[n - 1 - i]; if (p && q) pairs.push(Math.random() < .5 ? [p, q] : [q, p]); }
-    rounds.push(shuffle(pairs));
-    a.splice(1, 0, a.pop());
-  }
-  return shuffle(rounds);
-}
-const unpicked = new Set(); // 리그에서 뺀 사람 (새 참석자는 자동 선택)
-function pickedNames() { return [...document.querySelectorAll('#leaguePick input:checked')].map(i => i.value); }
-function renderPick() {
-  const D = day();
-  $('#leaguePick').innerHTML = D.players.length
-    ? [...D.players].sort(byGrade).map(p => `<label><input type="checkbox" value="${esc(p)}" ${unpicked.has(p) ? '' : 'checked'}> ${dot(p)}${esc(p)}</label>`).join('')
-    : '<span class="muted">참석자를 먼저 넣어 주세요.</span>';
-  renderRoundsOpt();
-}
-function renderRoundsOpt() {
-  const n = pickedNames().length;
-  const games = n - 1; // 모두 한 번씩이면 각자 n-1경기
-  const old = $('#lgRounds').value;
-  let h = `<option value="all">모두 한 번씩 (각 ${Math.max(games, 0)}경기)</option>`;
-  for (let k = 1; k < Math.max(games, 1); k++) h += `<option value="${k}">약 ${k}경기씩</option>`;
-  $('#lgRounds').innerHTML = h;
-  if ([...$('#lgRounds').options].some(o => o.value === old)) $('#lgRounds').value = old;
-  if (n >= 10 && $('#lgCourts').value === '1' && !$('#lgCourts').dataset.touched) $('#lgCourts').value = '2';
-  if (!$('#lgPrizeN').dataset.touched) $('#lgPrizeN').value = n >= 10 ? '2' : '1';
-}
-function syncUnpicked() { document.querySelectorAll('#leaguePick input').forEach(i => i.checked ? unpicked.delete(i.value) : unpicked.add(i.value)); renderRoundsOpt(); }
-$('#leaguePick').addEventListener('change', syncUnpicked);
-$('#lgCourts').addEventListener('change', () => $('#lgCourts').dataset.touched = '1');
-$('#lgPrizeN').addEventListener('change', () => $('#lgPrizeN').dataset.touched = '1');
-$('#pickAll').onclick = () => { document.querySelectorAll('#leaguePick input').forEach(i => i.checked = true); syncUnpicked(); };
-$('#pickNone').onclick = () => { document.querySelectorAll('#leaguePick input').forEach(i => i.checked = false); syncUnpicked(); };
-
-$('#makeLeague').onclick = () => {
-  const names = pickedNames();
-  if (names.length < 2) { toast('2명 이상 선택하세요'); return; }
-  const courts = +$('#lgCourts').value, target = +$('#lgTarget').value, fee = +$('#lgFee').value;
-  const prize = +$('#lgPrize').value, prizeN = +$('#lgPrizeN').value;
-  let rounds = roundRobin(shuffle(names));
-  const rv = $('#lgRounds').value;
-  if (rv !== 'all') {
-    // 홀수 인원은 매 라운드 1명이 쉬므로 라운드를 하나 더 써서 경기 수를 맞춤
-    const k = +rv + (names.length % 2 ? 1 : 0);
-    rounds = rounds.slice(0, k);
-  }
-  const matches = []; let no = 0;
-  rounds.forEach((pairs, ri) => pairs.forEach(([a, b]) => {
-    matches.push({ id: uid(), a, b, sa: '', sb: '', round: ri + 1, court: (no % courts) + 1, no: ++no });
-  }));
-  day().leagues.push({ id: uid(), courts, target, fee, prize, prizeN, players: names, matches, at: Date.now() });
-  save(); renderAll();
-  toast(`${matches.length}경기 대진표 완성!`);
-  setTimeout(() => document.querySelector('#leagues .league:last-child')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
-};
-
+/* ============ 벌금 계산 ============ */
 function result(mt, target) {
   if (mt.sa === '' || mt.sb === '' || mt.sa == null || mt.sb == null) return null;
   const a = +mt.sa, b = +mt.sb;
   if (!Number.isFinite(a) || !Number.isFinite(b) || a === b) return null;
-  const winner = a > b ? mt.a : mt.b, loser = a > b ? mt.b : mt.a;
-  const ls = Math.min(a, b);
-  const line = DBL_LINE[target] ?? Math.ceil(target / 2);
-  // 듀스: 진 사람도 (목표점수 − 1)점 이상 냈으면 듀스까지 간 경기
-  return { winner, loser, ws: Math.max(a, b), ls, dbl: ls < line, deuce: ls >= target - 1 };
+  const ls = Math.min(a, b), line = DBL_LINE[target] ?? Math.ceil(target / 2);
+  return { winner: a > b ? mt.a : mt.b, loser: a > b ? mt.b : mt.a, ls, dbl: ls < line, deuce: ls >= target - 1 };
 }
-
-// 순위: 득실차 → 동률이면 승자승(동률자끼리 승수 → 동률자끼리 득실) → 득점 → 승수
 function standings(L) {
   const s = {};
   L.players.forEach(p => s[p] = { name: p, g: 0, w: 0, l: 0, pf: 0, pa: 0 });
@@ -705,30 +802,26 @@ function standings(L) {
     done.push(mt);
     const a = +mt.sa, b = +mt.sb;
     [[mt.a, a, b], [mt.b, b, a]].forEach(([p, f, ag]) => { if (!s[p]) return; s[p].g++; s[p].pf += f; s[p].pa += ag; });
-    s[r.winner].w++; s[r.loser].l++;
+    if (s[r.winner]) s[r.winner].w++; if (s[r.loser]) s[r.loser].l++;
   });
-  const arr = Object.values(s).map(x => ({ ...x, diff: x.pf - x.pa }));
-  arr.sort((x, y) => y.diff - x.diff);
-  // 득실차 같은 그룹끼리 승자승 적용
+  const arr = Object.values(s).map(x => ({ ...x, diff: x.pf - x.pa })).sort((x, y) => y.diff - x.diff);
   const out = [];
   for (let i = 0; i < arr.length;) {
     let j = i; while (j < arr.length && arr[j].diff === arr[i].diff) j++;
     const grp = arr.slice(i, j);
-    if (grp.length > 1) {
-      const names = new Set(grp.map(g => g.name));
-      const h = {}; grp.forEach(g => h[g.name] = { w: 0, d: 0 });
+    if (grp.length > 1) { // 득실이 같으면 승자승
+      const names = new Set(grp.map(g => g.name)), h = {};
+      grp.forEach(g => h[g.name] = { w: 0, d: 0 });
       done.forEach(mt => {
         if (!names.has(mt.a) || !names.has(mt.b)) return;
         const a = +mt.sa, b = +mt.sb;
-        h[a > b ? mt.a : mt.b].w++;
-        h[mt.a].d += a - b; h[mt.b].d += b - a;
+        h[a > b ? mt.a : mt.b].w++; h[mt.a].d += a - b; h[mt.b].d += b - a;
       });
       grp.forEach(g => { g.hw = h[g.name].w; g.hd = h[g.name].d; });
       grp.sort((x, y) => y.hw - x.hw || y.hd - x.hd || y.pf - x.pf || y.w - x.w);
     }
     out.push(...grp); i = j;
   }
-  // 완전히 같은 기록은 같은 순위
   let rank = 0;
   out.forEach((x, k) => {
     const p = out[k - 1];
@@ -737,159 +830,568 @@ function standings(L) {
   });
   return { rows: out, played: done.length };
 }
-
-function standingsHtml(L) {
+function prizes(L) {
+  const amount = L.prize ?? 3000; if (!amount) return null;
   const st = standings(L);
-  const medals = ['🥇', '🥈', '🥉'];
-  const lastRank = st.rows.length ? st.rows[st.rows.length - 1].rank : 0;
-  return `<h3>🏆 순위 <span class="muted">(${st.played}/${L.matches.length}경기 완료)</span></h3>
-      <div class="scroll"><table>
-        <tr><th>순위</th><th style="text-align:left">이름</th><th>경기</th><th>승</th><th>패</th><th>득</th><th>실</th><th>득실</th></tr>
-        ${st.rows.map(x => `<tr>
-          <td>${st.played ? (x.rank <= 3 ? `<span class="medal">${medals[x.rank - 1]}</span>` : (x.rank === lastRank && st.rows.length > 3 ? '💀' : x.rank)) : '-'}</td>
-          <td class="n">${dot(x.name)}${esc(x.name)}</td><td>${x.g}</td><td>${x.w}</td><td>${x.l}</td><td>${x.pf}</td><td>${x.pa}</td>
-          <td style="font-weight:700;color:${x.diff > 0 ? 'var(--green)' : x.diff < 0 ? 'var(--red)' : 'inherit'}">${x.diff > 0 ? '+' : ''}${x.diff}</td>
-        </tr>`).join('')}
-      </table></div>
-      ${prizeLine(L, st)}`;
+  if (st.played < L.matches.length || st.rows.length < 2) return null;
+  const rows = st.rows, n = Math.max(1, Math.min(L.prizeN || 1, Math.floor(rows.length / 2)));
+  const topRank = rows[n - 1].rank, botRank = rows[rows.length - n].rank;
+  const top = rows.filter(x => x.rank <= topRank).map(x => x.name);
+  const bottom = rows.filter(x => x.rank >= botRank && !top.includes(x.name)).map(x => x.name);
+  return { amount, top, bottom };
 }
-function prizeLine(L, st) {
-  const amount = L.prize ?? 3000;
-  if (!amount) return '';
-  const pz = prizes(L);
-  if (!pz) return `<p class="prize-line">🏁 리그가 끝나면 1등 −${won(amount)}, 꼴등 +${won(amount)} (${L.prizeN || 1}명씩) · 남은 경기 ${L.matches.length - st.played}</p>`;
-  return `<p class="prize-line">🥇 ${pz.top.map(esc).join(', ')} −${won(amount)} &nbsp;·&nbsp; 💀 ${pz.bottom.map(esc).join(', ')} +${won(amount)}</p>`;
+// 하루의 모든 벌금 항목: 지각·결석, 보드 패, 리그 패, 1등·꼴등
+function charges(D) {
+  const out = [];
+  Object.entries(D.att || {}).forEach(([n, a]) => {
+    if (a.status === 'late') out.push({ name: n, amount: 2000, src: 'late' });
+    if (a.status === 'absent') out.push({ name: n, amount: 5000, src: 'absent' });
+  });
+  (D.marks || []).forEach(m => out.push({ ...m, src: 'board' }));
+  (D.leagues || []).forEach(L => L.matches.forEach(mt => {
+    const r = result(mt, L.target); if (!r || !L.fee) return;
+    out.push({ name: r.loser, amount: L.fee + (r.dbl || r.deuce ? 1000 : 0), base: L.fee, dbl: r.dbl, deuce: r.deuce, src: 'league' });
+  }));
+  (D.leagues || []).forEach(L => {
+    const pz = prizes(L); if (!pz) return;
+    pz.top.forEach(n => out.push({ name: n, amount: -pz.amount, src: 'prize', kind: 'top' }));
+    pz.bottom.forEach(n => out.push({ name: n, amount: pz.amount, src: 'prize', kind: 'bottom' }));
+  });
+  return out;
 }
-function renderLeagues() {
-  const D = day();
-  $('#leagues').innerHTML = D.leagues.map((L, li) => {
-    const byCourt = Array.from({ length: L.courts }, () => []);
-    L.matches.forEach(mt => byCourt[mt.court - 1].push(mt));
-    return `<div class="league" data-li="${li}">
-      <div class="lg-head">
-        <b>리그 ${li + 1} · ${L.players.length}명 · ${L.matches.length}경기</b>
-        <span class="muted">${L.target}점 · 패 ${L.fee ? won(L.fee) : '무료'} · 더블패 ${DBL_LINE[L.target]}점 미만 · 듀스패 +1,000${(L.prize ?? 3000) ? ` · 1등/꼴등 ${L.prizeN || 1}명 ±${won(L.prize ?? 3000)}` : ''}</span>
-      </div>
-      <div class="courts c${L.courts}">
-        ${byCourt.map((list, ci) => `<div class="court">
-          ${L.courts > 1 ? `<h4>🏸 ${ci + 1}코트</h4>` : ''}
-          ${list.map(mt => {
-            const r = result(mt, L.target);
-            const ca = r ? (r.winner === mt.a ? 'win' : 'lose') : '', cb = r ? (r.winner === mt.b ? 'win' : 'lose') : '';
-            return `<div class="match${r && (r.dbl || r.deuce) ? ' dbl' : ''}" id="m-${mt.id}">
-              <span class="no">${mt.no}</span>
-              <span class="a ${ca}">${esc(mt.a)} ${dot(mt.a)}</span>
-              <input inputmode="numeric" pattern="[0-9]*" data-mid="${mt.id}" data-side="sa" value="${esc(mt.sa)}" aria-label="${esc(mt.a)} 점수">
-              <span style="text-align:center">:</span>
-              <input inputmode="numeric" pattern="[0-9]*" data-mid="${mt.id}" data-side="sb" value="${esc(mt.sb)}" aria-label="${esc(mt.b)} 점수">
-              <span class="b ${cb}">${dot(mt.b)}${esc(mt.b)}</span>
-            </div>`;
-          }).join('')}
-        </div>`).join('')}
-      </div>
-      <div id="st-${L.id}">${standingsHtml(L)}</div>
-      <p class="muted" style="margin:6px 0 0">득실차 순으로 순위를 매기고, 같으면 승자승(맞대결)으로 정합니다.</p>
-      <div class="row" style="margin-top:8px;justify-content:flex-end">
-        <button class="small ghost" data-del="${li}" style="color:var(--red)">이 리그 삭제</button>
-      </div>
+function totals(D) {
+  const t = {}, blank = () => ({ amount: 0, losses: 0, league: 0, prize: 0, late: 0, absent: 0 });
+  Object.keys(D.att || {}).forEach(n => t[n] = blank());
+  charges(D).forEach(c => {
+    const x = t[c.name] || (t[c.name] = blank());
+    x.amount += c.amount;
+    if (c.src === 'prize') x.prize += c.amount;
+    else if (c.src === 'late') x.late++;
+    else if (c.src === 'absent') x.absent++;
+    else { x.losses++; if (c.src === 'league') x.league++; }
+  });
+  return t;
+}
+// 이번 달 참석률·벌금·납부
+function monthStats(mon) {
+  const days = Object.values(S.days).filter(d => d.date.startsWith(mon));
+  const clubDays = days.filter(d => Object.values(d.att).some(a => a.status === 'present' || a.status === 'late' || a.status === 'rsvp') && d.date <= S.today);
+  const st = {};
+  const get = n => st[n] || (st[n] = { days: 0, late: 0, absent: 0, charged: 0, paid: 0, rate: 0 });
+  S.members.forEach(m => get(m.name));
+  clubDays.forEach(d => Object.entries(d.att).forEach(([n, a]) => {
+    if (a.status === 'present' || a.status === 'late' || (a.status === 'rsvp' && d.date < S.today)) get(n).days++;
+    if (a.status === 'late') get(n).late++;
+    if (a.status === 'absent') get(n).absent++;
+  }));
+  days.forEach(d => Object.entries(totals(d)).forEach(([n, x]) => { get(n).charged += x.amount; }));
+  Object.values(S.payments).filter(p => p.date.startsWith(mon) && p.status === 'confirmed').forEach(p => { get(p.name).paid += p.amount || 0; });
+  const total = Object.values(st).reduce((s, x) => s + x.paid, 0);
+  Object.values(st).forEach(x => { x.rate = clubDays.length ? x.days / clubDays.length : 0; x.share = total ? x.paid / total : 0; });
+  st.__clubDays = clubDays.length; st.__paidTotal = total;
+  return st;
+}
+
+/* ============ 짝대기 ============ */
+const STROKES = ['M6 7 H34', 'M20 7 V33', 'M20 20 H31', 'M10 18 V33', 'M4 33 H36'];
+const COL = { b: 'var(--blue)', r: 'var(--red)', k: 'var(--black)' };
+function strokesOf(c) {
+  if (c.src === 'late' || c.src === 'absent') return Array(c.amount / 1000).fill(COL.k);
+  const base = c.base ?? (c.amount - (c.dbl || c.deuce ? 1000 : 0));
+  const out = Array(Math.max(0, Math.round(base / 1000))).fill(base <= 2000 ? COL.b : COL.r);
+  for (let k = Math.round((c.amount - base) / 1000); k > 0; k--) out.push(COL.r);
+  return out;
+}
+function drawStrokes(cols) {
+  let h = '';
+  for (let i = 0; i < cols.length; i += 5) h += '<svg viewBox="0 0 40 40" aria-hidden="true">' + cols.slice(i, i + 5).map((c, k) => `<path d="${STROKES[k]}" stroke="${c}" stroke-width="4.5" stroke-linecap="round" fill="none"/>`).join('') + '</svg>';
+  return h;
+}
+$$('.ex').forEach(el => el.innerHTML = drawStrokes(el.dataset.ex.split(',').map(x => COL[x])));
+
+/* ============ 현황판 ============ */
+const ST_LABEL = { rsvp: '참석 예정', present: '도착', late: '지각', absent: '결석' };
+function canEdit(D) { return isOff() || (!D.closed && D.date >= S.today); }
+function rateOf(D) { return D.rate === '2000' ? 2000 : D.rate === '3000' ? 3000 : (kstNow().h >= 19 ? 3000 : 2000); }
+function renderDay() {
+  const D = dayOf(S.sel), [y, m, d] = S.sel.split('-');
+  $('#dayLabel').textContent = `${+m}월 ${+d}일${S.sel === S.today ? ' (오늘)' : ''}`;
+  renderMyAct(D); renderBoard(D); renderTray(D); renderRate(D); renderPick(D); renderLeagues(D); renderSettle(D);
+}
+function renderMyAct(D) {
+  const me = S.me.name, a = D.att[me], isToday = S.sel === S.today;
+  let h = '';
+  if (D.closed) h += `<div class="closed">🔒 마감된 날입니다${D.closedBy ? ` (${esc(D.closedBy)})` : ''}. 아래에서 벌금을 확인하고 입금해 주세요.</div>`;
+  if (canEdit(D)) {
+    if (!a) h += `<div class="myact"><button class="primary" data-my="join" style="grid-column:1/-1">🧲 내 자석 붙이기 (참석)</button></div>`;
+    else if (a.status === 'rsvp') h += `<div class="myact">${isToday ? `<button class="forest" data-my="checkin">🏸 구장 도착</button>` : `<button class="forest" disabled>🏸 당일에 도착 체크</button>`}<button class="ghost" data-my="leave">자석 떼기</button></div>
+      ${isToday ? `<p class="muted" style="margin:6px 0 0">6시 15분이 지나 도착을 누르면 지각(2,000원)입니다.</p>` : ''}`;
+    else h += `<p class="muted" style="margin:8px 0 0">${a.status === 'absent' ? '결석 처리됐어요.' : `✅ ${a.arrivedAt ? new Date(a.arrivedAt).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }) + ' ' : ''}${ST_LABEL[a.status]}`}</p>`;
+  }
+  $('#myAct').innerHTML = h;
+  const n = Object.values(D.att).filter(x => x.status !== 'absent').length;
+  $('#wbSub').textContent = n ? `참석 ${n}명` : '아직 붙은 자석이 없어요';
+}
+function renderBoard(D) {
+  const all = charges(D), t = totals(D), r = rateOf(D), names = Object.keys(D.att).sort(byGrade), ed = canEdit(D);
+  if (!names.length) { $('#board').innerHTML = '<p class="muted" style="text-align:center">자석 통에서 자석을 붙여 주세요.</p>'; return; }
+  $('#board').innerHTML = names.map(p => {
+    const a = D.att[p], x = t[p], mine = all.filter(c => c.name === p && c.src !== 'prize');
+    const playing = a.status === 'present' || a.status === 'late' || a.status === 'rsvp';
+    return `<div class="pl" id="pl-${esc(p)}">
+      ${magnet(p, a.status === 'absent' ? 'ghosted' : '')}
+      <div class="pl-top"><span><span class="pl-name">${esc(p)}</span><span class="st ${a.status}">${ST_LABEL[a.status]}</span></span>
+        <span class="pl-sum num">${x.losses}패 · ${won(x.amount)}</span></div>
+      <div class="tally">${mine.length ? drawStrokes(mine.flatMap(strokesOf)) : '<span class="none">아직 깨끗! ✨</span>'}</div>
+      ${x.prize ? `<div class="prize ${x.prize < 0 ? 'minus' : 'plus'}">${x.prize < 0 ? '🥇 1등' : '💀 꼴등'} ${won(x.prize)}</div>` : ''}
+      ${ed && playing ? `<div class="pl-btns">
+        <button class="lose" data-mark="lose" data-p="${esc(p)}">패 +${r / 1000}천</button>
+        <button class="dbl" data-mark="dbl" data-p="${esc(p)}">더블 +${r / 1000 + 1}천</button>
+        <button class="deuce" data-mark="deuce" data-p="${esc(p)}">듀스 +${r / 1000 + 1}천</button>
+        <button class="ghost small" data-mark="undo" data-p="${esc(p)}" aria-label="마지막 표시 지우기">↶</button></div>` : ''}
+      ${isOff() ? `<div class="pl-off">운영: ${['rsvp', 'present', 'late', 'absent'].map(s => `<button class="${a.status === s ? 'on' : ''}" data-status="${s}" data-p="${esc(p)}">${ST_LABEL[s]}</button>`).join('')}<button data-remove="${esc(p)}">빼기</button></div>` : ''}
     </div>`;
   }).join('');
 }
-// 점수 입력: 다시 그리지 않고 저장 후 해당 부분만 갱신 (입력 포커스 유지)
+function renderTray(D) {
+  const away = S.members.map(m => m.name).filter(n => !D.att[n]).sort(byGrade);
+  $('#trayHint').textContent = isOff() ? '(운영진은 누구 자석이든 붙일 수 있어요)' : '(내 자석만 붙일 수 있어요)';
+  $('#tray').innerHTML = away.length ? away.map(n => magnet(n, isOff() || n === S.me.name ? '' : 'ghosted')).join('') : '<span class="empty">모두 붙었어요 🎉</span>';
+}
+function renderRate(D) {
+  $$('#rateBtns button').forEach(b => { b.classList.toggle('on', b.dataset.rate === (D.rate || 'auto')); b.disabled = !canEdit(D); });
+  const r = rateOf(D);
+  $('#rateNow').textContent = `지금 1패 = ${won(r)} (${r <= 2000 ? '파랑' : '빨강'} ${r / 1000}개)`;
+}
+async function dayOp(op, extra = {}) {
+  const date = S.sel;
+  try { applyDay(await api('dayOp', { date, op, ...extra })); if (S.sel === date) renderDay(); renderCal(); renderHud(); return true; }
+  catch (e) { toast(e.message, true); return false; }
+}
+$('#myAct').addEventListener('click', async e => {
+  const b = e.target.closest('[data-my]'); if (!b) return;
+  const op = b.dataset.my;
+  if (op === 'leave' && !confirm('자석을 뗄까요? (참석 취소)')) return;
+  b.disabled = true;
+  if (await dayOp(op)) {
+    if (op === 'join') { toast('자석 착! 🧲 참석 신청 완료'); const el = document.querySelector(`#pl-${CSS.escape(S.me.name)} .mag`); el && el.classList.add('pop'); }
+    if (op === 'checkin') { const a = dayOf(S.sel).att[S.me.name]; toast(a && a.status === 'late' ? '⏰ 지각! 검은 짝대기 2개 (2,000원)' : '🏸 도착 완료! 오늘도 화이팅'); }
+  }
+});
+$('#board').addEventListener('click', async e => {
+  const mag = e.target.closest('[data-mag]'); if (mag) return openProfile(mag.dataset.mag);
+  const b = e.target.closest('button'); if (!b) return;
+  const p = b.dataset.p;
+  if (b.dataset.mark) {
+    const k = b.dataset.mark;
+    if (await dayOp(k === 'undo' ? 'undoMark' : 'mark', { name: p, kind: k }) && k !== 'undo') toast(`${p} ${k === 'lose' ? '패' : k === 'dbl' ? '더블패' : '듀스패'} 기록`);
+  } else if (b.dataset.status) await dayOp('setStatus', { name: p, status: b.dataset.status });
+  else if (b.dataset.remove) { if (confirm(`${b.dataset.remove}님 자석을 뗄까요? 보드 표시도 지워집니다.`)) await dayOp('leave', { name: b.dataset.remove }); }
+});
+$('#tray').addEventListener('click', async e => {
+  const b = e.target.closest('[data-mag]'); if (!b) return;
+  const n = b.dataset.mag;
+  if (n !== S.me.name && !isOff()) return openProfile(n);
+  if (!canEdit(dayOf(S.sel))) return toast('지난 날이나 마감된 날은 운영진만 고칠 수 있어요', true);
+  if (await dayOp('join', { name: n })) toast(`${n} 자석 착! 🧲`);
+});
+$('#rateBtns').addEventListener('click', e => { const b = e.target.closest('[data-rate]'); if (b) dayOp('setRate', { rate: b.dataset.rate }); });
+
+/* ============ 리그 ============ */
+function shuffle(a) { a = [...a]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function roundRobin(list) {
+  const a = [...list]; if (a.length % 2) a.push(null);
+  const n = a.length, rounds = [];
+  for (let r = 0; r < n - 1; r++) {
+    const pairs = [];
+    for (let i = 0; i < n / 2; i++) { const p = a[i], q = a[n - 1 - i]; if (p && q) pairs.push(Math.random() < .5 ? [p, q] : [q, p]); }
+    rounds.push(shuffle(pairs)); a.splice(1, 0, a.pop());
+  }
+  return shuffle(rounds);
+}
+const playingNames = D => Object.keys(D.att).filter(n => D.att[n].status !== 'absent').sort(byGrade);
+const pickedNames = () => $$('#leaguePick input:checked').map(i => i.value);
+function renderPick(D) {
+  const names = playingNames(D);
+  $('#leagueSetup').classList.toggle('hidden', !canEdit(D));
+  $('#leaguePick').innerHTML = names.length ? names.map(p => `<label><input type="checkbox" value="${esc(p)}" ${S.unpicked.has(p) ? '' : 'checked'}> ${dot(p)}${esc(p)}</label>`).join('') : '<span class="muted">참석자가 생기면 고를 수 있어요.</span>';
+  renderRoundsOpt();
+}
+function renderRoundsOpt() {
+  const n = pickedNames().length, games = n - 1, old = $('#lgRounds').value;
+  let h = `<option value="all">모두 한 번씩 (각 ${Math.max(games, 0)}경기)</option>`;
+  for (let k = 1; k < Math.max(games, 1); k++) h += `<option value="${k}">약 ${k}경기씩</option>`;
+  $('#lgRounds').innerHTML = h;
+  if ([...$('#lgRounds').options].some(o => o.value === old)) $('#lgRounds').value = old;
+  if (n >= 10 && $('#lgCourts').value === '1' && !$('#lgCourts').dataset.touched) $('#lgCourts').value = '2';
+  if (!$('#lgPrizeN').dataset.touched) $('#lgPrizeN').value = n >= 10 ? '2' : '1';
+}
+function syncUnpicked() { $$('#leaguePick input').forEach(i => i.checked ? S.unpicked.delete(i.value) : S.unpicked.add(i.value)); renderRoundsOpt(); }
+$('#leaguePick').addEventListener('change', syncUnpicked);
+['lgCourts', 'lgPrizeN'].forEach(id => $('#' + id).addEventListener('change', () => $('#' + id).dataset.touched = '1'));
+$('#pickAll').onclick = () => { $$('#leaguePick input').forEach(i => i.checked = true); syncUnpicked(); };
+$('#pickNone').onclick = () => { $$('#leaguePick input').forEach(i => i.checked = false); syncUnpicked(); };
+$('#makeLeague').onclick = async () => {
+  const names = pickedNames(); if (names.length < 2) return toast('2명 이상 고르세요', true);
+  const courts = +$('#lgCourts').value, target = +$('#lgTarget').value;
+  let rounds = roundRobin(shuffle(names));
+  const rv = $('#lgRounds').value;
+  if (rv !== 'all') rounds = rounds.slice(0, +rv + (names.length % 2 ? 1 : 0));
+  const matches = []; let no = 0;
+  rounds.forEach(pairs => pairs.forEach(([a, b]) => matches.push({ id: uid(), a, b, sa: '', sb: '', court: (no % courts) + 1, no: ++no })));
+  const league = { courts, target, fee: +$('#lgFee').value, prize: +$('#lgPrize').value, prizeN: +$('#lgPrizeN').value, players: names, matches };
+  if (await dayOp('leagueCreate', { league })) toast(`${matches.length}경기 대진표 완성! 🎲`);
+};
+function standingsHtml(L) {
+  const st = standings(L), medals = ['🥇', '🥈', '🥉'], last = st.rows.length ? st.rows[st.rows.length - 1].rank : 0;
+  const amount = L.prize ?? 3000, pz = prizes(L);
+  return `<h3>🏆 순위 <span class="muted">(${st.played}/${L.matches.length}경기)</span></h3>
+    <div class="scroll"><table><tr><th>순위</th><th style="text-align:left">이름</th><th>경기</th><th>승</th><th>패</th><th>득</th><th>실</th><th>득실</th></tr>
+    ${st.rows.map(x => `<tr><td>${st.played ? (x.rank <= 3 ? medals[x.rank - 1] : (x.rank === last && st.rows.length > 3 ? '💀' : x.rank)) : '-'}</td>
+      <td class="n">${dot(x.name)}${esc(x.name)}</td><td>${x.g}</td><td>${x.w}</td><td>${x.l}</td><td>${x.pf}</td><td>${x.pa}</td>
+      <td style="font-weight:700;color:${x.diff > 0 ? 'var(--green)' : x.diff < 0 ? 'var(--red)' : 'inherit'}">${x.diff > 0 ? '+' : ''}${x.diff}</td></tr>`).join('')}
+    </table></div>
+    ${!amount ? '' : pz ? `<p class="prize-line">🥇 ${pz.top.map(esc).join(', ')} −${won(amount)} · 💀 ${pz.bottom.map(esc).join(', ')} +${won(amount)}</p>`
+      : `<p class="prize-line">🏁 리그가 끝나면 1등 −${won(amount)}, 꼴등 +${won(amount)} (${L.prizeN || 1}명씩) · 남은 경기 ${L.matches.length - st.played}</p>`}`;
+}
+function renderLeagues(D) {
+  if ($('#leagues').contains(document.activeElement) && document.activeElement.matches('input')) return; // 점수 입력 중에는 그대로 둠
+  const ed = canEdit(D);
+  $('#leagues').innerHTML = (D.leagues || []).map((L, li) => {
+    const byCourt = Array.from({ length: L.courts }, () => []);
+    L.matches.forEach(mt => byCourt[(mt.court - 1) % L.courts].push(mt));
+    return `<div class="league">
+      <div class="row between"><b>리그 ${li + 1} · ${L.players.length}명 · ${L.matches.length}경기</b>
+      <span class="muted">${L.target}점 · 패 ${L.fee ? won(L.fee) : '무료'}</span></div>
+      <div class="courts c${L.courts}">${byCourt.map((list, ci) => `<div class="court">${L.courts > 1 ? `<h4>🏸 ${ci + 1}코트</h4>` : ''}
+        ${list.map(mt => { const r = result(mt, L.target), ca = r ? (r.winner === mt.a ? 'win' : 'lose') : '', cb = r ? (r.winner === mt.b ? 'win' : 'lose') : '';
+          return `<div class="match${r && (r.dbl || r.deuce) ? ' dbl' : ''}" id="m-${mt.id}"><span class="no">${mt.no}</span>
+          <span class="a ${ca}">${esc(mt.a)} ${dot(mt.a)}</span>
+          <input inputmode="numeric" data-lid="${L.id}" data-mid="${mt.id}" data-side="sa" value="${esc(mt.sa)}" ${ed ? '' : 'disabled'} aria-label="${esc(mt.a)} 점수"><span style="text-align:center">:</span>
+          <input inputmode="numeric" data-lid="${L.id}" data-mid="${mt.id}" data-side="sb" value="${esc(mt.sb)}" ${ed ? '' : 'disabled'} aria-label="${esc(mt.b)} 점수">
+          <span class="b ${cb}">${dot(mt.b)}${esc(mt.b)}</span></div>`; }).join('')}</div>`).join('')}</div>
+      <div id="st-${L.id}">${standingsHtml(L)}</div>
+      ${ed && (isOff() || L.by === S.me.name) ? `<div class="row" style="justify-content:flex-end;margin-top:8px"><button class="small ghost" data-dellg="${L.id}" style="color:var(--red)">이 리그 삭제</button></div>` : ''}
+    </div>`;
+  }).join('');
+}
+const scoreTimers = {};
 $('#leagues').addEventListener('input', e => {
   const i = e.target.closest('input[data-mid]'); if (!i) return;
   i.value = i.value.replace(/\D/g, '').slice(0, 2);
-  const D = day();
-  D.leagues.forEach(L => L.matches.forEach(mt => {
-    if (mt.id !== i.dataset.mid) return;
-    mt[i.dataset.side] = i.value;
-    // 이 경기 줄과 순위표만 갱신
-    const r = result(mt, L.target), row = document.getElementById('m-' + mt.id);
-    row.classList.toggle('dbl', !!(r && (r.dbl || r.deuce)));
-    row.querySelector('.a').className = 'a ' + (r ? (r.winner === mt.a ? 'win' : 'lose') : '');
-    row.querySelector('.b').className = 'b ' + (r ? (r.winner === mt.b ? 'win' : 'lose') : '');
-    document.getElementById('st-' + L.id).innerHTML = standingsHtml(L);
-  }));
-  save();
-  renderBoard(); renderSettle();
+  const D = dayOf(S.sel), L = D.leagues.find(x => x.id === i.dataset.lid), mt = L && L.matches.find(x => x.id === i.dataset.mid);
+  if (!mt) return;
+  mt[i.dataset.side] = i.value;
+  const r = result(mt, L.target), row = document.getElementById('m-' + mt.id);
+  row.classList.toggle('dbl', !!(r && (r.dbl || r.deuce)));
+  row.querySelector('.a').className = 'a ' + (r ? (r.winner === mt.a ? 'win' : 'lose') : '');
+  row.querySelector('.b').className = 'b ' + (r ? (r.winner === mt.b ? 'win' : 'lose') : '');
+  document.getElementById('st-' + L.id).innerHTML = standingsHtml(L);
+  renderBoard(D); renderSettle(D);
+  clearTimeout(scoreTimers[mt.id]);
+  scoreTimers[mt.id] = setTimeout(async () => {
+    try { applyDay(await api('dayOp', { date: S.sel, op: 'leagueScore', lid: L.id, mid: mt.id, sa: mt.sa, sb: mt.sb })); renderDay(); } catch (err) { toast(err.message, true); }
+  }, 700);
 });
-$('#leagues').addEventListener('click', e => {
-  const b = e.target.closest('[data-del]'); if (!b) return;
-  if (!confirm('이 리그를 삭제할까요? 리그에서 붙은 비용도 빠집니다.')) return;
-  day().leagues.splice(+b.dataset.del, 1); save(); renderAll();
+$('#leagues').addEventListener('click', async e => {
+  const b = e.target.closest('[data-dellg]'); if (!b) return;
+  if (confirm('이 리그를 지울까요? 리그 벌금도 빠집니다.')) await dayOp('leagueDelete', { lid: b.dataset.dellg });
 });
 
-/* ---------- 정산 & 공유 ---------- */
-function renderSettle() {
-  const D = day(), t = totals(D);
-  const names = Object.keys(t).sort((a, b) => t[b].amount - t[a].amount);
-  const sum = names.reduce((s, n) => s + t[n].amount, 0);
-  $('#settle').innerHTML = names.length ? names.map(n => `<div class="settle-row">
-      <div>${dot(n)}<b>${esc(n)}</b> <span class="muted">${t[n].count}패${t[n].league ? ` (리그 ${t[n].league})` : ''}${t[n].top ? ' · 🥇1등 ' + won(t[n].prize) : ''}${t[n].bottom ? ' · 💀꼴등 +' + won(t[n].prize) : ''}</span></div>
-      <span class="amt">${amtText(t[n].amount)}</span>
-    </div>`).join('') + `<div class="settle-total"><span>합계</span><span>${won(sum)}</span></div>`
-    : '<p class="muted">참석자가 없습니다.</p>';
-  $('#account').value = db.account || '';
+/* ============ 정산 · 입금 ============ */
+const payOf = (date, n) => S.payments[date + '|' + n] || { status: 'none' };
+const PST = { none: '미입금', claimed: '⏳ 입금했어요', confirmed: '✅ 확인' };
+function renderSettle(D) {
+  const t = totals(D), names = Object.keys(t).sort((a, b) => t[b].amount - t[a].amount || byGrade(a, b));
+  const sum = names.reduce((s, n) => s + Math.max(0, t[n].amount), 0);
+  const me = S.me.name, mine = t[me], st = S.settings;
+  const [, m, d] = S.sel.split('-');
+  let box = '';
+  if (mine && mine.amount > 0) {
+    const p = payOf(S.sel, me);
+    box = `<div class="paybox">
+      <div style="font-size:14px;opacity:.9">${D.closed ? '🏁 오늘 게임 끝! 총무 계좌로 입금해 주세요' : '지금까지 내 벌금 (게임이 끝나면 입금)'}</div>
+      <div class="big game num">${won(mine.amount)}</div>
+      <div class="acct"><span>${esc(st.bank)} ${esc(st.number)}<br><small style="font-weight:500;opacity:.85">예금주 ${esc(st.holder)} · 입금자명 <b>${esc(me)}${m}${d}</b></small></span>
+        <button class="small white" data-copy="${esc(st.bank + ' ' + st.number)}">복사</button></div>
+      <div class="btns">
+        <button class="toss" data-toss="${mine.amount}">토스로 보내기</button>
+        ${st.kakaopay ? `<button class="kpay" data-kpay>카카오페이 송금</button>` : `<button class="white" data-copy="${esc(st.number)}" data-bank>계좌번호만 복사</button>`}
+        ${p.status === 'confirmed' ? `<button class="done" disabled>✅ 총무 확인 완료</button>` : p.status === 'claimed' ? `<button class="done" data-claim>⏳ 총무 확인 기다리는 중 (다시 알리기)</button>` : `<button class="done" data-claim>💸 입금했어요</button>`}
+      </div>
+      <div style="font-size:12px;opacity:.85;margin-top:8px">계좌번호를 복사하고 카카오뱅크·토스 앱을 열면 받는 계좌가 자동으로 뜹니다.</div>
+    </div>`;
+  } else if (mine) box = `<div class="paybox"><div class="game" style="font-size:22px">🎉 오늘 벌금 없음!</div><div style="font-size:14px;opacity:.9">${mine.amount < 0 ? `1등 보너스 ${won(mine.amount)}` : '깨끗한 하루'}</div></div>`;
+  $('#payBox').innerHTML = box;
+  $('#settle').innerHTML = names.length ? names.map(n => {
+    const x = t[n], p = payOf(S.sel, n), bits = [];
+    if (x.losses) bits.push(`${x.losses}패`); if (x.late) bits.push('지각'); if (x.absent) bits.push('결석'); if (x.prize) bits.push(x.prize < 0 ? '🥇1등' : '💀꼴등');
+    return `<div class="settle-row ${n === me ? 'mine' : ''}"><div>${dot(n)}<b>${esc(n)}</b> <span class="muted">${bits.join(' · ') || '깨끗'}</span></div>
+      <div class="row" style="gap:6px;flex-wrap:nowrap"><span class="amt num">${x.amount ? won(x.amount) : '0원'}</span>${x.amount > 0 ? `<span class="pst ${p.status}">${PST[p.status]}</span>` : ''}
+      ${isOff() && x.amount > 0 ? (p.status === 'confirmed' ? `<button class="small ghost" data-pay="reset" data-p="${esc(n)}">취소</button>` : `<button class="small forest" data-pay="confirm" data-p="${esc(n)}" data-amt="${x.amount}">확인</button>`) : ''}</div></div>`;
+  }).join('') + `<div class="settle-total"><span>합계</span><span class="num">${won(sum)}</span></div>` : '<p class="muted">참석자가 없습니다.</p>';
+  $('#closeArea').innerHTML = isOff() && names.length ? `<button class="${D.closed ? 'ghost' : 'gold'}" data-close-day style="width:100%;margin-top:10px">${D.closed ? '🔓 마감 풀기' : '🏁 오늘 마감 (벌금 확정 · 입금 안내)'}</button>` : '';
 }
-$('#account').addEventListener('input', e => { db.account = e.target.value; save(); });
-
-function amtText(a) { return a > 0 ? won(a) : a < 0 ? `−${won(-a)}` : '0원 🎉'; }
-function shareText() {
-  const D = day(), t = totals(D);
-  const [y, m, d] = selDate.split('-');
-  const names = Object.keys(t).sort((a, b) => t[b].amount - t[a].amount);
-  const sum = names.reduce((s, n) => s + t[n].amount, 0);
-  let s = `🏸 우당탕탕 요절복통\n${y}.${m}.${d} 정산 (참석 ${D.players.length}명)\n\n`;
-  s += names.map(n => {
-    const x = t[n], a = x.amount;
-    const tag = (x.top ? ' 🥇' : '') + (x.bottom ? ' 💀' : '');
-    return `${n}${tag} : ${a > 0 ? won(a) + ' 입금' : a < 0 ? `−${won(-a)} (받을 돈)` : '0원 🎉'} (${x.count}패${x.prize ? `, 1등/꼴등 ${x.prize > 0 ? '+' : '−'}${won(Math.abs(x.prize))}` : ''})`;
-  }).join('\n');
-  s += `\n\n합계 ${won(sum)}`;
-  D.leagues.forEach((L, li) => {
-    const st = standings(L); if (!st.played) return;
-    s += `\n\n🏆 리그${D.leagues.length > 1 ? ' ' + (li + 1) : ''} 순위\n` + st.rows.map(x => `${x.rank}. ${x.name} (${x.w}승${x.l}패 득실${x.diff > 0 ? '+' : ''}${x.diff})`).join('\n');
-  });
-  if (db.account) s += `\n\n💳 ${db.account}`;
-  return s;
-}
-async function copy(text) {
+async function copyText(text) {
   try { await navigator.clipboard.writeText(text); return true; }
-  catch (e) {
-    const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select();
-    let ok = false; try { ok = document.execCommand('copy'); } catch (_) {}
-    ta.remove(); return ok;
+  catch (e) { const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select(); let ok = false; try { ok = document.execCommand('copy'); } catch (_) {} ta.remove(); return ok; }
+}
+$('#payBox').addEventListener('click', async e => {
+  const b = e.target.closest('button'); if (!b) return;
+  const st = S.settings;
+  if (b.dataset.copy) { toast(await copyText(b.dataset.copy) ? '계좌를 복사했어요. 은행 앱을 열어 보내 주세요' : '복사하지 못했어요', !1); }
+  else if (b.dataset.toss) {
+    await copyText(st.bank + ' ' + st.number);
+    location.href = `supertoss://send?amount=${b.dataset.toss}&bank=${encodeURIComponent(st.bank)}&accountNo=${encodeURIComponent(st.number.replace(/-/g, ''))}`;
+    setTimeout(() => { if (!document.hidden) toast('토스 앱이 없으면 복사된 계좌로 은행 앱에서 보내 주세요'); }, 1500);
+  } else if (b.dataset.kpay !== undefined) window.open(st.kakaopay, '_blank');
+  else if (b.dataset.claim !== undefined) {
+    const amt = totals(dayOf(S.sel))[S.me.name].amount;
+    try { const r = await api('pay', { op: 'claim', date: S.sel, amount: amt }); r.payments.forEach(p => S.payments[p.id] = p); renderSettle(dayOf(S.sel)); toast('총무에게 알렸어요. 확인되면 ✅로 바뀝니다'); } catch (err) { toast(err.message, true); }
   }
+});
+$('#settle').addEventListener('click', async e => {
+  const b = e.target.closest('[data-pay]'); if (!b) return;
+  try { const r = await api('pay', { op: b.dataset.pay, date: S.sel, name: b.dataset.p, amount: +b.dataset.amt || undefined }); r.payments.forEach(p => S.payments[p.id] = p); renderSettle(dayOf(S.sel)); renderHud(); }
+  catch (err) { toast(err.message, true); }
+});
+$('#closeArea').addEventListener('click', async e => {
+  if (!e.target.closest('[data-close-day]')) return;
+  const D = dayOf(S.sel);
+  if (!D.closed) {
+    const waiting = Object.entries(D.att).filter(([, a]) => a.status === 'rsvp').map(([n]) => n);
+    if (waiting.length && !confirm(`아직 도착 체크를 안 한 사람: ${waiting.join(', ')}\n결석이면 먼저 '결석'으로 바꿔 주세요. 그대로 마감할까요?`)) return;
+  }
+  if (await dayOp(D.closed ? 'reopen' : 'close')) toast(D.closed ? '마감을 풀었어요' : '🏁 마감! 멤버들에게 입금 안내가 떴어요');
+});
+function shareText() {
+  const D = dayOf(S.sel), t = totals(D), st = S.settings, [y, m, d] = S.sel.split('-');
+  const names = Object.keys(t).sort((a, b) => t[b].amount - t[a].amount);
+  const sum = names.reduce((s, n) => s + Math.max(0, t[n].amount), 0);
+  let s = `🏸 우당탕탕 요절복통\n${y}.${m}.${d} 정산 (참석 ${playingNames(D).length}명)\n\n`;
+  s += names.map(n => { const x = t[n]; return `${n} : ${x.amount > 0 ? won(x.amount) : x.amount < 0 ? won(x.amount) + ' (1등)' : '0원 🎉'}${x.late ? ' ⏰지각' : ''}${x.absent ? ' ❌결석' : ''}`; }).join('\n');
+  s += `\n\n합계 ${won(sum)}`;
+  (D.leagues || []).forEach((L, li) => { const r = standings(L); if (r.played) s += `\n\n🏆 리그${D.leagues.length > 1 ? ' ' + (li + 1) : ''} 순위\n` + r.rows.map(x => `${x.rank}. ${x.name} (${x.w}승${x.l}패 ${x.diff > 0 ? '+' : ''}${x.diff})`).join('\n'); });
+  s += `\n\n💳 ${st.bank} ${st.number} (${st.holder})\n입금자명: 이름+${m}${d}\n${location.origin + location.pathname}`;
+  return s;
 }
 $('#shareBtn').onclick = async () => {
   const text = shareText();
-  if (navigator.share) {
-    try { await navigator.share({ title: '우당탕탕 요절복통 정산', text }); return; }
-    catch (e) { if (e.name === 'AbortError') return; }
-  }
-  if (await copy(text)) toast('결과를 복사했어요. 카카오톡 단톡방에 붙여넣기 하세요!');
-  else alert(text);
-};
-$('#copyBtn').onclick = async () => { toast(await copy(shareText()) ? '복사 완료!' : '복사 실패'); };
-$('#resetDay').onclick = () => {
-  if (!confirm(`${selDate} 기록(참석자, 보드, 리그)을 모두 지울까요?`)) return;
-  delete db.days[selDate]; save(); renderAll();
+  if (navigator.share) { try { await navigator.share({ title: '우당탕탕 요절복통 정산', text }); return; } catch (e) { if (e.name === 'AbortError') return; } }
+  toast(await copyText(text) ? '복사했어요. 카카오톡 단톡방에 붙여넣으세요!' : '복사하지 못했어요');
 };
 
-/* ---------- 공통 ---------- */
-let tt;
-function toast(m) { const t = $('#toast'); t.textContent = m; t.classList.add('on'); clearTimeout(tt); tt = setTimeout(() => t.classList.remove('on'), 2200); }
-function renderAll() {
-  renderCal();
-  if (!selDate) return;
-  renderMembers(); renderRate(); renderBoard(); renderPick(); renderLeagues(); renderSettle();
+/* ============ 모달 ============ */
+const opened = {
+  noticeModal: renderNotices, activityModal: renderActivity, opsModal: renderOps,
+  meModal: () => { $('#mPhone').value = S.me.phone || ''; $('#mBirth').value = S.me.birth || ''; $('#mAddr').value = S.me.addr || ''; $('#mOld').value = $('#mNew').value = ''; }
+};
+function openModal(id) { opened[id] && opened[id](); $('#' + id).classList.remove('hidden'); document.body.style.overflow = 'hidden'; }
+function closeModal(m) { m.classList.add('hidden'); if (!$$('.modal:not(.hidden)').length) document.body.style.overflow = ''; }
+document.addEventListener('click', e => {
+  const o = e.target.closest('[data-open]'); if (o) return openModal(o.dataset.open);
+  const m = e.target.closest('.modal');
+  if (m && (e.target === m || e.target.closest('[data-close]'))) closeModal(m);
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') $$('.modal:not(.hidden)').forEach(closeModal); });
+
+/* 게시판 */
+function renderNotices() {
+  $('#noticeWrite').classList.toggle('hidden', !isBoss());
+  $('#noticeList').innerHTML = S.notices.length ? S.notices.map(n => `<div class="ntc ${n.pinned ? 'pinned' : ''} ${n.kind === 'promo' ? 'promo' : ''}">
+    <div class="t">${n.pinned ? '📌 ' : ''}${esc(n.title)}</div>
+    <div class="meta">${n.kind === 'promo' ? '승급 소식' : `${n.authorRole === '회장' ? '👑 ' : ''}${esc(n.author)} ${esc(n.authorRole || '')}`} · ${esc(kd(n.at))}</div>
+    ${n.body ? `<div class="b">${esc(n.body)}</div>` : ''}
+    ${isBoss() ? `<div class="row" style="margin-top:8px">${n.kind !== 'promo' ? `<button class="small ghost" data-edit="${n.id}">수정</button>` : ''}<button class="small ghost" data-del="${n.id}" style="color:var(--red)">삭제</button></div>` : ''}
+  </div>`).join('') : '<p class="muted">아직 공지가 없습니다.</p>';
+  if (S.notices[0]) { try { localStorage.setItem('wdtt-notice-seen', String(S.notices.reduce((a, n) => n.at > a ? n.at : a, ''))); } catch (e) {} }
+  renderHud();
 }
-// 7시가 지나면 요금 표시 갱신
-setInterval(() => { if (selDate) renderRate(); }, 60000);
+$('#newNoticeBtn').onclick = () => { $('#nId').value = ''; $('#nTitle').value = ''; $('#nBody').value = ''; $('#nPin').checked = true; $('#noticeForm').classList.remove('hidden'); $('#newNoticeBtn').classList.add('hidden'); $('#nTitle').focus(); };
+$('#nCancel').onclick = () => { $('#noticeForm').classList.add('hidden'); $('#newNoticeBtn').classList.remove('hidden'); };
+$('#noticeForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  try {
+    await api('noticeSave', { id: $('#nId').value || undefined, title: $('#nTitle').value, body: $('#nBody').value, pinned: $('#nPin').checked });
+    $('#nCancel').onclick(); await refreshBoot(); renderNotices(); toast('📢 공지를 게시했어요');
+  } catch (err) { toast(err.message, true); }
+});
+$('#noticeList').addEventListener('click', async e => {
+  const ed = e.target.closest('[data-edit]'), del = e.target.closest('[data-del]');
+  if (ed) { const n = S.notices.find(x => x.id === ed.dataset.edit); $('#newNoticeBtn').onclick(); $('#nId').value = n.id; $('#nTitle').value = n.title; $('#nBody').value = n.body || ''; $('#nPin').checked = !!n.pinned; }
+  if (del && confirm('이 공지를 지울까요?')) { try { await api('noticeDelete', { id: del.dataset.del }); await refreshBoot(); renderNotices(); } catch (err) { toast(err.message, true); } }
+});
 
-renderCal();
-openDay(today);
-window.scrollTo(0, 0);
+/* 활동 */
+let actTab = 'att';
+$$('#activityModal [data-act]').forEach(b => b.onclick = () => { actTab = b.dataset.act; renderActivity(); });
+async function renderActivity() {
+  const [y, m] = S.view.split('-');
+  $('#actTitle').textContent = `${y}년 ${+m}월`;
+  $$('#activityModal [data-act]').forEach(b => b.classList.toggle('on', b.dataset.act === actTab));
+  const st = monthStats(S.view), names = S.members.map(x => x.name);
+  if (actTab === 'att') {
+    names.sort((a, b) => st[b].rate - st[a].rate || st[b].days - st[a].days || byGrade(a, b));
+    $('#actNote').textContent = `모임한 날 ${st.__clubDays}일 기준 · 지각·결석 횟수도 함께 보여요`;
+    $('#actList').innerHTML = names.map((n, i) => { const x = st[n], pct = Math.round(x.rate * 100);
+      return `<div class="act-row">${magnet(n, 'sm')}<div><b>${i < 3 && x.days ? ['🥇', '🥈', '🥉'][i] + ' ' : ''}${esc(n)}</b>
+        <div class="bar"><i style="width:${pct}%;background:linear-gradient(90deg,#58c48b,#1f9d55)"></i></div>
+        <div class="lbl"><span>참석 ${x.days}회${x.late ? ` · 지각 ${x.late}` : ''}${x.absent ? ` · 결석 ${x.absent}` : ''}</span></div></div>
+        <b class="num">${pct}%</b></div>`; }).join('');
+  } else {
+    names.sort((a, b) => st[b].paid - st[a].paid || st[b].charged - st[a].charged);
+    $('#actNote').textContent = `이번 달 총무가 확인한 입금 ${won(st.__paidTotal)} 중 각자 낸 비율 (부과된 벌금도 함께 표시)`;
+    $('#actList').innerHTML = names.map((n, i) => { const x = st[n], pct = Math.round(x.share * 1000) / 10;
+      return `<div class="act-row">${magnet(n, 'sm')}<div><b>${i === 0 && x.paid ? '💰 ' : ''}${esc(n)}</b>
+        <div class="bar"><i style="width:${Math.min(100, pct)}%;background:linear-gradient(90deg,#ffd863,#e8b02f)"></i></div>
+        <div class="lbl"><span>낸 돈 ${won(x.paid)} · 벌금 ${won(x.charged)}</span></div></div>
+        <b class="num">${pct}%</b></div>`; }).join('');
+  }
+}
+$('#actList').addEventListener('click', e => { const b = e.target.closest('[data-mag]'); if (b) openProfile(b.dataset.mag); });
+
+/* 멤버 카드 (자석을 누르면) */
+function badgesOf(n, st) {
+  const x = st[n], all = S.members.map(m => st[m.name]), out = [];
+  if (st.__clubDays && x.days >= st.__clubDays) out.push('🏅 개근왕');
+  if (x.paid && x.paid === Math.max(...all.map(a => a.paid))) out.push('💰 기부천사');
+  if (x.days >= 8) out.push('🔥 열정 ' + x.days + '회');
+  if (x.late && x.late === Math.max(...all.map(a => a.late))) out.push('⏰ 지각대장');
+  const m = member(n); if (m && (m.gradeHistory || []).some(h => h.from && GRADES.indexOf(h.to) < GRADES.indexOf(h.from))) out.push('🚀 승급 경험');
+  return out;
+}
+function openProfile(n) {
+  const m = member(n); if (!m) return;
+  const st = monthStats(S.view), x = st[n], gi = GRADES.indexOf(m.grade), [y, mo] = S.view.split('-');
+  const next = gi > 0 ? GRADES[gi - 1] : null;
+  const bg = badgesOf(n, st);
+  $('#profileBody').innerHTML = `<div class="profile">
+    ${magnet(n, 'xl')}
+    <h2 style="justify-content:center;margin:12px 0 0">${esc(n)} ${roleTag(m.role)}</h2>
+    <div class="muted">${m.grade}조 · ${GRADE_NAME[m.grade]} 자석${next ? ` · 다음 목표 ${next}조 ${GRADE_NAME[next]}` : ' · 최고 등급 👑'}</div>
+    <div class="path">${[...GRADES].reverse().map(g => `<div class="step ${g === m.grade ? 'on' : GRADES.indexOf(g) > gi ? 'done' : ''}"><i class="dot g-${g}"></i>${g}</div>`).join('<span style="align-self:center;color:#ccb">›</span>')}</div>
+    <div class="muted">${y}년 ${+mo}월 기록</div>
+    <div class="stats"><div><b class="num">${Math.round(x.rate * 100)}%</b><span>참석률</span></div><div><b class="num">${Math.round(x.share * 1000) / 10}%</b><span>벌금 지분율</span></div><div><b class="num">${x.days}</b><span>참석 횟수</span></div></div>
+    <div class="stats"><div><b class="num">${x.late}</b><span>지각</span></div><div><b class="num">${x.absent}</b><span>결석</span></div><div><b class="num" style="font-size:16px">${won(x.charged)}</b><span>이번 달 벌금</span></div></div>
+    ${bg.length ? `<div class="badges">${bg.map(b => `<span>${b}</span>`).join('')}</div>` : ''}
+    ${(m.gradeHistory || []).length > 1 ? `<h3>📈 급수 기록</h3><div class="muted" style="text-align:left">${m.gradeHistory.slice().reverse().map(h => `${kd(h.at)} · ${h.from ? `${h.from}조 → ` : ''}${h.to}조${h.note ? ' (' + esc(h.note) + ')' : ''}`).join('<br>')}</div>` : ''}
+    ${isOff() && m.phone ? `<h3>📋 명부 정보 (운영진만)</h3><div class="muted" style="text-align:left">📞 <a href="tel:${esc(m.phone)}">${esc(m.phone.replace(/(\d{3})(\d{3,4})(\d{4})/, '$1-$2-$3'))}</a><br>🎂 ${esc(m.birth)}<br>🏠 ${esc(m.addr)}</div>` : ''}
+    ${isOff() ? `<h3>🎖️ 자석 색 바꾸기</h3><div class="row" style="justify-content:center">${GRADES.map(g => `<button class="small ${g === m.grade ? 'forest' : ''}" data-setgrade="${g}" data-p="${esc(n)}"><i class="dot g-${g}"></i>${g}조</button>`).join('')}</div>` : ''}
+  </div>`;
+  openModal('profileModal');
+}
+$('#profileBody').addEventListener('click', async e => {
+  const b = e.target.closest('[data-setgrade]'); if (!b) return;
+  try {
+    const before = gradeOf(b.dataset.p);
+    await api('setGrade', { name: b.dataset.p, grade: b.dataset.setgrade });
+    await refreshBoot(); renderDay(); openProfile(b.dataset.p);
+    toast(GRADES.indexOf(b.dataset.setgrade) < GRADES.indexOf(before) ? `🎉 ${b.dataset.p} 승급! 게시판에 소식을 올렸어요` : '자석 색을 바꿨어요');
+  } catch (err) { toast(err.message, true); }
+});
+$('#tray').addEventListener('contextmenu', e => { const b = e.target.closest('[data-mag]'); if (b) { e.preventDefault(); openProfile(b.dataset.mag); } });
+
+/* 운영 */
+let opsTab = 'pay';
+$('#opsTabs').addEventListener('click', e => { const b = e.target.closest('[data-ops]'); if (b) { opsTab = b.dataset.ops; renderOps(); } });
+function renderOps() {
+  if (!isOff()) return;
+  $$('#opsTabs button').forEach(b => b.classList.toggle('on', b.dataset.ops === opsTab));
+  const body = $('#opsBody');
+  if (opsTab === 'pay') {
+    const mon = S.view, days = Object.values(S.days).filter(d => d.date.startsWith(mon)).sort((a, b) => b.date.localeCompare(a.date));
+    let due = 0, got = 0, claimed = 0; const rows = [];
+    days.forEach(D => Object.entries(totals(D)).forEach(([n, x]) => {
+      if (x.amount <= 0) return; const p = payOf(D.date, n); due += x.amount;
+      if (p.status === 'confirmed') got += p.amount || x.amount; else rows.push({ date: D.date, n, amt: x.amount, p });
+      if (p.status === 'claimed') claimed++;
+    }));
+    rows.sort((a, b) => (b.p.status === 'claimed') - (a.p.status === 'claimed') || b.date.localeCompare(a.date));
+    body.innerHTML = `<div class="stats"><div><b class="num" style="font-size:16px">${won(due)}</b><span>이번 달 벌금</span></div><div><b class="num" style="font-size:16px;color:var(--green)">${won(got)}</b><span>확인된 입금</span></div><div><b class="num" style="font-size:16px;color:var(--red)">${won(due - got)}</b><span>남은 돈</span></div></div>
+      <div class="demo" style="background:#fff7e0;color:#6b4e00">개인 카카오뱅크 계좌는 다른 앱과 자동 연동이 안 됩니다. 카카오뱅크 앱의 입금 알림에서 <b>입금자명(이름+날짜)</b>과 금액을 보고 아래에서 ✅확인을 눌러 주세요. ⏳는 본인이 "입금했어요"를 누른 사람입니다.</div>
+      <h3>확인할 입금 (${rows.length}건${claimed ? ` · ⏳ ${claimed}건 대기` : ''})</h3>
+      ${rows.map(r => `<div class="settle-row"><div>${dot(r.n)}<b>${esc(r.n)}</b> <span class="muted">${+r.date.slice(5, 7)}/${+r.date.slice(8)}</span> <span class="pst ${r.p.status}">${PST[r.p.status]}</span></div>
+        <div class="row" style="gap:6px;flex-wrap:nowrap"><b class="num">${won(r.amt)}</b><button class="small forest" data-opspay="${r.date}|${esc(r.n)}" data-amt="${r.amt}">✅ 확인</button></div></div>`).join('') || '<p class="muted">모두 확인됐어요 👏</p>'}`;
+  } else if (opsTab === 'members') {
+    const roles = ['회장', '총무', '관리자', '일반'];
+    body.innerHTML = `<p class="muted">${isBoss() ? '직책은 회장·관리자가 임명합니다. 회장·총무는 한 명씩입니다.' : '급수(자석 색)는 운영진이 바꿀 수 있습니다. 직책 임명은 회장·관리자만 가능합니다.'}</p>` +
+      [...S.members].sort((a, b) => byGrade(a.name, b.name)).map(m => `<div class="mrow">${magnet(m.name, 'sm')}<b>${esc(m.name)}${roleTag(m.role)}</b>
+        <select data-grade-of="${esc(m.name)}" aria-label="급수">${GRADES.map(g => `<option value="${g}" ${g === m.grade ? 'selected' : ''}>${g}조</option>`).join('')}</select>
+        ${isBoss() ? `<select data-role-of="${esc(m.name)}" aria-label="직책">${roles.map(r => `<option ${r === m.role ? 'selected' : ''}>${r}</option>`).join('')}</select>
+        <button class="small ghost" data-resetpw="${esc(m.name)}">비번 초기화</button>${m.name !== S.me.name ? `<button class="small ghost" data-kick="${esc(m.name)}" style="color:var(--red)">탈퇴</button>` : ''}` : ''}</div>`).join('');
+  } else if (opsTab === 'roster') {
+    const list = [...S.members].sort((a, b) => a.name.localeCompare(b.name, 'ko'));
+    body.innerHTML = `<div class="row between"><b>우당탕탕 멤버 명부 (${list.length}명)</b><button class="small forest" id="csvBtn">⬇️ 엑셀(CSV) 받기</button></div>
+      <p class="muted">구글 시트의 members 탭에도 같은 명부가 정리돼 있습니다.</p>
+      <div class="scroll"><table><tr><th style="text-align:left">이름</th><th>급수</th><th>직책</th><th>전화</th><th>생년월일</th><th style="text-align:left">주소</th></tr>
+      ${list.map(m => `<tr><td class="n">${dot(m.name)}${esc(m.name)}</td><td>${m.grade}</td><td>${esc(m.role)}</td><td style="white-space:nowrap">${esc(m.phone || '')}</td><td style="white-space:nowrap">${esc(m.birth || '')}</td><td style="text-align:left;min-width:160px">${esc(m.addr || '')}</td></tr>`).join('')}</table></div>`;
+  } else {
+    const st = S.settings;
+    body.innerHTML = `<form id="acctForm"><label class="f">은행</label><input id="aBank" value="${esc(st.bank)}">
+      <label class="f">계좌번호</label><input id="aNum" inputmode="numeric" value="${esc(st.number)}">
+      <label class="f">예금주</label><input id="aHolder" value="${esc(st.holder)}">
+      <label class="f">카카오페이 송금 링크 (선택)</label><input id="aKpay" placeholder="https://qr.kakaopay.com/..." value="${esc(st.kakaopay)}">
+      <p class="muted">카카오페이 앱 → 송금 → 송금코드(QR) → 링크 복사로 받을 수 있어요. 넣으면 멤버 화면에 "카카오페이 송금" 버튼이 생깁니다.</p>
+      <button class="primary" style="width:100%">저장</button></form>`;
+  }
+}
+$('#opsBody').addEventListener('click', async e => {
+  const b = e.target.closest('button'); if (!b) return;
+  try {
+    if (b.dataset.opspay) {
+      const [date, name] = b.dataset.opspay.split('|');
+      const r = await api('pay', { op: 'confirm', date, name, amount: +b.dataset.amt }); r.payments.forEach(p => S.payments[p.id] = p);
+      renderOps(); renderSettle(dayOf(S.sel)); toast(`${name} 입금 확인 ✅`);
+    } else if (b.dataset.resetpw) {
+      const pw = prompt(`${b.dataset.resetpw}님의 임시 비밀번호 (4자 이상)`); if (!pw) return;
+      await api('resetPassword', { name: b.dataset.resetpw, password: pw }); toast('임시 비밀번호로 바꿨어요. 본인에게 알려 주세요');
+    } else if (b.dataset.kick) {
+      if (!confirm(`${b.dataset.kick}님을 탈퇴 처리할까요? 명부에서 지워집니다.`)) return;
+      await api('deleteMember', { name: b.dataset.kick }); await refreshBoot(); renderOps(); renderDay();
+    } else if (b.id === 'csvBtn') {
+      const rows = [['이름', '급수', '직책', '전화번호', '생년월일', '주소', '가입일']].concat(S.members.map(m => [m.name, m.grade + '조', m.role, m.phone, m.birth, m.addr, kd(m.joinedAt)]));
+      const csv = '﻿' + rows.map(r => r.map(v => `"${String(v ?? '').replace(/"/g, '""')}"`).join(',')).join('\r\n');
+      const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); a.download = `우당탕탕_명부_${S.today}.csv`; a.click();
+    }
+  } catch (err) { toast(err.message, true); }
+});
+$('#opsBody').addEventListener('change', async e => {
+  const s = e.target;
+  try {
+    if (s.dataset.gradeOf) { const before = gradeOf(s.dataset.gradeOf); await api('setGrade', { name: s.dataset.gradeOf, grade: s.value }); if (GRADES.indexOf(s.value) < GRADES.indexOf(before)) toast(`🎉 ${s.dataset.gradeOf} 승급!`); }
+    if (s.dataset.roleOf) { await api('setRole', { name: s.dataset.roleOf, role: s.value }); toast(`${s.dataset.roleOf} → ${s.value}`); }
+    await refreshBoot(); renderOps(); renderDay();
+  } catch (err) { toast(err.message, true); await refreshBoot(); renderOps(); }
+});
+$('#opsBody').addEventListener('submit', async e => {
+  if (e.target.id !== 'acctForm') return; e.preventDefault();
+  try { const r = await api('settingsSave', { bank: $('#aBank').value, number: $('#aNum').value, holder: $('#aHolder').value, kakaopay: $('#aKpay').value }); S.settings = r.settings; renderSettle(dayOf(S.sel)); toast('계좌 정보를 저장했어요'); }
+  catch (err) { toast(err.message, true); }
+});
+
+/* 내 정보 */
+$('#meForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const body = { phone: $('#mPhone').value, birth: $('#mBirth').value, addr: $('#mAddr').value };
+  if ($('#mNew').value) { body.oldPassword = $('#mOld').value; body.newPassword = $('#mNew').value; }
+  try { const r = await api('updateMe', body); S.me = r.me; if (r.token) { S.token = r.token; saveSession(); } toast('저장했어요'); closeModal($('#meModal')); }
+  catch (err) { toast(err.message, true); }
+});
+$('#logoutBtn').onclick = () => { closeModal($('#meModal')); logout(); };
+
+/* ============ 공통 ============ */
+let tt;
+function toast(m, err) { const t = $('#toast'); t.textContent = m; t.classList.toggle('err', !!err); t.classList.add('on'); clearTimeout(tt); tt = setTimeout(() => t.classList.remove('on'), 2600); }
+// 다른 사람이 붙인 자석·점수를 15초마다 반영
+setInterval(async () => {
+  if (document.hidden || !S.me || !S.sel || pending) return;
+  try { const r = await api('day', { date: S.sel }); const old = dayOf(S.sel); if ((r.day.ver || 0) !== (old.ver || 0) || JSON.stringify(r.payments) !== JSON.stringify(Object.values(S.payments).filter(p => p.date === S.sel))) { applyDay(r); renderDay(); renderCal(); renderHud(); } } catch (e) {}
+}, 15000);
+setInterval(() => { if (S.me && !document.hidden) refreshBoot(); }, 120000);
+
+$('#demoNote').classList.toggle('hidden', !!API_URL);
+loadSession();
+if (S.token) start(); else show('auth');
 })();
 </script>
 </body>
