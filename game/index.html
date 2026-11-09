@@ -135,12 +135,14 @@ h3{font-size:16px;margin:14px 0 8px}
 .wb-head img{height:30px;width:auto}
 .wb-title{font-size:22px;letter-spacing:1px;color:#111}
 .wb-sub{text-align:center;font-size:12px;color:#3d5f55;margin-bottom:6px}
-.board{display:grid;gap:4px}
+.board{display:grid;gap:4px;grid-template-columns:minmax(0,1fr)}
 .pl{background:#fff;border-radius:6px;padding:4px 6px;display:flex;align-items:center;gap:6px;cursor:pointer;border:0;width:100%;text-align:left;box-shadow:none;font:inherit;color:inherit}
 .pl:active{transform:none;background:#fffbe9}
 .pl .mag{width:44px;height:44px}.pl .mag span{font-size:10px;max-width:40px;padding:1px 3px}.pl .mag.long span{font-size:8.5px}
 .pl .info{flex:1;min-width:0}
-.pl .line{display:flex;align-items:center;gap:4px;font-size:13px;white-space:nowrap}
+.pl{min-width:0}
+.pl .line{display:flex;align-items:center;gap:2px 4px;font-size:13px;flex-wrap:wrap}
+.pl .line>*{white-space:nowrap}
 .pl .nm{font-weight:800;font-size:14px;overflow:hidden;text-overflow:ellipsis}
 .pl .sum{margin-left:auto;font-weight:800;color:var(--brand);font-size:13px}
 .st{font-size:10px;font-weight:800;border-radius:999px;padding:1px 6px}
