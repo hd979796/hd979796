@@ -886,10 +886,10 @@ window.addEventListener("afterprint",async()=>{document.body.classList.remove("p
   const auto=kind==="gift"?$("#gift-auto").checked:$("#mail-auto").checked;if(!auto)return;await markShipped(ids,kind)});
 async function markShipped(ids,kind){if(!db)return toast("데이터 연결이 안 됐습니다");const key=kind==="gift"?"waybillAt":"mailedAt";const now=new Date().toISOString();
   try{await db.batch(ids.map(id=>({op:"update",col:"cases",id,data:{[key]:today(),updatedAt:now}})));toast(`${ids.length}건 ${kind==="gift"?"송장 출력":"우편 발송"} 완료로 표시했습니다`)}catch(e){toast("완료 표시 실패")}}
-function giftCsv(list){const s=senderInfo();const H=["받는분성명","받는분전화","받는분우편번호","받는분주소","품목","수량","배송메시지","보내는분","보내는분전화","보내는분주소","비고"];
-  const rows=list.map(c=>[c.name,c.phone||"",zipOf(c),c.address||"",s.item,"1",s.msg,s.name,s.phone,(s.zip?"("+s.zip+") ":"")+s.addr,`${lineOf(c)} ${c.product||""} 갱신 ${c.renewedAt||c.due||""}`]);
+function giftCsv(list){const s=senderInfo();const H=["주문번호","수하인명","수하인전화","수하인휴대폰","우편번호","수하인주소","물품명","수량","배송메세지","비고"];
+  const rows=list.map(c=>[c.id,c.name,c.phone||"",c.phone||"",zipOf(c),c.address||"",s.item,"1",s.msg,`${lineOf(c)} ${c.product||""} 갱신 ${c.renewedAt||c.due||""}`]);
   const q=v=>'"'+String(v??"").replace(/"/g,'""')+'"';const csv="\ufeff"+[H,...rows].map(r=>r.map(q).join(",")).join("\r\n");
-  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));a.download=`로젠_일괄등록_${today()}.csv`;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);toast(`${list.length}건 CSV를 내려받았습니다`)}
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));a.download=`로젠_복수건_${today()}.csv`;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);toast(`${list.length}건 CSV를 내려받았습니다`)}
 async function fillAddresses(){if(!db)return toast("데이터 연결이 안 됐습니다");await loadCustomers();if(!custRows.length)return toast("보유고객 명부를 불러오지 못했습니다");
   const need=cases.filter(c=>isDone(c)&&!c.address);const writes=[];const now=new Date().toISOString();
   for(const c of need){if(custRows.filter(r=>norm(r.name)===norm(c.name)).length>1&&!(profiles[pkey(c.name)]||{}).addr)continue;const I=custInfo(c.name);const d={updatedAt:now};if(I.addr)d.address=I.addr;
