@@ -437,6 +437,7 @@ td.n{text-align:left;font-weight:700;white-space:nowrap}
       <button data-ops="pay" class="on">💳 입금 확인</button>
       <button data-ops="members">🎖️ 직책·급수</button>
       <button data-ops="roster">📋 명부</button>
+      <button data-ops="export">📥 엑셀</button>
       <button data-ops="account">🏦 계좌</button>
     </div>
     <div id="opsBody"></div>
@@ -1446,6 +1447,17 @@ function renderOps() {
       <p class="muted">구글 시트의 members 탭에도 같은 명부가 정리돼 있습니다.</p>
       <div class="scroll"><table><tr><th style="text-align:left">이름</th><th>급수</th><th>직책</th><th>전화</th><th>생년월일</th><th style="text-align:left">주소</th></tr>
       ${list.map(m => `<tr><td class="n">${dot(m.name)}${esc(m.name)}</td><td>${m.grade}</td><td>${esc(m.role)}</td><td style="white-space:nowrap">${esc(m.phone || '')}</td><td style="white-space:nowrap">${esc(m.birth || '')}</td><td style="text-align:left;min-width:160px">${esc(m.addr || '')}</td></tr>`).join('')}</table></div>`;
+  } else if (opsTab === 'export') {
+    const y = S.today.slice(0, 4);
+    body.innerHTML = `<p class="muted">고른 기간의 기록을 엑셀 파일(.xlsx) 하나로 받습니다. 시트는 <b>사람별 요약 · 출석표 · 벌금 내역 · 입금 기록 · 명부</b>입니다.</p>
+      <div class="grid2"><label>시작 월<input type="month" id="exFrom" value="${S.view}"></label><label>끝 월<input type="month" id="exTo" value="${S.view}"></label></div>
+      <div class="row" style="margin-top:8px">
+        <button class="small ghost" data-exrange="month">이번 달</button>
+        <button class="small ghost" data-exrange="prev">지난달</button>
+        <button class="small ghost" data-exrange="year">올해 전체</button>
+      </div>
+      <button class="primary" id="exBtn" style="width:100%;margin-top:12px">📥 엑셀 받기</button>
+      <p class="hint">기록 원본은 구글 시트(우당탕탕 명부)에 있습니다. 엑셀은 그 기록을 사람이 보기 좋게 정리한 것입니다. 연락처가 들어 있으니 단톡방에 올리지 마세요.</p>`;
   } else {
     const st = S.settings;
     body.innerHTML = `<form id="acctForm"><label class="f">은행</label><input id="aBank" value="${esc(st.bank)}">
@@ -1476,6 +1488,15 @@ $('#opsBody').addEventListener('click', async e => {
     } else if (b.dataset.kick) {
       if (!confirm(`${b.dataset.kick}님을 탈퇴 처리할까요? 명부에서 지워집니다.`)) return;
       await api('deleteMember', { name: b.dataset.kick }); await refreshBoot(); renderOps(); renderDay();
+    } else if (b.dataset.exrange) {
+      const [y, m] = S.today.split('-').map(Number), ym = (yy, mm) => `${yy}-${pad(mm)}`;
+      const r = b.dataset.exrange;
+      if (r === 'month') { $('#exFrom').value = $('#exTo').value = ym(y, m); }
+      if (r === 'prev') { const d = new Date(y, m - 2, 1); $('#exFrom').value = $('#exTo').value = ym(d.getFullYear(), d.getMonth() + 1); }
+      if (r === 'year') { $('#exFrom').value = ym(y, 1); $('#exTo').value = ym(y, m); }
+    } else if (b.id === 'exBtn') {
+      b.disabled = true; b.textContent = '정리하는 중…';
+      try { await exportExcel($('#exFrom').value, $('#exTo').value); } finally { b.disabled = false; b.textContent = '📥 엑셀 받기'; }
     } else if (b.id === 'csvBtn') {
       const rows = [['이름', '급수', '직책', '전화번호', '생년월일', '주소', '가입일']].concat(S.members.map(m => [m.name, m.grade + '조', m.role, m.phone, m.birth, m.addr, kd(m.joinedAt)]));
       const csv = '﻿' + rows.map(r => r.map(v => `"${String(v ?? '').replace(/"/g, '""')}"`).join(',')).join('\r\n');
@@ -1502,6 +1523,72 @@ $('#opsBody').addEventListener('submit', async e => {
   try { const r = await api('settingsSave', { bank: $('#aBank').value, number: $('#aNum').value, holder: $('#aHolder').value, kakaopay: $('#aKpay').value }); S.settings = r.settings; renderSettle(dayOf(S.sel)); toast('계좌 정보를 저장했어요'); }
   catch (err) { toast(err.message, true); }
 });
+
+/* 엑셀 내려받기 (운영진) */
+function loadXlsx() {
+  if (window.XLSX) return Promise.resolve();
+  return new Promise((ok, no) => { const sc = document.createElement('script'); sc.src = 'vendor/xlsx-0.18.5.full.min.js'; /* SheetJS 0.18.5, Apache-2.0 */ sc.onload = ok; sc.onerror = () => no(new Error('엑셀 도구를 불러오지 못했어요. 인터넷 연결을 확인해 주세요')); document.head.appendChild(sc); });
+}
+async function exportExcel(from, to) {
+  if (!isOff()) throw new Error('운영진만 받을 수 있어요');
+  if (!/^\d{4}-\d{2}$/.test(from || '') || !/^\d{4}-\d{2}$/.test(to || '')) throw new Error('기간을 골라 주세요');
+  if (from > to) [from, to] = [to, from];
+  const months = [];
+  for (let [y, m] = from.split('-').map(Number); `${y}-${pad(m)}` <= to; m === 12 ? (y++, m = 1) : m++) months.push(`${y}-${pad(m)}`);
+  if (months.length > 24) throw new Error('한 번에 24개월까지 받을 수 있어요');
+  await loadXlsx();
+  for (const mon of months) await loadMonth(mon, true);
+  const inRange = d => { const mo = d.slice(0, 7); return mo >= from && mo <= to; };
+  const days = Object.values(S.days).filter(d => inRange(d.date) && Object.keys(d.att).length).sort((a, b) => a.date.localeCompare(b.date));
+  const memberNames = S.members.map(m => m.name).sort((a, b) => a.localeCompare(b, 'ko'));
+  const ST = { rsvp: '참석예정', present: '도착', late: '지각', absent: '불참' };
+  const fmt = iso => iso ? kstStamp(iso) : '';
+  // 벌금 내역
+  const fineRows = [['날짜', '이름', '구분', '항목', '금액', '기록 시각', '기록자']];
+  const sum = {}; const get = n => sum[n] || (sum[n] = { days: 0, late: 0, absent: 0, fine: 0, paid: 0 });
+  memberNames.forEach(get);
+  days.forEach(D => {
+    charges(D).forEach(c => fineRows.push([D.date, c.name, D.att[c.name] && D.att[c.name].guest ? '게스트' : '회원', c.label, c.amount, c.at ? fmt(c.at) : '', c.by || '']));
+    Object.entries(totals(D)).forEach(([n, x]) => { if (!(D.att[n] && D.att[n].guest)) get(n).fine += x.amount; });
+    if (D.date <= S.today) Object.entries(D.att).forEach(([n, a]) => {
+      if (a.guest) return;
+      if (a.status === 'present' || a.status === 'late' || (a.status === 'rsvp' && D.date < S.today)) get(n).days++;
+      if (a.status === 'late') get(n).late++;
+      if (a.status === 'absent') get(n).absent++;
+    });
+  });
+  // 입금 기록
+  const payRows = [['날짜', '이름', '벌금', '상태', '입금했어요 시각', '확인 시각', '확인자']];
+  days.forEach(D => Object.entries(totals(D)).forEach(([n, x]) => {
+    if (x.amount <= 0) return;
+    const p = payOf(D.date, n);
+    if (p.status === 'confirmed' && sum[n]) sum[n].paid += p.amount || x.amount;
+    payRows.push([D.date, n, x.amount, { none: '미입금', claimed: '입금했어요', confirmed: '확인완료' }[p.status], fmt(p.claimedAt), fmt(p.confirmedAt), p.by || '']);
+  }));
+  // 사람별 요약
+  const clubDays = days.filter(D => D.date <= S.today && Object.values(D.att).some(a => !a.guest && a.status !== 'absent')).length;
+  const paidTotal = memberNames.reduce((t, n) => t + sum[n].paid, 0);
+  const sumRows = [['이름', '급수', '직책', '참석', '지각', '불참', '참석률(%)', '벌금 합계', '입금 확인', '미확인 금액', '벌금 지분율(%)']];
+  memberNames.forEach(n => { const m = member(n), x = sum[n];
+    sumRows.push([n, m.grade + '조', [m.role, m.title, m.host].filter(v => v && v !== '일반').join(' · ') || '일반', x.days, x.late, x.absent, clubDays ? Math.round(x.days / clubDays * 1000) / 10 : 0, x.fine, x.paid, Math.max(0, x.fine - x.paid), paidTotal ? Math.round(x.paid / paidTotal * 1000) / 10 : 0]); });
+  sumRows.push([]); sumRows.push(['모임한 날', clubDays]); sumRows.push(['기간', `${from} ~ ${to}`]); sumRows.push(['만든 날', `${nowStamp()} · ${S.me.name}`]);
+  // 출석표 (사람 × 날짜)
+  const attRows = [['이름'].concat(days.map(D => D.date.slice(5).replace('-', '/')))];
+  const guestNames = [...new Set(days.flatMap(D => Object.keys(D.att).filter(n => D.att[n].guest)))];
+  memberNames.concat(guestNames).forEach(n => attRows.push([n + (guestNames.includes(n) && !memberNames.includes(n) ? ' (게스트)' : '')].concat(days.map(D => D.att[n] ? ST[D.att[n].status] + (D.att[n].lateReg ? '·늦은신청' : '') : ''))));
+  // 명부
+  const rosterRows = [['이름', '급수', '직책', '방장', '전화번호', '생년월일', '주소', '가입일']].concat(
+    [...S.members].sort((a, b) => a.name.localeCompare(b.name, 'ko')).map(m => [m.name, m.grade + '조', m.role === '임원' ? (m.title || '임원') : m.role, m.host || '', m.phone || '', m.birth || '', m.addr || '', kd(m.joinedAt)]));
+  const wb = XLSX.utils.book_new();
+  const add = (rows, name, widths) => { const ws = XLSX.utils.aoa_to_sheet(rows); ws['!cols'] = widths.map(w => ({ wch: w })); XLSX.utils.book_append_sheet(wb, ws, name); };
+  add(sumRows, '사람별 요약', [10, 6, 14, 6, 6, 6, 10, 10, 10, 11, 13]);
+  add(attRows, '출석표', [12].concat(days.map(() => 9)));
+  add(fineRows, '벌금 내역', [11, 10, 7, 22, 9, 17, 10]);
+  add(payRows, '입금 기록', [11, 10, 9, 10, 17, 17, 10]);
+  add(rosterRows, '명부', [10, 6, 10, 7, 14, 12, 40, 11]);
+  XLSX.writeFile(wb, `우당탕탕_${from === to ? from : from + '_' + to}.xlsx`);
+  toast(`📥 엑셀을 받았어요 (${days.length}일 기록)`);
+}
 
 /* 내 정보 */
 $('#meForm').addEventListener('submit', async e => {
