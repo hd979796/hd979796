@@ -276,6 +276,43 @@ tr.over td:first-child{box-shadow:inset 4px 0 var(--bad)}
   .fg{grid-template-columns:1fr}
   .pays{grid-template-columns:1fr}
 }
+
+/* 보험 폴더: 스테이지 매니저처럼 왼쪽에 접힌 폴더, 가운데에 열린 폴더 */
+.sm-rail{display:none}
+.wrap.stage-on{display:grid;grid-template-columns:200px minmax(0,1fr);gap:22px;align-items:start}
+.wrap.stage-on>.view{grid-column:2;grid-row:1}
+.wrap.stage-on>.sm-rail{display:flex;flex-direction:column;gap:14px;grid-column:1;grid-row:1;position:sticky;top:120px;perspective:900px;padding-top:6px}
+.sm-head{font-size:12px;font-weight:700;color:var(--dim);letter-spacing:.06em;padding-left:4px}
+.sm-card{position:relative;display:block;width:100%;text-align:left;font:inherit;color:inherit;cursor:pointer;background:none;border:0;padding:16px 0 0;transform:rotateY(16deg) scale(.94);transform-origin:left center;transition:transform .25s ease,opacity .25s,filter .25s;opacity:.82;filter:saturate(.85)}
+.sm-card:hover,.sm-card:focus-visible{transform:rotateY(4deg) scale(.98);opacity:1;filter:none;outline:none}
+.sm-card .sm-tab{position:absolute;top:0;left:10px;font-size:12px;font-weight:800;color:#1a1200;background:var(--fc);border-radius:8px 8px 0 0;padding:3px 12px 4px;z-index:2}
+.sm-card .sm-body{position:relative;display:flex;flex-direction:column;gap:3px;background:var(--panel2);border:1px solid var(--line);border-top:3px solid var(--fc);border-radius:4px 12px 12px 12px;padding:12px 12px 12px;z-index:1;box-shadow:var(--hard)}
+.sm-card .sm-body::before,.sm-card .sm-body::after{content:"";position:absolute;left:6px;right:-6px;top:6px;bottom:-6px;background:var(--panel);border:1px solid var(--line);border-radius:4px 12px 12px 12px;z-index:-1}
+.sm-card .sm-body::after{left:12px;right:-12px;top:12px;bottom:-12px;opacity:.6;z-index:-2}
+.sm-card b{font-size:14.5px}.sm-card small{font-size:11.5px;color:var(--dim)}
+.sm-mini{display:flex;flex-direction:column;gap:2px;margin-top:4px}
+.sm-mini i{font-style:normal;font-size:11.5px;color:var(--mute)}
+.sm-mini i.c-warn{color:var(--warn)}.sm-mini i.c-bad{color:var(--bad)}.sm-mini i.c-info{color:var(--info)}.sm-mini i.c-accent{color:var(--accent)}
+.sm-card.on{display:none}
+.sm-card.on .sm-body{outline:2px solid var(--fc);outline-offset:2px}
+.wrap.stage-on>.view:not([hidden])>.card:first-child{position:relative;border-top:4px solid var(--accent);border-top-left-radius:4px;margin-top:22px;animation:smOpen .32s ease}
+.wrap.stage-on>#v-cases:not([hidden])>.card:first-child{border-top-color:var(--info)}
+.wrap.stage-on>#v-gen:not([hidden])>.card:first-child{border-top-color:var(--good)}
+.wrap.stage-on>.view:not([hidden])>.card:first-child::before{position:absolute;top:-26px;left:-1px;font-size:13px;font-weight:800;color:#1a1200;background:var(--accent);border-radius:10px 10px 0 0;padding:3px 16px 4px}
+.wrap.stage-on>#v-cases>.card:first-child::before{content:"자동차";background:var(--info)}
+.wrap.stage-on>#v-gen>.card:first-child::before{content:"일반";background:var(--good)}
+.wrap.stage-on>#v-long>.card:first-child::before{content:"장기"}
+@keyframes smOpen{from{opacity:.4;transform:translateX(-28px) scale(.97)}to{opacity:1;transform:none}}
+@media (max-width:860px){
+  .wrap.stage-on{grid-template-columns:1fr;gap:10px}
+  .wrap.stage-on>.view{grid-column:1;grid-row:2}
+  .wrap.stage-on>.sm-rail{position:static;flex-direction:row;gap:8px;overflow-x:auto;padding:2px 2px 8px;perspective:none}
+  .sm-head{display:none}
+  .sm-card{flex:0 0 150px;transform:none;opacity:.75}
+  .sm-card.on{display:none}
+  .sm-mini{display:none}
+}
+@media (prefers-reduced-motion:reduce){.sm-card,.wrap.stage-on>.view>.card:first-child{transition:none;animation:none}}
 </style>
 </head>
 <body>
@@ -332,6 +369,7 @@ tr.over td:first-child{box-shadow:inset 4px 0 var(--bad)}
   </div>
 </section>
 
+<div class="sm-rail" id="sm-rail" role="navigation" aria-label="보험 폴더"></div>
 <section class="view" id="v-long" hidden></section>
 <section class="view" id="v-cases" hidden></section>
 <section class="view" id="v-gen" hidden></section>
@@ -551,7 +589,10 @@ const STUDY_TOOLS=[
   {t:"하이 영업포탈",d:"담보 조회 · 설계",u:"https://sp.hi.co.kr",i:"🏢"}];
 const CLAIM_LOG_KINDS=["배상책임접수","상해질병접수"];
 const NAV_ALL=[["home","현황"],["long","장기"],["cases","자동차"],["gen","일반"],["claims","보상·청구"],["ship","발송"],["customers","고객"],["requests","요청함"],["pay","카드결제"],["calls","통화·할 일"],["templates","멘트"],["study","보험상담"]];
-const ROLES={"대표":{main:["home","long","claims","study","customers","calls"],lines:["장기","자동차","일반"]},"실장":{main:["home","cases","gen","ship","customers","requests","pay"],lines:["자동차","일반","장기"]}};
+/* 역할별 상단 메뉴. 대표: 상담·관리 5개만. 실장: 현황 · 보험(자동차·일반·장기 폴더) · 발송 · 고객 · 요청함 · 카드결제 */
+const ROLES={"대표":{nav:[["calls","통화·할 일"],["customers","고객"],["claims","보상·청구"],["study","보험상담"],["templates","멘트"]],home:"calls",lines:[]},
+  "실장":{nav:[["home","현황"],["ins","보험"],["ship","발송"],["customers","고객"],["requests","요청함"],["pay","카드결제"]],home:"home",lines:["자동차","일반","장기"]}};
+const INS_VIEWS=["cases","gen","long"];let lastIns="cases";
 const NAV_N={long:"n-long",cases:"n-cases",gen:"n-gen",claims:"n-claims",ship:"n-ship",requests:"n-req",pay:"n-pay",calls:"n-todo"};
 const GIFT_MIN=400000; const SOON_DAYS=10;
 const GEN_PRODUCTS=["기타전문인배상책임","하이기업종합플러스","승강기배상책임","생산물배상책임","화재보험","영업배상책임","기타"];
@@ -568,18 +609,15 @@ const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&g
 let toastT;function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("on");clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove("on"),2200)}
 async function copy(txt){try{await navigator.clipboard.writeText(txt);toast("복사했습니다")}catch(e){const ta=document.createElement("textarea");ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");toast("복사했습니다")}catch(_){toast("복사가 막혀 있습니다. 직접 선택해 복사하세요")}ta.remove()}}
 try{who=localStorage.getItem("who")||"대표"}catch(e){}
-$$("#who button[data-w]").forEach(b=>{b.setAttribute("aria-pressed",String(b.dataset.w===who));b.onclick=()=>{who=b.dataset.w;$$("#who button[data-w]").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));try{localStorage.setItem("who",who)}catch(e){}buildNav();render();toast((who==="대표"?"박문철 대표":"황혜정 실장")+" 업무 화면으로 바꿨습니다")}});
+$$("#who button[data-w]").forEach(b=>{b.setAttribute("aria-pressed",String(b.dataset.w===who));b.onclick=()=>{who=b.dataset.w;$$("#who button[data-w]").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));try{localStorage.setItem("who",who)}catch(e){}const cv=location.hash.replace("#","").split(":")[0];if(!roleViews().includes(cv))location.hash=ROLES[who].home;else{buildNav();render()}toast((who==="대표"?"박문철 대표":"황혜정 실장")+" 업무 화면으로 바꿨습니다")}});
 /* 상단 2단 메뉴: 현황 · 보험(장기·자동차·일반) · 업무(통화·할 일 등). 역할(대표/실장)에 따라 업무 순서만 달라진다 */
-const NAV_GROUPS=[["home","현황",["home"]],["ins","보험",["long","cases","gen"]],["work","업무",["calls","requests","claims","ship","pay","customers","templates","study"]]];
-const NAV_LAST={};
-function navGroupOf(v){const g=NAV_GROUPS.find(g=>g[2].includes(v));return g?g[0]:"home"}
-function buildNav(){const R=ROLES[who];const cur=location.hash.replace("#","").split(":")[0]||"home";const v=NAV_ALL.some(n=>n[0]===cur)?cur:"home";const gid=navGroupOf(v);NAV_LAST[gid]=v;
-  const label=x=>(NAV_ALL.find(n=>n[0]===x)||[x,x])[1];
-  const order=vs=>vs.slice().sort((a,b)=>{const ia=R.main.indexOf(a),ib=R.main.indexOf(b);return (ia<0?99:ia)-(ib<0?99:ib)});
-  const tops=NAV_GROUPS.map(([id,l,vs])=>`<a href="#${NAV_LAST[id]||order(vs)[0]}" data-g="${id}" class="${id===gid?"on":""}">${l}<span class="n" id="g-${id}"></span></a>`).join("");
-  const subs=NAV_GROUPS.map(([id,l,vs])=>vs.length<2?"":`<div class="subs" data-g="${id}"${id===gid?"":" hidden"}>`+order(vs).map(x=>`<a href="#${x}" data-v="${x}"${x===v?' aria-current="page"':""}>${label(x)}${NAV_N[x]?` <span class="n" id="${NAV_N[x]}"></span>`:""}</a>`).join("")+`</div>`).join("");
-  $("#nav").innerHTML=`<div class="tops">${tops}</div>${subs}`;try{renderNav()}catch(e){syncGroupBadges()}}
-function syncGroupBadges(){NAV_GROUPS.forEach(([id,l,vs])=>{const g=document.getElementById("g-"+id);if(!g)return;let sum=0,hot=false;vs.forEach(x=>{const el=NAV_N[x]&&document.getElementById(NAV_N[x]);if(!el)return;sum+=parseInt(el.textContent,10)||0;if(el.classList.contains("hot"))hot=true});g.textContent=sum||"";g.classList.toggle("hot",hot)})}
+function roleViews(){const v=[];ROLES[who].nav.forEach(([k])=>{if(k==="ins")v.push(...INS_VIEWS);else v.push(k)});return v}
+function buildNav(){const R=ROLES[who];const cur=location.hash.replace("#","").split(":")[0]||R.home;if(INS_VIEWS.includes(cur))lastIns=cur;
+  const items=R.nav.map(([k,l])=>{const href=k==="ins"?lastIns:k;const on=k==="ins"?INS_VIEWS.includes(cur):k===cur;const nid=k==="ins"?"g-ins":NAV_N[k];
+    return `<a href="#${href}" data-v="${k}" class="${on?"on":""}"${on?' aria-current="page"':""}>${l}${nid?` <span class="n" id="${nid}"></span>`:""}</a>`}).join("");
+  const shown=new Set(R.nav.map(n=>NAV_N[n[0]]).filter(Boolean));const hold=Object.values(NAV_N).filter(id=>!shown.has(id)).map(id=>`<span class="n" id="${id}"></span>`).join("");
+  $("#nav").innerHTML=`<div class="tops">${items}</div><span hidden>${hold}</span>`;try{renderNav()}catch(e){syncGroupBadges()}}
+function syncGroupBadges(){const g=document.getElementById("g-ins");if(!g)return;let sum=0,hot=false;["n-cases","n-gen","n-long"].forEach(id=>{const el=document.getElementById(id);if(!el)return;sum+=parseInt(el.textContent,10)||0;if(el.classList.contains("hot"))hot=true});g.textContent=sum||"";g.classList.toggle("hot",hot)}
 buildNav();
 window.addEventListener("hashchange",buildNav);
 
@@ -619,7 +657,8 @@ Object.keys(LINES).forEach(l=>{$("#v-"+LINES[l].key).innerHTML=lineSection(l)});
 
 /* ---- routing ---- */
 const VIEWS=["home","long","cases","gen","claims","ship","pay","requests","customers","calls","templates","study"];
-function go(){let h=location.hash.replace("#","");let arg="";if(h.includes(":")){[h,arg]=h.split(":")}if(!VIEWS.includes(h))h="home";view=h;
+function go(){let h=location.hash.replace("#","");let arg="";if(h.includes(":")){[h,arg]=h.split(":")}if(!VIEWS.includes(h))h=ROLES[who].home;if(who==="대표"&&h==="home")h="calls";view=h;
+  const stage=INS_VIEWS.includes(h);$(".wrap").classList.toggle("stage-on",stage);if(stage){lastIns=h;renderRail()}
   VIEWS.forEach(v=>{$("#v-"+v).hidden=v!==h});$$("#nav a").forEach(a=>{if(a.dataset.v===h)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current")});
   const line=LINE_KEYS[h];if(line&&arg){LF[line].s=decodeURIComponent(arg);$$(`#sf-${LINES[line].key} .fchip`).forEach(c=>c.setAttribute("aria-pressed",String(c.dataset.s===LF[line].s)))}
   if(h==="ship"&&arg){const el=document.getElementById(arg==="mail"?"mail-t":"gift-t");if(el)setTimeout(()=>el.scrollIntoView({block:"start"}),60)}
@@ -670,7 +709,7 @@ function callsOf(name){const n=norm(name);if(!n)return[];return allCalls().filte
 function enrichCases(){const multi=new Set();const seen={};custRows.forEach(r=>{const k=norm(r.name);if(seen[k])multi.add(k);seen[k]=1});
   cases.forEach(c=>{if(c.address&&c.phone&&c.zip)return;if(multi.has(norm(c.name))&&!(profiles[pkey(c.name)]||{}).addr)return;const I=custInfo(c.name);
     if(!c.address&&I.addr){c.address=I.addr;c._autoAddr=1}if(!c.phone&&I.phone)c.phone=I.phone;if(!c.zip&&I.zip)c.zip=I.zip})}
-function render(){enrichCases();renderHome();Object.keys(LINES).forEach(renderLine);renderClaims();renderShip();renderPay();renderReqs();renderTpls();renderNotes();renderCust();renderCalls();renderTodos();renderNav()}
+function render(){enrichCases();if(INS_VIEWS.includes(view))renderRail();renderHome();Object.keys(LINES).forEach(renderLine);renderClaims();renderShip();renderPay();renderReqs();renderTpls();renderNotes();renderCust();renderCalls();renderTodos();renderNav()}
 function renderNav(){const open=reqs.filter(r=>r.status==="new"||r.status==="working");const n=$("#n-req");n.textContent=open.length||"";n.classList.toggle("hot",open.length>0);
   Object.keys(LINES).forEach(l=>{const k=LINES[l].key;const cs=cases.filter(c=>lineOf(c)===l);const hot=cs.filter(c=>isSoon(c)||isOver(c)||needPolicy(c)).length;const n2=cs.filter(c=>inMonth(c)&&!isDone(c)&&!isFail(c)).length;const el=$("#n-"+k);el.textContent=(hot||n2)||"";el.classList.toggle("hot",hot>0)});
   const cl=open.filter(r=>CLAIM_KINDS.includes(r.kind)).length;const nc=$("#n-claims");nc.textContent=cl||"";nc.classList.toggle("hot",cl>0);
@@ -730,19 +769,25 @@ Object.keys(LINES).forEach(line=>{const k=LINES[line].key;
   $$(`#sf-${k} .fchip`).forEach(c=>c.onclick=()=>setLineFilter(line,c.dataset.s));
   $$(`#pf-${k} .fchip`).forEach(c=>c.onclick=()=>{LF[line].p=c.dataset.p;$$(`#pf-${k} .fchip`).forEach(x=>x.setAttribute("aria-pressed",String(x===c)));renderLine(line)})});
 
+/* ---- 보험 폴더 (스테이지 매니저) ---- */
+const FOLDER={cases:{t:"자동차",c:"var(--info)"},gen:{t:"일반",c:"var(--good)"},long:{t:"장기",c:"var(--accent)"}};
+function renderRail(){const rail=$("#sm-rail");if(!rail)return;
+  rail.innerHTML=`<div class="sm-head">보험 폴더</div>`+INS_VIEWS.map(k=>{const line=LINE_KEYS[k],F=FOLDER[k],{all,m,w}=lineStats(line);const wait=w.reduce((a,x)=>a+x.n,0);const on=k===view;
+    return `<button type="button" class="sm-card${on?" on":""}" data-sm="${k}" style="--fc:${F.c}" aria-pressed="${on}"><span class="sm-tab">${F.t}</span><span class="sm-body"><b>${LINES[line].title}</b><small>${MONTH?MONTH.slice(5).replace(/^0/,"")+"월":"전체"} ${m.length}건 · 대기 ${wait}건</small><span class="sm-mini">${w.filter(x=>x.n).slice(0,3).map(x=>`<i class="c-${x.c}">${x.l} ${x.n}</i>`).join("")||"<i>대기 업무 없음</i>"}</span></span></button>`}).join("")}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-sm]");if(!b)return;if(b.dataset.sm===view)return;location.hash=b.dataset.sm});
+
 /* ---- 현황 ---- */
 function myWork(){const inM=cases.filter(inMonth);const n=(f)=>cases.filter(f).length;const openReq=reqs.filter(r=>r.status==="new"||r.status==="working");
   if(who==="실장")return[
     {l:"자동차 갱신설계·안내",n:inM.filter(c=>isCar(c)&&isRun(c)&&c.status!=="안내완료").length,h:"#cases:진행",c:"warn"},
     {l:"일반 갱신설계·안내",n:cases.filter(c=>isGen(c)&&(isSoon(c)||isOver(c)||(inMonth(c)&&isRun(c)))&&c.status!=="안내완료").length,h:"#gen:진행",c:"warn"},
-    {l:"증권출력",n:n(needPolicy),h:"#cases:증권",c:"info"},{l:"송장출력",n:n(c=>isGift(c)&&!c.waybillAt),h:"#ship:gift",c:"accent"},{l:"우편발송",n:n(c=>isMail(c)&&!c.mailedAt),h:"#ship:mail",c:"mute"},{l:"카드결제",n:n(needPay),h:"#pay",c:"warn"},{l:"요청함",n:openReq.length,h:"#requests",c:"info"}];
+    {l:"증권출력",n:n(needPolicy),h:"#cases:증권",c:"info"},{l:"송장출력",n:n(c=>isGift(c)&&!c.waybillAt),h:"#ship:gift",c:"accent"},{l:"우편발송",n:n(c=>isMail(c)&&!c.mailedAt),h:"#ship:mail",c:"mute"},{l:"장기 진행 중",n:inM.filter(c=>isLong(c)&&isRun(c)).length,h:"#long:진행",c:"info"},{l:"카드결제",n:n(needPay),h:"#pay",c:"warn"},{l:"요청함",n:openReq.length,h:"#requests",c:"info"}];
   return[
-    {l:"장기 진행 중",n:inM.filter(c=>isLong(c)&&isRun(c)).length,h:"#long:진행",c:"info"},{l:"장기 신규 상담",n:inM.filter(c=>isLong(c)&&c.status==="상담").length,h:"#long:신규",c:"accent"},
     {l:"만기 지남·미갱신 상담",n:n(c=>!isLong(c)&&(isOver(c)||isFail(c))&&inMonth(c)),h:"#cases:실패",c:"bad"},{l:"보상·청구 기록",n:reqs.filter(r=>CLAIM_LOG_KINDS.includes(r.kind)&&(r.createdAt||"").startsWith(MONTH||"")).length,h:"#claims",c:"info"},
     {l:"할 일",n:todos.filter(t=>!t.done&&t.who==="대표님").length,h:"#calls",c:"warn"},{l:"요청함",n:openReq.length,h:"#requests",c:"mute"}]}
 function renderHome(){$("#home-today").textContent=today()+" · "+(who==="대표"?"박문철 대표":"황혜정 실장");
-  const R=ROLES[who];$("#home-my").innerHTML=`<div class="mywork"><span class="ttl">${who==="대표"?"박문철 대표":"황혜정 실장"} 업무</span>${myWork().map(x=>`<a class="wchip ${x.n?"on":""} c-${x.c}" href="${x.h}">${x.l} <b>${x.n}</b></a>`).join("")}<span class="note" style="margin-left:auto">${who==="대표"?"고객상담 · 고객관리 · 보상 · 장기보험 · 신규영업":"자동차·일반 갱신설계 안내 · 증권출력 · 송장·우편 발송 · 고객관리"}</span></div>`;
-  $("#home-lines").innerHTML=R.lines.map((line,i)=>{const sec=i===0?'<div class="lsec">내 업무</div>':i===1&&who==="대표"?'<div class="lsec">실장 업무 (참고)</div>':i===2&&who==="실장"?'<div class="lsec">대표 업무 (참고)</div>':"";return sec+(line=>{const L=LINES[line],{all,m,t,w}=lineStats(line);const hot=w.filter(x=>x.n);
+  const R=ROLES[who];$("#home-my").innerHTML=`<div class="mywork"><span class="ttl">${who==="대표"?"박문철 대표":"황혜정 실장"} 업무</span>${myWork().map(x=>`<a class="wchip ${x.n?"on":""} c-${x.c}" href="${x.h}">${x.l} <b>${x.n}</b></a>`).join("")}<span class="note" style="margin-left:auto">${who==="대표"?"고객상담 · 고객관리 · 보상 · 신규영업":"자동차·일반 갱신설계 안내 · 장기 계약 관리 · 증권출력 · 송장·우편 발송 · 고객관리"}</span></div>`;
+  $("#home-lines").innerHTML=R.lines.map((line,i)=>{const sec=i===0?'<div class="lsec">내 업무 · 자동차 · 일반 · 장기</div>':"";return sec+(line=>{const L=LINES[line],{all,m,t,w}=lineStats(line);const hot=w.filter(x=>x.n);
     return `<div class="card lrow"><div class="row"><a class="lt" href="#${L.key}">${L.title}</a><em class="note">${MONTH?MONTH.replace("-","년 ")+"월":"전체"} ${m.length}건</em>${hot.length?hot.map(x=>`<button class="wchip on c-${x.c}" type="button" data-lf="${line}" data-f="${x.f}">${x.l} <b>${x.n}</b></button>`).join(""):'<span class="chip s-갱신완료">대기 업무 없음</span>'}</div>
     <div class="kpis" style="margin-top:8px">${t.map(x=>`<button class="kpi" type="button" data-lf="${line}" data-f="${x.f}" style="text-align:left;cursor:pointer;font:inherit;color:inherit"><span>${x.l}</span><b style="color:var(--${x.c})">${x.n}</b><small class="note">${esc(x.s)}</small></button>`).join("")}</div></div>`})(line)}).join("");
   const due=cases.filter(isDue).sort((a,b)=>a.due.localeCompare(b.due));
@@ -1126,7 +1171,7 @@ const apiDb={doc:p=>{const [col,id]=p.split("/");return{set:async d=>{await post
 const apiSample={json:async(input,opts)=>{const msgs=Array.isArray(input)?input:[{role:"user",content:String(input)}];const sys=msgs.length>1?msgs[0].content:"";const prompt=msgs[msgs.length-1].content;if(opts&&opts.onText)opts.onText({text:"정리 중…"});const r=await post({action:"summarize",system:sys,prompt});if(!r.data){const e=new Error("JSON 아님");e.text=r.text;throw e}return r.data}};
 let refreshT=null;function refresh(){clearTimeout(refreshT);refreshT=setTimeout(loadAll,400)}
 async function loadAll(){if(!API||!KEY)return;try{const j=await call("all");const d=j.data||{};cases=d.cases||[];reqs=d.requests||[];tpls=(d.templates||[]).sort((a,b)=>(a.order||0)-(b.order||0));notes=d.notes||[];calls=d.calls||[];todos=d.todos||[];profiles={};(d.profiles||[]).forEach(p=>profiles[p.id]=p);portal=(d.portal||[]).find(x=>x.id==="snapshot")||null;sender=(d.portal||[]).find(x=>x.id==="sender")||sender||{};monthOpts();if(!custLoaded)loadCustomers();$("#db-note").textContent="연결됨 · "+new Date().toLocaleTimeString("ko-KR",{hour:"2-digit",minute:"2-digit"});render()}catch(e){$("#db-note").textContent="데이터를 불러오지 못했습니다: "+(e.message||"");if(/unauthorized/.test(e.message||""))showLogin("비밀번호가 맞지 않습니다")}}
-async function loadCustomers(){if(custLoaded||!API||!KEY)return;custLoaded=true;try{const j=await call("list",{col:"customers"});custRows=j.data||[];const m=await call("get",{col:"customers_meta",id:"meta"});$("#cust-meta").textContent=`보유고객 ${custRows.length.toLocaleString("ko-KR")}명 · ${(m.data&&m.data.updatedAt)||""}`;render()}catch(e){custLoaded=false;$("#cust-meta").textContent="명부를 불러오지 못했습니다"}}
+async function loadCustomers(){if(custLoaded||!API||!KEY)return;custLoaded=true;try{const j=await call("list",{col:"customers"});custRows=Array.isArray(j.data)?j.data:[];const m=await call("get",{col:"customers_meta",id:"meta"});$("#cust-meta").textContent=`보유고객 ${custRows.length.toLocaleString("ko-KR")}명 · ${(m.data&&m.data.updatedAt)||""}`;render()}catch(e){custLoaded=false;$("#cust-meta").textContent="명부를 불러오지 못했습니다"}}
 function showLogin(msg){$("#login").hidden=false;$("#login-url").value=API||DEFAULT_API;$("#login-note").textContent=msg||""}
 $("#login-form").onsubmit=async e=>{e.preventDefault();const url=$("#login-url").value.trim(),key=$("#login-key").value;if(!url||!key){$("#login-note").textContent="주소와 비밀번호를 넣어 주세요";return}
   API=url;KEY=key;$("#login-note").textContent="확인 중…";try{await call("all");try{localStorage.setItem("api",API);localStorage.setItem("key",KEY)}catch(e2){}$("#login").hidden=true;db=apiDb;sampleFn=apiSample;await loadAll();if(view==="customers")loadCustomers();clearInterval(pollT);pollT=setInterval(loadAll,30000)}catch(err){$("#login-note").textContent="연결 실패: "+(err.message||"")}};
