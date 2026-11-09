@@ -3,6 +3,9 @@
  * 직책 미리 정하기: 이 이름으로 가입하면 해당 직책이 자동으로 붙습니다.
  * 웹페이지의 운영 메뉴에서 언제든 바꿀 수 있습니다.
  */
+/* 기록을 저장할 구글 시트 (우당탕탕 명부) */
+var SHEET_ID = '18BouDAq7u4MmJEDXXWdTc6wR6icXR-p03eUoeeDq33g';
+
 var PRESETS = { '도민구': '회장', '지승욱': '총무', '박문철': '관리자' };
 
 /* 탭 구성. members 탭은 명부로 바로 볼 수 있게 칸을 나눕니다. */
@@ -43,7 +46,9 @@ function run(action, body) {
 function out(o) { return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }
 
 function sheetStore() {
-  var book = SpreadsheetApp.getActiveSpreadsheet();
+  var book = null;
+  try { book = SpreadsheetApp.getActiveSpreadsheet(); } catch (e) {}
+  if (!book) book = SpreadsheetApp.openById(SHEET_ID);
   var cache = {};
   function sheet(col) {
     if (!TABS[col]) throw new Error('없는 탭: ' + col);
