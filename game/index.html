@@ -955,7 +955,7 @@ function totals(D) {
 // 이번 달 참석률·벌금·납부 (게스트 제외)
 function monthStats(mon) {
   const days = Object.values(S.days).filter(d => d.date.startsWith(mon));
-  const real = (d, n) => S.members.some(m => m.name === n) && !d.att[n].guest;
+  const real = (d, n) => { const a = d.att[n]; return !!a && !a.guest && S.members.some(m => m.name === n); }; // 탈퇴했거나 그날 자석이 없는 사람은 통계에서 제외
   const clubDays = days.filter(d => d.date <= S.today && Object.entries(d.att).some(([n, a]) => real(d, n) && a.status !== 'absent'));
   const st = {};
   const get = n => st[n] || (st[n] = { days: 0, late: 0, absent: 0, charged: 0, paid: 0, rate: 0 });
@@ -1279,11 +1279,11 @@ function renderSettle(D) {
       <div class="acct"><span>${esc(st.bank)} ${esc(st.number)}<br><small style="font-weight:500;opacity:.85">예금주 ${esc(st.holder)} · 입금자명 <b>${esc(me)}${m}${d}</b></small></span>
         <button class="small white" data-copy="${esc(st.bank + ' ' + st.number)}">복사</button></div>
       <div class="btns">
-        ${st.kakaopay ? `<button class="kpay" data-ktalk="${mine.amount}">💛 카카오톡 송금</button>` : `<button class="kpay" data-copy="${esc(st.bank + ' ' + st.number)}">계좌 복사</button>`}
+        ${st.kakaopay ? `<button class="kpay" data-ktalk="${mine.amount}">💛 카카오톡 송금</button>` : `<button class="kpay" data-copy="${esc(st.bank + ' ' + st.number)}" data-what="모임통장 계좌">모임통장 계좌 복사</button>`}
         <button class="white" data-copy="${mine.amount}" data-what="금액">금액 복사</button>
         ${p.status === 'confirmed' ? `<button class="done" disabled>✅ 총무 확인 완료</button>` : p.status === 'claimed' ? `<button class="done" data-claim>⏳ 총무 확인 기다리는 중 (다시 알리기)</button>` : `<button class="done" data-claim>💸 입금했어요</button>`}
       </div>
-      <div style="font-size:12px;opacity:.85;margin-top:8px">${st.kakaopay ? `「카카오톡 송금」을 누르면 금액 ${won(mine.amount)}이 복사되고 카카오톡 송금 화면(총무 ${esc(st.holder)})이 열립니다. 금액 칸에 붙여넣고 보내세요.` : `계좌를 복사한 뒤 쓰시는 은행 앱이나 카카오톡 송금(+ → 송금 → 계좌)에서 붙여넣어 보내세요.`}</div>
+      <div style="font-size:12px;opacity:.85;margin-top:8px">${st.kakaopay ? `「카카오톡 송금」을 누르면 금액 ${won(mine.amount)}이 복사되고 카카오톡 송금 화면(총무 ${esc(st.holder)})이 열립니다. 금액 칸에 붙여넣고 보내세요.` : `💛 카카오톡으로 보내기: 「모임통장 계좌 복사」 → 카카오톡 → 송금 → <b>계좌</b> 탭에 붙여넣기 → 금액 ${won(mine.amount)}. 이렇게 보내면 <b>모임통장으로 바로</b> 들어갑니다. 은행 앱도 같은 방법이에요.`}</div>
     </div>`;
   } else if (mine) box = `<div class="paybox"><div class="game" style="font-size:22px">🎉 오늘 벌금 없음!</div><div style="font-size:14px;opacity:.9">${mine.amount < 0 ? `1등 보너스 ${won(mine.amount)}` : '깨끗한 하루'}</div></div>`;
   $('#payBox').innerHTML = box;
@@ -1512,7 +1512,8 @@ function renderOps() {
       <label class="f">계좌번호</label><input id="aNum" inputmode="numeric" value="${esc(st.number)}">
       <label class="f">예금주</label><input id="aHolder" value="${esc(st.holder)}">
       <label class="f">카카오톡 송금 링크 (선택)</label><input id="aKpay" placeholder="https://qr.kakaopay.com/..." value="${esc(st.kakaopay)}">
-      <p class="muted">넣으면 회원 화면에 「💛 카카오톡 송금」 버튼이 생깁니다. 만드는 법: 카카오톡 → 더보기(…) → 페이 → 송금 → 「송금코드」(또는 QR) → 링크 복사. <b>이 링크로 보낸 돈은 총무 본인 카카오페이로 들어가니</b>, 모임통장으로 옮겨 주세요. 비워 두면 계좌 복사 버튼만 보입니다.</p>
+      <p class="muted"><b>모임통장으로 바로 받으려면 비워 두세요(권장).</b> 비워 두면 회원 화면에 「모임통장 계좌 복사」와 카카오톡 송금 → 계좌 안내가 나와, 돈이 모임통장으로 바로 들어갑니다.<br>
+      링크를 넣으면 「💛 카카오톡 송금」 버튼이 생기지만, 카카오페이 송금 링크는 사람에게 보내는 기능이라 <b>돈이 총무 본인 카카오페이로 들어갑니다</b>. (만드는 법: 카카오톡 → 더보기 → 페이 → 송금 → 송금코드 → 링크 복사)</p>
       <button class="primary" style="width:100%">저장</button></form>`;
   }
 }
@@ -1695,7 +1696,7 @@ async function exportExcel(from, to) {
   sumRows.push([]); sumRows.push(['모임한 날', clubDays]); sumRows.push(['기간', `${from} ~ ${to}`]); sumRows.push(['만든 날', `${nowStamp()} · ${S.me.name}`]);
   // 출석표 (사람 × 날짜)
   const attRows = [['이름'].concat(days.map(D => D.date.slice(5).replace('-', '/')))];
-  const guestNames = [...new Set(days.flatMap(D => Object.keys(D.att).filter(n => D.att[n].guest)))];
+  const guestNames = [...new Set(days.flatMap(D => Object.keys(D.att).filter(n => D.att[n] && D.att[n].guest)))];
   memberNames.concat(guestNames).forEach(n => attRows.push([n + (guestNames.includes(n) && !memberNames.includes(n) ? ' (게스트)' : '')].concat(days.map(D => D.att[n] ? ST[D.att[n].status] + (D.att[n].lateReg ? '·늦은신청' : '') : ''))));
   // 명부
   const rosterRows = [['이름', '급수', '직책', '방장', '전화번호', '생년월일', '주소', '가입일']].concat(
