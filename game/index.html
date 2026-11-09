@@ -8,6 +8,7 @@
 <meta name="theme-color" content="#1d6b4c">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&display=swap" rel="stylesheet">
 <style>
@@ -65,6 +66,8 @@ h3{font-size:16px;margin:14px 0 8px}
 .role{display:inline-block;font-size:11px;font-weight:800;border-radius:6px;padding:1px 6px;margin-left:4px;vertical-align:2px}
 .role.회장{background:linear-gradient(#ffe08a,#e2a91f);color:#3a2800}
 .role.총무{background:#dff0ff;color:#1c4fb8}
+.role.임원{background:#e3f6ea;color:#16794a}
+.role.인턴{background:#f1ece5;color:#7a6c5d}
 .role.부회장{background:linear-gradient(#f2f4f7,#cfd5dd);color:#3b4350}
 .admin-tag{font-size:11px;color:#5b34b5;background:#eee6ff;border-radius:6px;padding:1px 6px;margin-left:4px}
 
@@ -101,8 +104,11 @@ h3{font-size:16px;margin:14px 0 8px}
 .notice-banner .t{font-size:16px;font-weight:800;display:flex;gap:6px;align-items:center}
 .notice-banner .b{font-size:14px;margin-top:4px;white-space:pre-wrap;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-weight:500}
 
-.hero{border-radius:20px;overflow:hidden;margin-top:12px;box-shadow:0 4px 0 #e9d3b8}
-.hero svg{display:block;width:100%;height:auto}
+.hero{border-radius:20px;overflow:hidden;margin-top:12px;box-shadow:0 4px 0 #d9832f;padding:14px 18px 10px;text-align:center;
+  background:radial-gradient(circle,rgba(255,255,255,.22) 1.6px,transparent 2px) 0 0/16px 16px,linear-gradient(135deg,#ffcf3c,#ff7a35)}
+.hero img{display:block;width:min(78%,360px);height:auto;margin:0 auto;filter:drop-shadow(0 3px 0 rgba(0,0,0,.12))}
+.hero-tag{display:inline-block;margin-top:8px;background:rgba(31,26,20,.85);color:#fff;font-size:12px;font-weight:700;border-radius:999px;padding:4px 12px}
+.appview .hero{padding:10px 14px 8px}.appview .hero img{width:min(58%,260px)}
 
 /* 달력 */
 .cal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:6px}
@@ -122,45 +128,55 @@ h3{font-size:16px;margin:14px 0 8px}
 .day.today.sun,.day.today.sat{color:#fff}
 
 /* 현황판 */
-.wb{background:var(--mint);border:7px solid #fbfbf8;outline:3px solid var(--forest);border-radius:8px;padding:10px;margin-top:10px}
-.wb-title{font-size:28px;letter-spacing:2px;text-align:center;color:#111;margin:2px 0 4px}
-.wb-sub{text-align:center;font-size:13px;color:#3d5f55;margin-bottom:8px}
-.board{display:grid;gap:8px}
-.pl{background:#fff;border-radius:6px;padding:8px;display:grid;grid-template-columns:62px 1fr;gap:4px 10px;align-items:center}
-.pl .mag{grid-row:span 2}
-.pl-top{display:flex;justify-content:space-between;align-items:center;gap:6px;flex-wrap:wrap}
-.pl-name{font-size:17px;font-weight:800}
-.pl-sum{font-weight:800;color:var(--brand)}
-.st{font-size:12px;font-weight:800;border-radius:999px;padding:2px 8px;margin-left:6px;vertical-align:2px}
+.wb{background:var(--mint);border:6px solid #fbfbf8;outline:3px solid var(--forest);border-radius:8px;padding:8px;margin-top:10px}
+.wb-head{display:flex;align-items:center;justify-content:center;gap:8px;margin:0 0 6px}
+.wb-head img{height:30px;width:auto}
+.wb-title{font-size:22px;letter-spacing:1px;color:#111}
+.wb-sub{text-align:center;font-size:12px;color:#3d5f55;margin-bottom:6px}
+.board{display:grid;gap:4px}
+.pl{background:#fff;border-radius:6px;padding:4px 6px;display:flex;align-items:center;gap:6px;cursor:pointer;border:0;width:100%;text-align:left;box-shadow:none;font:inherit;color:inherit}
+.pl:active{transform:none;background:#fffbe9}
+.pl .mag{width:44px;height:44px}.pl .mag span{font-size:10px;max-width:40px;padding:1px 3px}.pl .mag.long span{font-size:8.5px}
+.pl .info{flex:1;min-width:0}
+.pl .line{display:flex;align-items:center;gap:4px;font-size:13px;white-space:nowrap}
+.pl .nm{font-weight:800;font-size:14px;overflow:hidden;text-overflow:ellipsis}
+.pl .sum{margin-left:auto;font-weight:800;color:var(--brand);font-size:13px}
+.st{font-size:10px;font-weight:800;border-radius:999px;padding:1px 6px}
 .st.rsvp{background:#eef0f3;color:#56606b}
 .st.present{background:#e3f6ea;color:#16794a}
 .st.late{background:#fff0d6;color:#9a5b00}
 .st.absent{background:#3a3a3a;color:#fff}
-.pl-btns{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:6px}
-.pl-btns button{padding:9px 4px;font-size:14px}
-.pl-btns .lose{background:#e8f0ff;color:#1c4fb8;box-shadow:0 3px 0 #c5d6f7}
-.pl-btns .dbl{background:#ffe5e5;color:#b3261e;box-shadow:0 3px 0 #f3c2c2}
-.pl-btns .deuce{background:#fff0d6;color:#9a5b00;box-shadow:0 3px 0 #f0d7a8}
-.pl-off{grid-column:1/-1;display:flex;gap:4px;flex-wrap:wrap;align-items:center;font-size:13px;color:var(--muted)}
-.pl-off button{font-size:12px;padding:4px 8px;box-shadow:none;border:1px solid var(--line);background:#fff}
-.pl-off button.on{background:var(--ink);color:#fff}
-.tally{display:flex;flex-wrap:wrap;gap:4px;min-height:52px;padding:6px;border-radius:4px;
-  background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 44' width='44' height='44'%3E%3Cpath d='M6 7H34M20 7V33M20 20H31M10 18V33M4 33H36' stroke='%23d6ebe6' stroke-width='4.5' stroke-linecap='round' fill='none'/%3E%3C/svg%3E") 6px 6px/44px 44px repeat;border:1px solid #e3efec}
-.tally svg{width:40px;height:40px}
-.tally .none{color:var(--muted);font-size:13px;align-self:center;padding:2px 6px;background:rgba(255,255,255,.85);border-radius:6px}
-.prize{grid-column:2;justify-self:start;font-weight:800;font-size:14px;padding:2px 10px;border-radius:999px}
-.prize.minus{background:#e3f6ea;color:#16794a}
-.prize.plus{background:#ffe5e5;color:#b3261e}
-.tray{display:flex;flex-wrap:wrap;gap:8px;padding:10px;border-radius:12px;background:#f3f3ef;min-height:70px;margin-top:10px}
-.tray .empty{color:var(--muted);font-size:13px;align-self:center}
+.st.guest{background:#f1e9ff;color:#6a3fc0}
+.st.pending{background:#ffe5e5;color:#b3261e}
+.chip{font-size:10px;font-weight:800;border-radius:999px;padding:1px 6px;background:#f1e9ff;color:#6a3fc0}
+.chip.minus{background:#e3f6ea;color:#16794a}.chip.plus{background:#ffe5e5;color:#b3261e}
+.tally{display:flex;gap:2px;height:30px;margin-top:2px;align-items:center;width:max-content;max-width:100%;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40' width='40' height='40'%3E%3Cpath d='M6 7H34M20 7V33M20 20H31M10 18V33M4 33H36' stroke='%23d6ebe6' stroke-width='4.5' stroke-linecap='round' fill='none'/%3E%3C/svg%3E") 0 0/30px 30px repeat-x;min-width:190px}
+.tally svg{width:30px;height:30px;flex:none}
+.tally .more{font-size:11px;font-weight:800;color:var(--red);padding-left:2px}
 .myact{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
-.myact button{padding:14px 8px;font-size:16px}
+.myact button{padding:12px 6px;font-size:15px}
+.myact .full{grid-column:1/-1}
+.hint{font-size:12px;color:var(--muted);margin:6px 2px 0;line-height:1.5}
 .closed{background:#2b2118;color:#fff;border-radius:12px;padding:10px 12px;font-weight:700;margin-top:10px}
-.legend{display:flex;gap:10px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-top:8px}
-.legend i{display:inline-block;width:14px;height:4px;border-radius:2px;vertical-align:middle;margin-right:4px}
-.rate{display:flex;gap:6px;flex-wrap:wrap}
-.rate button{box-shadow:none}
-.rate button.on{background:var(--ink);color:#fff}
+.legend{font-size:12px;color:var(--muted);margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.legend i{display:inline-block;width:12px;height:4px;border-radius:2px;vertical-align:middle;margin-right:3px}
+.act-sheet .acts{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.act-sheet .acts button{padding:14px 4px;font-size:15px}
+.act-sheet .lose{background:#e8f0ff;color:#1c4fb8;box-shadow:0 3px 0 #c5d6f7}
+.act-sheet .dbl{background:#ffe5e5;color:#b3261e;box-shadow:0 3px 0 #f3c2c2}
+.act-sheet .deuce{background:#fff0d6;color:#9a5b00;box-shadow:0 3px 0 #f0d7a8}
+.act-sheet .ops{display:flex;flex-wrap:wrap;gap:6px}
+.act-sheet .ops button{box-shadow:none;border:1px solid var(--line);background:#fff;font-size:14px}
+.act-sheet .ops button.on{background:var(--ink);color:#fff}
+.law h3{margin:18px 0 6px;color:var(--forest)}
+.law p{margin:6px 0;font-size:15px;line-height:1.65}
+.law .art{font-weight:800}
+.law ol{margin:4px 0;padding-left:4px;list-style:none}.law li{margin:3px 0;font-size:15px;line-height:1.6}
+.law .applied{display:inline-block;font-size:11px;font-weight:800;background:#e3f6ea;color:#16794a;border-radius:6px;padding:1px 6px;margin-left:4px;vertical-align:1px}
+.tray{display:flex;flex-wrap:wrap;gap:6px;padding:8px;border-radius:12px;background:#f3f3ef;min-height:56px;margin-top:10px}
+.tray .mag{width:44px;height:44px}.tray .mag span{font-size:10px;max-width:40px;padding:1px 3px}.tray .mag.long span{font-size:8.5px}
+.tray .empty{color:var(--muted);font-size:13px;align-self:center}
 
 /* 리그 */
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
@@ -256,46 +272,7 @@ td.n{text-align:left;font-weight:700;white-space:nowrap}
 
 <!-- ============ 로그인 · 가입 ============ -->
 <div class="wrap hidden" id="authView">
-  <div class="hero" aria-label="우당탕탕 요절복통">
-    <svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" role="img">
-      <title>우당탕탕 요절복통</title>
-      <defs>
-        <linearGradient id="sky" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stop-color="#ffcf3c"/><stop offset="1" stop-color="#ff6b35"/>
-        </linearGradient>
-        <pattern id="dots" width="18" height="18" patternUnits="userSpaceOnUse">
-          <circle cx="4" cy="4" r="2.2" fill="#fff" opacity=".22"/>
-        </pattern>
-      </defs>
-      <rect width="720" height="300" fill="url(#sky)"/>
-      <rect width="720" height="300" fill="url(#dots)"/>
-      <!-- 폭발 말풍선 -->
-      <polygon fill="#fff" stroke="#2b2118" stroke-width="5" stroke-linejoin="round"
-        points="360,22 398,62 452,34 456,86 520,74 494,120 560,140 500,166 536,214 470,206 466,262 420,226 382,278 352,226 300,268 296,214 226,226 254,178 180,156 248,128 214,78 280,92 290,38 330,72"/>
-      <text x="370" y="146" text-anchor="middle" font-family="'Black Han Sans','Jua','Apple SD Gothic Neo','Malgun Gothic',sans-serif" font-size="62" font-weight="900" fill="#ff6b35" stroke="#2b2118" stroke-width="3" paint-order="stroke" transform="rotate(-6 370 130)">우당탕탕</text>
-      <text x="372" y="214" text-anchor="middle" font-family="'Black Han Sans','Jua','Apple SD Gothic Neo','Malgun Gothic',sans-serif" font-size="56" font-weight="900" fill="#2f7cf6" stroke="#2b2118" stroke-width="3" paint-order="stroke" transform="rotate(4 372 200)">요절복통</text>
-      <!-- 셔틀콕 -->
-      <g transform="translate(96 90) rotate(-30)">
-        <path d="M0 40 L-26 -30 L26 -30 Z" fill="#fff" stroke="#2b2118" stroke-width="4" stroke-linejoin="round"/>
-        <path d="M-13 -30 L-4 36 M13 -30 L4 36 M0 -30 L0 36" stroke="#2b2118" stroke-width="2"/>
-        <circle cx="0" cy="48" r="14" fill="#e5383b" stroke="#2b2118" stroke-width="4"/>
-      </g>
-      <path d="M140 150 q20 10 30 30 M150 132 q24 4 40 18" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round"/>
-      <!-- 라켓 -->
-      <g transform="translate(628 176) rotate(28)">
-        <ellipse cx="0" cy="-50" rx="38" ry="48" fill="none" stroke="#2b2118" stroke-width="7"/>
-        <path d="M-26 -82 L26 -18 M-36 -56 L20 -6 M-14 -96 L34 -36 M26 -82 L-26 -18 M36 -56 L-20 -6 M14 -96 L-34 -36" stroke="#2b2118" stroke-width="2" opacity=".5"/>
-        <rect x="-5" y="-2" width="10" height="70" rx="4" fill="#2b2118"/>
-        <rect x="-8" y="44" width="16" height="34" rx="6" fill="#2f7cf6" stroke="#2b2118" stroke-width="3"/>
-      </g>
-      <!-- 반짝이 -->
-      <g fill="#fff" stroke="#2b2118" stroke-width="3" stroke-linejoin="round">
-        <path d="M600 40 l8 18 18 8 -18 8 -8 18 -8 -18 -18 -8 18 -8z"/>
-        <path d="M70 230 l6 13 13 6 -13 6 -6 13 -6 -13 -13 -6 13 -6z"/>
-      </g>
-      <text x="704" y="290" text-anchor="end" font-family="sans-serif" font-size="16" font-weight="700" fill="#2b2118" opacity=".7">진 사람이 낸다!</text>
-    </svg>
-  </div>
+  <div class="hero" aria-label="우당탕탕 요절복통"><img src="logo.png" alt="우당탕탕 요절복통 — 내가 치면 in.. 너가 치면 out!" width="640" height="563"><div class="hero-tag">🏸 배드민턴 모임 · 초안산실내배드민턴장 06:00~09:00</div></div>
   <div class="auth card">
     <div id="demoNote" class="demo hidden">체험 모드입니다. 이 휴대폰에만 저장됩니다. 연습용 계정: <b>도민구 / 1234</b> (회장), <b>지승욱 / 1234</b> (총무), <b>서용 / 1234</b> (일반)</div>
     <div class="tabs"><button data-tab="login" class="on">로그인</button><button data-tab="signup">처음이에요 (가입)</button></div>
@@ -303,6 +280,7 @@ td.n{text-align:left;font-weight:700;white-space:nowrap}
       <label class="f">아이디 (이름)</label><input id="lName" autocomplete="username" placeholder="예: 박문철" required>
       <label class="f">비밀번호</label><input id="lPw" type="password" autocomplete="current-password" required>
       <button class="primary" style="width:100%;margin-top:14px;padding:14px">입장하기</button>
+      <button type="button" class="ghost" data-open="lawModal" style="width:100%;margin-top:10px">📜 우당탕탕 회칙 보기</button>
       <p class="muted" style="margin:10px 0 0">비밀번호를 잊으면 운영진에게 말해 주세요. 관리자가 초기화해 드립니다.</p>
     </form>
     <form id="signupForm" class="hidden">
@@ -328,7 +306,7 @@ td.n{text-align:left;font-weight:700;white-space:nowrap}
 </div>
 
 <!-- ============ 앱 ============ -->
-<div class="wrap hidden" id="appView">
+<div class="wrap hidden appview" id="appView">
   <div class="hud">
     <div class="hud-in">
       <span id="hudMag"></span>
@@ -343,52 +321,14 @@ td.n{text-align:left;font-weight:700;white-space:nowrap}
       <button data-open="noticeModal">📢 게시판<span class="badge hidden" id="noticeBadge"></span></button>
       <button data-open="activityModal">📊 활동</button>
       <button data-open="rulesModal">📖 게임룰</button>
+      <button data-open="lawModal">📜 회칙</button>
       <button data-open="opsModal" id="opsBtn" class="gold hidden">🛡️ 운영</button>
       <button data-open="meModal">⚙️ 내 정보</button>
     </div>
   </div>
 
   <div id="pinned"></div>
-  <div class="hero" aria-label="우당탕탕 요절복통">
-    <svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" role="img">
-      <title>우당탕탕 요절복통</title>
-      <defs>
-        <linearGradient id="sky2" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stop-color="#ffcf3c"/><stop offset="1" stop-color="#ff6b35"/>
-        </linearGradient>
-        <pattern id="dots2" width="18" height="18" patternUnits="userSpaceOnUse">
-          <circle cx="4" cy="4" r="2.2" fill="#fff" opacity=".22"/>
-        </pattern>
-      </defs>
-      <rect width="720" height="300" fill="url(#sky2)"/>
-      <rect width="720" height="300" fill="url(#dots2)"/>
-      <!-- 폭발 말풍선 -->
-      <polygon fill="#fff" stroke="#2b2118" stroke-width="5" stroke-linejoin="round"
-        points="360,22 398,62 452,34 456,86 520,74 494,120 560,140 500,166 536,214 470,206 466,262 420,226 382,278 352,226 300,268 296,214 226,226 254,178 180,156 248,128 214,78 280,92 290,38 330,72"/>
-      <text x="370" y="146" text-anchor="middle" font-family="'Black Han Sans','Jua','Apple SD Gothic Neo','Malgun Gothic',sans-serif" font-size="62" font-weight="900" fill="#ff6b35" stroke="#2b2118" stroke-width="3" paint-order="stroke" transform="rotate(-6 370 130)">우당탕탕</text>
-      <text x="372" y="214" text-anchor="middle" font-family="'Black Han Sans','Jua','Apple SD Gothic Neo','Malgun Gothic',sans-serif" font-size="56" font-weight="900" fill="#2f7cf6" stroke="#2b2118" stroke-width="3" paint-order="stroke" transform="rotate(4 372 200)">요절복통</text>
-      <!-- 셔틀콕 -->
-      <g transform="translate(96 90) rotate(-30)">
-        <path d="M0 40 L-26 -30 L26 -30 Z" fill="#fff" stroke="#2b2118" stroke-width="4" stroke-linejoin="round"/>
-        <path d="M-13 -30 L-4 36 M13 -30 L4 36 M0 -30 L0 36" stroke="#2b2118" stroke-width="2"/>
-        <circle cx="0" cy="48" r="14" fill="#e5383b" stroke="#2b2118" stroke-width="4"/>
-      </g>
-      <path d="M140 150 q20 10 30 30 M150 132 q24 4 40 18" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round"/>
-      <!-- 라켓 -->
-      <g transform="translate(628 176) rotate(28)">
-        <ellipse cx="0" cy="-50" rx="38" ry="48" fill="none" stroke="#2b2118" stroke-width="7"/>
-        <path d="M-26 -82 L26 -18 M-36 -56 L20 -6 M-14 -96 L34 -36 M26 -82 L-26 -18 M36 -56 L-20 -6 M14 -96 L-34 -36" stroke="#2b2118" stroke-width="2" opacity=".5"/>
-        <rect x="-5" y="-2" width="10" height="70" rx="4" fill="#2b2118"/>
-        <rect x="-8" y="44" width="16" height="34" rx="6" fill="#2f7cf6" stroke="#2b2118" stroke-width="3"/>
-      </g>
-      <!-- 반짝이 -->
-      <g fill="#fff" stroke="#2b2118" stroke-width="3" stroke-linejoin="round">
-        <path d="M600 40 l8 18 18 8 -18 8 -8 18 -8 -18 -18 -8 18 -8z"/>
-        <path d="M70 230 l6 13 13 6 -13 6 -6 13 -6 -13 -13 -6 13 -6z"/>
-      </g>
-      <text x="704" y="290" text-anchor="end" font-family="sans-serif" font-size="16" font-weight="700" fill="#2b2118" opacity=".7">진 사람이 낸다!</text>
-    </svg>
-  </div>
+  <div class="hero" aria-label="우당탕탕 요절복통"><img src="logo.png" alt="우당탕탕 요절복통 — 내가 치면 in.. 너가 치면 out!" width="640" height="563"><div class="hero-tag">🏸 배드민턴 모임 · 초안산실내배드민턴장 06:00~09:00</div></div>
 
   <!-- 달력 -->
   <section class="card">
@@ -408,24 +348,12 @@ td.n{text-align:left;font-weight:700;white-space:nowrap}
       <h2>🧲 현황판 <span class="muted" id="dayLabel"></span></h2>
       <div id="myAct"></div>
       <div class="wb">
-        <div class="wb-title game">우당탕탕 요절복통</div>
+        <div class="wb-head"><img src="logo-lips.png" alt=""><span class="wb-title game">현황판</span></div>
         <div class="wb-sub" id="wbSub"></div>
         <div class="board" id="board"></div>
       </div>
-      <div class="row between" style="margin-top:12px">
-        <div class="rate" id="rateBtns">
-          <button class="small" data-rate="auto">자동(시간)</button>
-          <button class="small" data-rate="2000">7시 전 2,000</button>
-          <button class="small" data-rate="3000">7시 후 3,000</button>
-        </div>
-        <span class="muted" id="rateNow"></span>
-      </div>
-      <div class="legend">
-        <span>짝대기 1개 = 1,000원</span>
-        <span><i style="background:var(--blue)"></i>7시 전 패</span>
-        <span><i style="background:var(--red)"></i>7시 후 패 · 더블 · 듀스</span>
-        <span><i style="background:var(--black)"></i>지각 · 결석</span>
-      </div>
+      <div class="legend">짝대기 1개 = 1,000원 · <span><i style="background:var(--blue)"></i>2천</span><span><i style="background:var(--red)"></i>3천 이상</span><span><i style="background:var(--black)"></i>지각·불참·연체</span> · 이름을 누르면 기록 <button class="small ghost" data-open="rulesModal" style="padding:2px 8px;font-size:12px;box-shadow:none">📖 게임룰</button></div>
+      <div id="guestArea"></div>
       <h3>자석 통 <span class="muted" id="trayHint"></span></h3>
       <div class="tray" id="tray"></div>
     </section>
@@ -531,37 +459,123 @@ td.n{text-align:left;font-weight:700;white-space:nowrap}
   </div>
 </div>
 
-<!-- 게임룰 -->
+<!-- 게임룰 (회칙 제10조~제12조를 앱에 적용한 것) -->
 <div class="modal hidden" id="rulesModal" role="dialog" aria-modal="true">
   <div class="sheet rules">
     <div class="sheet-head"><h2>📖 게임룰</h2><button class="small ghost" data-close aria-label="닫기">✕</button></div>
-    <h3>🧲 참석</h3>
+    <p class="muted">정기모임: 매일 06:00~09:00 · 초안산실내배드민턴장 (휴관 시 다락원 또는 사설 체육관). 자세한 내용은 📜 회칙을 보세요.</p>
+    <h3>🧲 참석 (회칙 제10조)</h3>
     <ul>
-      <li>달력에서 날짜를 누르고 <b>내 자석 붙이기</b>를 누르면 참석 신청입니다.</li>
-      <li>구장에 오면 <b>구장 도착</b>을 누릅니다. <b>6시 15분이 지나 입장</b>하면 지각입니다.</li>
-      <li>자석 색 = 배드민턴 급수: <i class="dot g-S"></i>S조 황금 · <i class="dot g-A"></i>A조 빨강 · <i class="dot g-B"></i>B조 주황 · <i class="dot g-C"></i>C조 녹색 · <i class="dot g-D"></i>D조 흰색</li>
-      <li>급수가 오르면 운영진이 자석 색을 바꿔 줍니다. 승급 소식은 게시판에 올라갑니다. 🎉</li>
+      <li>날짜를 누르고 <b>내 자석 붙이기</b> = 참석 신청. <b>전날 23:00까지</b> 붙여야 합니다. 그 뒤에 붙이면 <b>1,000원</b> <span class="ex" data-ex="k"></span></li>
+      <li>참석 취소(자석 떼기)는 <b>당일 05:30 전까지만</b>. 05:30이 지나 취소하거나 안 오면 <b>불참 5,000원</b> <span class="ex" data-ex="k,k,k,k,k"></span></li>
+      <li>당일 집에서 나설 때 <b>🚗 출발 알림</b>을 누릅니다 (카톡 출발 인증과 같음).</li>
+      <li>자석 색 = 급수: <i class="dot g-S"></i>S 황금 · <i class="dot g-A"></i>A 빨강 · <i class="dot g-B"></i>B 주황 · <i class="dot g-C"></i>C 녹색 · <i class="dot g-D"></i>D 흰색. 승급하면 운영진이 바꿔 주고 게시판에 소식이 올라갑니다 🎉</li>
     </ul>
-    <h3>✏️ 바를 정(正) — 짝대기 1개 = 1,000원</h3>
+    <h3>⏰ 지각 (회칙 제12조 ④)</h3>
     <ul>
-      <li><b class="t-blue">7시 전</b> 한 게임 지면 <b>2,000원</b>, 파란 짝대기 2개 <span class="ex" data-ex="b,b"></span></li>
-      <li><b class="t-red">7시부터</b> 한 게임 지면 <b>3,000원</b>, 빨간 짝대기 3개 <span class="ex" data-ex="r,r,r"></span></li>
-      <li><b>더블패</b>: 21점 게임 10점 미만, 25점 게임 13점 미만으로 지면 <b>+1,000원</b> (빨간 짝대기 1개 추가)</li>
-      <li><b>듀스패</b>: 듀스(21점 게임 20:20, 25점 게임 24:24)까지 가서 지면 <b>+1,000원</b> (빨간 짝대기 1개 추가)</li>
-      <li><b class="t-black">지각</b> 2,000원, 검은 짝대기 2개 <span class="ex" data-ex="k,k"></span></li>
-      <li><b class="t-black">결석</b>(자석을 붙이고 안 옴) 5,000원, 검은 짝대기 5개 <span class="ex" data-ex="k,k,k,k,k"></span></li>
+      <li>구장에 오면 <b>🏸 구장 도착</b>. <b>06:10</b>부터 지각 <b>2,000원</b> <span class="ex" data-ex="k,k"></span></li>
+      <li>서울 강북권(강북·도봉·노원)과 의정부 <b>밖</b>에 사는 회원은 <b>05:30 전에 출발 알림</b>을 하면 지각 기준이 <b>06:30</b>.</li>
+      <li>회원을 <b>픽업</b>해서 오면 지각 기준 <b>06:15</b>.</li>
+      <li>최종 판정은 입장권 영수증 시간 기준이며, 집행부가 고칠 수 있습니다.</li>
+    </ul>
+    <h3>✏️ 게임 벌금 (회칙 제12조 ③) — 짝대기 1개 = 1,000원</h3>
+    <ul>
+      <li><b>07:00 전</b>에 지면 <b>2,000원</b>, 파란 짝대기 2개 <span class="ex" data-ex="b,b"></span></li>
+      <li><b>07:00부터</b> 지면 <b>3,000원</b>, 빨간 짝대기 3개 <span class="ex" data-ex="r,r,r"></span></li>
+      <li><b>더블패</b>(21점에 10점 미만, 25점에 13점 미만)와 <b>듀스패</b>(20:20·24:24 듀스까지 가서 짐)는 <b>+1,000원</b>. 3,000원 이상은 모두 빨간 짝대기 <span class="ex" data-ex="r,r,r"></span></li>
+      <li>한 줄에 正 6개(30,000원)까지 보이고, 넘으면 "+금액"으로 표시됩니다.</li>
+    </ul>
+    <h3>👥 게스트 (회칙 제11조)</h3>
+    <ul>
+      <li>참석 인원이 <b>평일 10명 미만, 주말 15명 미만</b>일 때만 초대할 수 있습니다.</li>
+      <li>집행부·임원진 승인 후 참석합니다. <b>게스트비 3,000원</b>(운동 전 입금). 지각·불참 벌금도 같이 적용됩니다.</li>
+      <li>초대한 회원이 게스트의 게스트비·벌금 입금을 책임지고 확인합니다.</li>
     </ul>
     <h3>🎲 랜덤 리그</h3>
     <ul>
-      <li>참석자끼리 모두 한 번씩 붙도록 무작위로 대진표를 만듭니다. 사람이 많으면 코트를 2개로 나눕니다.</li>
-      <li>리그에서 지면 3,000원, 더블패·듀스패는 +1,000원.</li>
-      <li>순위는 득실차, 같으면 승자승(맞대결). 리그가 끝나면 <b>1등 −3,000원, 꼴등 +3,000원</b>.</li>
+      <li>참석자끼리 모두 한 번씩 붙도록 무작위 대진표. 사람이 많으면 코트를 나눕니다.</li>
+      <li>리그에서 지면 3,000원, 더블·듀스패 +1,000원. 순위는 득실차, 같으면 승자승. 끝나면 <b>1등 −3,000원, 꼴등 +3,000원</b>.</li>
     </ul>
-    <h3>💰 정산</h3>
+    <h3>💰 입금 (회칙 제12조 ③-2)</h3>
     <ul>
-      <li>그날 벌금을 합쳐 <b>총무 계좌</b>로 입금합니다. 입금하고 <b>입금했어요</b>를 누르면 총무가 확인합니다.</li>
-      <li>📊 활동에서 이번 달 참석률과 벌금 지분율을 볼 수 있습니다. 자석을 누르면 그 사람의 기록이 나옵니다.</li>
+      <li>벌금은 <b>당일 23:59까지</b> 총무 계좌로 입금. 넘기면 <b>2,000원 추가</b> <span class="ex" data-ex="k,k"></span></li>
+      <li>입금하고 <b>입금했어요</b>를 누르면 총무가 확인합니다. 📊 활동에서 참석률·벌금 지분율을 볼 수 있습니다.</li>
     </ul>
+  </div>
+</div>
+
+<!-- 자석(이름)을 누르면 뜨는 기록 창 -->
+<div class="modal hidden" id="actModal" role="dialog" aria-modal="true">
+  <div class="sheet act-sheet"><div class="sheet-head"><h2 id="actName"></h2><button class="small ghost" data-close aria-label="닫기">✕</button></div><div id="actBody"></div></div>
+</div>
+
+<!-- 회칙 -->
+<div class="modal hidden" id="lawModal" role="dialog" aria-modal="true">
+  <div class="sheet law">
+    <div class="sheet-head"><h2>📜 회칙</h2><button class="small ghost" data-close aria-label="닫기">✕</button></div>
+    <div style="text-align:center;background:linear-gradient(135deg,#fff4cf,#ffe6c7);border-radius:16px;padding:14px"><img src="logo.png" alt="우당탕탕 요절복통" style="width:62%;max-width:260px"><div class="game" style="font-size:20px;margin-top:6px">우당탕탕 요절복통 배드민턴모임 운영 회칙</div><div class="muted">제정 2026. 11. 14.</div></div>
+    <p class="muted" style="margin-top:10px"><span class="applied">앱 적용</span> 표시가 붙은 조항은 이 앱이 자동으로 계산·안내합니다.</p>
+    <h3>제1장 총칙</h3>
+    <p><span class="art">제1조 (명칭)</span> 본 모임은 "우당탕탕요절복통"이라 칭한다.</p>
+    <p><span class="art">제2조 (목적)</span> 우당탕탕요절복통 모임은 배드민턴을 통하여 회원의 건강증진과 친목 도모를 목적으로 한다.</p>
+    <h3>제2장 회원</h3>
+    <p><span class="art">제3조 (회원의 자격 및 구분)</span><span class="applied">앱 적용: 정원 50명 · 인턴 직책</span></p>
+    <ol>
+      <li>① 회원은 남성 50명으로 한정하며, 나이는 20~40대로 제한한다. (1항은 2026.11.14. 기준으로 기존회원은 제외한다.) 1. 빠른년생 관련 문제는 해당자들끼리 정리한다.</li>
+      <li>② 회원의 구분을 다음과 같이 정한다.<br>1. 회원: 구대회기준 B조 이상인 자 중, 기존 회원들의 심사(인성)를 통과하여 단체채팅방에 초대된 자. (단, C조 이하 가입문의는 기존회원 의사를 우선 고려한다.)<br>2. 인턴: 회원 승인 전의 임시회원으로서 자격 심사 진행 중인 자.</li>
+      <li>③ 제2항 1호의 기준에 미달하더라도, 모임의 운영 및 발전에 기여할 수 있다고 인정되는 자는 집행부 및 임원진회의를 통해 회원 자격을 부여할 수 있다.</li>
+    </ol>
+    <p><span class="art">제4조 (회원의 권리)</span> ① 모든 회원은 공식 활동 및 행사에 참여할 권리와 운영에 관하여 의견을 제출(청원)할 권리를 가진다.</p>
+    <p><span class="art">제5조 (회원의 의무)</span></p>
+    <ol>
+      <li>① 회원은 다음 각 호의 의무를 진다. 1. 회칙 및 모임 의결 사항 준수 의무 2. 모임 규칙에 따른 회비, 벌금 및 지각비 납부 의무 3. 회원 간 상호 예의 준수 및 품위 유지 의무 4. 집행부의 원활한 모임 운영 및 활동에 대한 협조 의무 5. 개인 사적인 영리 행위 금지 의무</li>
+      <li>② 회원은 정기모임 및 각종 행사 시 진행되는 유튜브 등 영상 촬영에 협조할 의무가 있다. 1. 불가피한 사유로 협조가 불가능한 회원은 사전에 집행부에 알리고, 본인 초상권을 지키기 위한 조치를 스스로 취하여야 한다. 2. 제2항 1호에 따른 조치에도 불구하고 발생하는 초상권 관련 문제에 대해서는 본 모임에 책임을 물을 수 없다.</li>
+      <li>③ 회원이 제1항 각 호의 의무를 이행하지 아니하거나 위반한 경우, 회원 자격을 제명할 수 있다.</li>
+      <li>④ 제1항 각 호 외에 모임 운영을 방해하거나 명예를 실추시킨 경우에도 집행부 및 임원진 회의를 거쳐 회원을 제명할 수 있다.</li>
+    </ol>
+    <h3>제3장 집행부 및 임원진</h3>
+    <p><span class="art">제6조 (구성)</span><span class="applied">앱 적용: 직책</span> 모임의 원활한 운영을 위하여 다음의 집행부 및 임원진 총합 7인을 둔다. 1. 집행부로는 회장, 부회장, 총무 총 3인으로 한다. 2. 임원진으로는 개인의 특성을 고려하여 총 4인으로 한다.</p>
+    <p><span class="art">제7조 (집행부 및 임원진의 임무)</span></p>
+    <ol>
+      <li>① 회장 및 부회장은 모임을 대표하며 다음 업무를 총괄한다. 1. 정기모임 운영 및 관리 2. 운동 장소(체육관) 개방 여부 및 이용 시간 확인 3. 각종 행사의 기획 및 진행</li>
+      <li>② 총무는 재정 및 자산을 관리하며 다음 업무를 담당한다. 1. 셔틀콕 및 비품 등 모임 용품 관리 2. 회비 및 벌금 계좌 관리 3. 행사 지출 정산 및 집행</li>
+      <li>③ 임원진으로 선출된 자는 본인 특성에 맞는 직위를 가지며, 그에 맞는 역할을 수행한다. 1. 임원진의 직위는 회장이 부여한다.</li>
+    </ol>
+    <p><span class="art">제8조 (집행부 및 임원진의 선출)</span><span class="applied">앱 적용: 회장이 임명</span></p>
+    <ol>
+      <li>① 회장은 회원들의 추천 및 동의를 거쳐 선출한다.</li>
+      <li>② 회장 외 집행부 및 임원진은 회장의 단독 임명으로 선출한다.</li>
+      <li>③ 선출 또는 임명된 자는 사유가 있거나 본인 의사에 따라 임명을 거부하거나 임무 수행 도중 사임할 수 있다. 단, 별도의 사임 의사 표시가 없을 경우 임기는 자동 연장된다.</li>
+    </ol>
+    <h3>제4장 정기모임 및 운영</h3>
+    <p><span class="art">제9조 (모임 일시 및 장소)</span> ① 정기모임은 매주 월요일부터 일요일(06:00~09:00)에 진행함을 원칙으로 한다. ② 정기모임 장소는 초안산실내배드민턴장을 기본으로 한다. ③ 정기모임 장소 휴관 시 다락원실내배드민턴장 또는 사설 체육관을 대관할 수 있다.</p>
+    <p><span class="art">제10조 (모임 참석 수칙)</span><span class="applied">앱 적용</span></p>
+    <ol>
+      <li>① 모임 참석자는 전날 23:00까지 단체 카톡방을 통해 출석 여부를 사전에 등록해야 한다. 1. 전날 23:00 이후 등록하는 회원은 벌금 1,000원을 부과한다. 2. 모임 당일 운동출발 전 출발(기상)했음을 알리는 카톡 업로드를 하여야 한다.</li>
+      <li>② 참석 취소는 운동당일 05:30 이전까지만 가능하다.</li>
+    </ol>
+    <p><span class="art">제11조 (게스트 운영)</span><span class="applied">앱 적용</span></p>
+    <ol>
+      <li>① 게스트 초대는 당일 참석 인원이 평일 10명 미만, 주말 15명 미만일 경우에만 가능하다. 단, 레슨이 있는 요일은 게스트를 제한한다. 1. 게스트 초대 전 집행부 및 임원진에게 승인받은 후 초대한다.</li>
+      <li>② 게스트를 초대한 회원은 해당 게스트의 운동 전 게스트비 입금 및 운동 후 벌금 입금 여부를 책임지고 확인하여야 한다.</li>
+    </ol>
+    <h3>제5장 재정 및 회계</h3>
+    <p><span class="art">제12조 (재정 및 회비)</span><span class="applied">앱 적용: ③~⑥</span></p>
+    <ol>
+      <li>① 모임의 재정은 연회비, 게임벌금, 지각비, 게스트비 등으로 충당한다.</li>
+      <li>② 연회비: 연 10만 원을 매년 초에 납입한다. 단, 연내 중간에 가입한 회원은 달로 나누어 계산하여 납부한다.</li>
+      <li>③ 게임벌금: 매 게임 패배한 팀은 1인당 2,000원씩 지정된 벌금 계좌로 입금한다. 1. 게임 시작 시각 기준으로 07:00 이후에는 1인당 3,000원으로 벌금이 상승한다. (기준시각은 레슨코트 쪽 벽시계를 기준으로 한다.) 2. 벌금 납부 기한은 당일 23:59까지이며, 익일 납입 시 2,000원 추가 부과한다.</li>
+      <li>④ 지각비: 06:10 이후 도착 시 지각비 2,000원을 부과한다. 1. 개인사정(근무, 질병, 육아 등)이 생겨 늦게 참석할 경우 05:30 이전에 알려야 한다. 2. 지각시간 판명 기준은 입장권 영수증 시간으로 한다. 3. 서울 강북권과 의정부시 외의 지역에서 출발하는 회원은 05:30 이전에 출발 카톡 업로드 시 지각기준 시각을 06:30으로 한다. 4. 회원 픽업을 하여 체육관을 올 경우 지각기준 시각을 06:15으로 한다. 5. 게스트도 12조 4항 각 호를 적용한다.</li>
+      <li>⑤ 불참벌금: 참석 등록 후 불참하거나 당일 05:30 이후 취소 시 벌금 5,000원을 부과한다. 1. 게스트도 적용한다. (기존회원과 마찬가지로 05:30 이전 취소 시 면제)</li>
+      <li>⑥ 게스트비: 게스트 참가비는 1인당 3,000원으로 하며 운동 시작 전 입금해야 한다.</li>
+    </ol>
+    <p><span class="art">제13조 (회비의 지출)</span> 모임 회비는 다음 각 항의 용도로만 지출한다. ① 셔틀콕 및 모임운영 관련 비품 구매 ② 사설체육관 대관 ③ 자체 대회 및 송년회 등 모임 공식 행사 비용 ④ 경조사(화환, 출산 등) ⑤ 분기별 1회 회원 단합을 위한 아침식사비용(식사비용으로만 한정) ⑥ 전국대회 출전 시 참가비 1인당 5,000원 지원 (1. 팀원이 모두 우당탕탕 요절복통 회원이며, 팀명 또한 '우당탕탕 요절복통'이어야 한다.) ⑦ 모임 단합을 위한 단체티 및 굿즈 등 제작 비용</p>
+    <p><span class="art">제14조 (재정 보고 및 공개)</span> 모임의 입출금 내역은 별도의 서면 보고를 대신하여, 회원이 카카오뱅크 모임통장을 통해 실시간으로 수시 확인할 수 있도록 공개한다. 1. 모임통장 가입요청은 회원 본인이 총무에게 요청한다.</p>
+    <h3>부칙</h3>
+    <p><span class="art">제1조 (시행일)</span> 본 회칙은 통과된 날부터 즉시 시행한다.</p>
+    <p><span class="art">제2조 (공개여부)</span> 본 회칙은 집행부 및 임원진회의를 통해 변경이 가능하며, 변경될 시 이력관리 및 전체 회원에게 알려야 한다.</p>
+    <h3>제·개정 이력</h3>
+    <div class="scroll"><table><tr><th>번호</th><th>내용</th><th>직위</th><th>작성자</th><th>시행일자</th></tr><tr><td>1</td><td>최초 제정</td><td>총무</td><td>지승욱</td><td>2026.11.14</td></tr></table></div>
   </div>
 </div>
 
@@ -576,7 +590,7 @@ const SESSION_KEY = 'wdtt-session';
 const GRADES = ['S', 'A', 'B', 'C', 'D'];
 const GRADE_NAME = { S: '황금', A: '빨강', B: '주황', C: '녹색', D: '흰색' };
 const DBL_LINE = { 21: 10, 25: 13 };
-const ROLES = ['회장', '부회장', '총무', '일반'];
+const ROLES = ['회장', '부회장', '총무', '임원', '일반', '인턴']; // 회칙 제3조·제6조
 const OFFICER = { '회장': 1, '부회장': 1, '총무': 1 }; // 운영진 (관리자는 표시 없이 권한만)
 
 const $ = s => document.querySelector(s);
@@ -601,11 +615,13 @@ const gradeOf = n => (member(n) || {}).grade || 'none';
 const gIdx = n => { const i = GRADES.indexOf(gradeOf(n)); return i < 0 ? 9 : i; };
 const byGrade = (a, b) => gIdx(a) - gIdx(b) || a.localeCompare(b, 'ko');
 const dot = n => `<i class="dot g-${gradeOf(n)}"></i>`;
-const roleTag = r => r && r !== '일반' ? `<span class="role ${esc(r)}">${esc(r)}</span>` : '';
-function magnet(n, extra = '') {
+const roleTag = (r, title) => r && r !== '일반' ? `<span class="role ${esc(r)}">${esc(r === '임원' ? (title || '임원') : r)}</span>` : '';
+const canSetRole = () => !!(S.me && (S.me.admin || S.me.role === '회장')); // 회칙 제8조 ②
+function magnet(n, extra = '', tag = 'button') {
   const cls = ['mag', 'g-' + gradeOf(n), extra];
   if (n.length > 3) cls.push('long');
   if (S.me && n === S.me.name) cls.push('me');
+  if (tag === 'span') return `<span class="${cls.join(' ')}" aria-hidden="true"><span>${esc(n)}</span></span>`;
   return `<button type="button" class="${cls.join(' ')}" data-mag="${esc(n)}" title="${esc(n)}"><span>${esc(n)}</span></button>`;
 }
 
@@ -733,7 +749,7 @@ function renderHud() {
   const me = S.me; if (!me) return;
   $('#hudMag').innerHTML = magnet(me.name, 'sm');
   $('#hudName').textContent = me.name;
-  $('#hudRole').innerHTML = roleTag(me.role);
+  $('#hudRole').innerHTML = roleTag(me.role, me.title);
   $('#hudGrade').textContent = `${me.grade}조 · ${GRADE_NAME[me.grade]} 자석`;
   const st = monthStats(S.view || S.today.slice(0, 7))[me.name] || {};
   const rate = st.rate || 0;
@@ -843,54 +859,75 @@ function prizes(L) {
   const bottom = rows.filter(x => x.rank >= botRank && !top.includes(x.name)).map(x => x.name);
   return { amount, top, bottom };
 }
-// 하루의 모든 벌금 항목: 지각·결석, 보드 패, 리그 패, 1등·꼴등
-function charges(D) {
+// KST 'YYYY-MM-DD HH:MM'
+const kstStamp = iso => { const d = new Date(Date.parse(iso) + 9 * 3600e3).toISOString(); return d.slice(0, 10) + ' ' + d.slice(11, 16); };
+const nowStamp = () => kstStamp(new Date().toISOString());
+const isGuest = (D, n) => !!(D.att[n] && D.att[n].guest);
+// 하루의 벌금 항목 (회칙 제10조·제12조)
+function baseCharges(D) {
   const out = [];
   Object.entries(D.att || {}).forEach(([n, a]) => {
-    if (a.status === 'late') out.push({ name: n, amount: 2000, src: 'late' });
-    if (a.status === 'absent') out.push({ name: n, amount: 5000, src: 'absent' });
+    if (a.guest && !a.pending && a.status !== 'absent') out.push({ name: n, amount: a.fee || 3000, src: 'guest', label: '게스트비' });
+    if (a.lateReg) out.push({ name: n, amount: 1000, src: 'lateReg', label: '늦은 참석 신청' });
+    if (a.status === 'late') out.push({ name: n, amount: 2000, src: 'late', label: '지각' });
+    if (a.status === 'absent' && !a.pending) out.push({ name: n, amount: 5000, src: 'absent', label: a.lateCancel ? '05:30 이후 취소' : '불참' });
   });
-  (D.marks || []).forEach(m => out.push({ ...m, src: 'board' }));
+  (D.marks || []).forEach(m => out.push({ ...m, src: 'board', label: m.dbl ? '더블패' : m.deuce ? '듀스패' : '패' }));
   (D.leagues || []).forEach(L => L.matches.forEach(mt => {
     const r = result(mt, L.target); if (!r || !L.fee) return;
-    out.push({ name: r.loser, amount: L.fee + (r.dbl || r.deuce ? 1000 : 0), base: L.fee, dbl: r.dbl, deuce: r.deuce, src: 'league' });
+    out.push({ name: r.loser, amount: L.fee + (r.dbl || r.deuce ? 1000 : 0), dbl: r.dbl, deuce: r.deuce, src: 'league', label: `리그 ${r.dbl ? '더블패' : r.deuce ? '듀스패' : '패'}` });
   }));
   (D.leagues || []).forEach(L => {
     const pz = prizes(L); if (!pz) return;
-    pz.top.forEach(n => out.push({ name: n, amount: -pz.amount, src: 'prize', kind: 'top' }));
-    pz.bottom.forEach(n => out.push({ name: n, amount: pz.amount, src: 'prize', kind: 'bottom' }));
+    pz.top.forEach(n => out.push({ name: n, amount: -pz.amount, src: 'prize', kind: 'top', label: '리그 1등' }));
+    pz.bottom.forEach(n => out.push({ name: n, amount: pz.amount, src: 'prize', kind: 'bottom', label: '리그 꼴등' }));
   });
   return out;
 }
+// 당일 23:59까지 입금(입금했어요·확인)이 없으면 +2,000원 (회칙 제12조 ③-2)
+function isOverdue(date, n) {
+  const due = date + ' 23:59';
+  if (nowStamp() <= due) return false;
+  const p = S.payments[date + '|' + n];
+  const t = p && (p.claimedAt || p.confirmedAt);
+  return !(t && kstStamp(t) <= due);
+}
+function charges(D) {
+  const out = baseCharges(D), sum = {};
+  out.forEach(c => sum[c.name] = (sum[c.name] || 0) + c.amount);
+  Object.entries(sum).forEach(([n, v]) => { if (v > 0 && isOverdue(D.date, n)) out.push({ name: n, amount: 2000, src: 'overdue', label: '23:59 지나 입금 (연체)' }); });
+  return out;
+}
 function totals(D) {
-  const t = {}, blank = () => ({ amount: 0, losses: 0, league: 0, prize: 0, late: 0, absent: 0 });
+  const t = {}, blank = () => ({ amount: 0, losses: 0, league: 0, prize: 0, late: 0, absent: 0, guest: 0, overdue: 0, lateReg: 0 });
   Object.keys(D.att || {}).forEach(n => t[n] = blank());
   charges(D).forEach(c => {
     const x = t[c.name] || (t[c.name] = blank());
     x.amount += c.amount;
     if (c.src === 'prize') x.prize += c.amount;
-    else if (c.src === 'late') x.late++;
-    else if (c.src === 'absent') x.absent++;
-    else { x.losses++; if (c.src === 'league') x.league++; }
+    else if (c.src === 'board' || c.src === 'league') { x.losses++; if (c.src === 'league') x.league++; }
+    else x[c.src]++;
   });
   return t;
 }
-// 이번 달 참석률·벌금·납부
+// 이번 달 참석률·벌금·납부 (게스트 제외)
 function monthStats(mon) {
   const days = Object.values(S.days).filter(d => d.date.startsWith(mon));
-  const clubDays = days.filter(d => Object.values(d.att).some(a => a.status === 'present' || a.status === 'late' || a.status === 'rsvp') && d.date <= S.today);
+  const real = (d, n) => S.members.some(m => m.name === n) && !d.att[n].guest;
+  const clubDays = days.filter(d => d.date <= S.today && Object.entries(d.att).some(([n, a]) => real(d, n) && a.status !== 'absent'));
   const st = {};
   const get = n => st[n] || (st[n] = { days: 0, late: 0, absent: 0, charged: 0, paid: 0, rate: 0 });
   S.members.forEach(m => get(m.name));
   clubDays.forEach(d => Object.entries(d.att).forEach(([n, a]) => {
+    if (!real(d, n)) return;
     if (a.status === 'present' || a.status === 'late' || (a.status === 'rsvp' && d.date < S.today)) get(n).days++;
     if (a.status === 'late') get(n).late++;
     if (a.status === 'absent') get(n).absent++;
   }));
-  days.forEach(d => Object.entries(totals(d)).forEach(([n, x]) => { get(n).charged += x.amount; }));
-  Object.values(S.payments).filter(p => p.date.startsWith(mon) && p.status === 'confirmed').forEach(p => { get(p.name).paid += p.amount || 0; });
-  const total = Object.values(st).reduce((s, x) => s + x.paid, 0);
-  Object.values(st).forEach(x => { x.rate = clubDays.length ? x.days / clubDays.length : 0; x.share = total ? x.paid / total : 0; });
+  days.forEach(d => Object.entries(totals(d)).forEach(([n, x]) => { if (real(d, n)) get(n).charged += x.amount; }));
+  Object.values(S.payments).filter(p => p.date.startsWith(mon) && p.status === 'confirmed' && st[p.name]).forEach(p => { get(p.name).paid += p.amount || 0; });
+  const names = S.members.map(m => m.name), total = names.reduce((s, n) => s + st[n].paid, 0);
+  names.forEach(n => { const x = st[n]; x.rate = clubDays.length ? x.days / clubDays.length : 0; x.share = total ? x.paid / total : 0; });
   st.__clubDays = clubDays.length; st.__paidTotal = total;
   return st;
 }
@@ -898,73 +935,97 @@ function monthStats(mon) {
 /* ============ 짝대기 ============ */
 const STROKES = ['M6 7 H34', 'M20 7 V33', 'M20 20 H31', 'M10 18 V33', 'M4 33 H36'];
 const COL = { b: 'var(--blue)', r: 'var(--red)', k: 'var(--black)' };
+const MAX_STROKES = 30; // 한 줄에 正 6개 = 30,000원
+// 2,000원은 파랑, 3,000원 이상은 전부 빨강, 지각·불참·늦은 신청·연체는 검정. 게스트비는 짝대기 없이 표시
 function strokesOf(c) {
-  if (c.src === 'late' || c.src === 'absent') return Array(c.amount / 1000).fill(COL.k);
-  const base = c.base ?? (c.amount - (c.dbl || c.deuce ? 1000 : 0));
-  const out = Array(Math.max(0, Math.round(base / 1000))).fill(base <= 2000 ? COL.b : COL.r);
-  for (let k = Math.round((c.amount - base) / 1000); k > 0; k--) out.push(COL.r);
-  return out;
+  if (c.src === 'prize' || c.src === 'guest') return [];
+  const n = Math.max(0, Math.round(c.amount / 1000));
+  if (['late', 'absent', 'lateReg', 'overdue'].includes(c.src)) return Array(n).fill(COL.k);
+  return Array(n).fill(c.amount >= 3000 ? COL.r : COL.b);
 }
-function drawStrokes(cols) {
+function drawStrokes(cols, cap = Infinity) {
   let h = '';
-  for (let i = 0; i < cols.length; i += 5) h += '<svg viewBox="0 0 40 40" aria-hidden="true">' + cols.slice(i, i + 5).map((c, k) => `<path d="${STROKES[k]}" stroke="${c}" stroke-width="4.5" stroke-linecap="round" fill="none"/>`).join('') + '</svg>';
+  const shown = cols.slice(0, cap);
+  for (let i = 0; i < shown.length; i += 5) h += '<svg viewBox="0 0 40 40" aria-hidden="true">' + shown.slice(i, i + 5).map((c, k) => `<path d="${STROKES[k]}" stroke="${c}" stroke-width="4.5" stroke-linecap="round" fill="none"/>`).join('') + '</svg>';
+  if (cols.length > cap) h += `<span class="more">+${won((cols.length - cap) * 1000)}</span>`;
   return h;
 }
 $$('.ex').forEach(el => el.innerHTML = drawStrokes(el.dataset.ex.split(',').map(x => COL[x])));
 
 /* ============ 현황판 ============ */
-const ST_LABEL = { rsvp: '참석 예정', present: '도착', late: '지각', absent: '결석' };
+const ST_LABEL = { rsvp: '참석 예정', present: '도착', late: '지각', absent: '불참' };
+const canApprove = () => isOff() || (S.me && S.me.role === '임원');
 function canEdit(D) { return isOff() || (!D.closed && D.date >= S.today); }
-function rateOf(D) { return D.rate === '2000' ? 2000 : D.rate === '3000' ? 3000 : (kstNow().h >= 19 ? 3000 : 2000); }
+function rateOf() { return kstNow().h >= 7 ? 3000 : 2000; } // 07:00 전 2,000원, 07:00부터 3,000원 (자동)
+const NEAR_RE = /의정부|강북구|도봉구|노원구/;
+function myLateText(a) {
+  const far = S.me.addr && !NEAR_RE.test(S.me.addr);
+  if (a && a.pickup) return '06:15 (픽업)';
+  if (far && a && a.departAt && kstStamp(a.departAt) < S.sel + ' 05:30') return '06:30 (05:30 전 출발 알림)';
+  return far ? '06:10 · 05:30 전에 출발 알림하면 06:30' : '06:10';
+}
 function renderDay() {
   const D = dayOf(S.sel), [y, m, d] = S.sel.split('-');
   $('#dayLabel').textContent = `${+m}월 ${+d}일${S.sel === S.today ? ' (오늘)' : ''}`;
-  renderMyAct(D); renderBoard(D); renderTray(D); renderRate(D); renderPick(D); renderLeagues(D); renderSettle(D);
+  renderMyAct(D); renderBoard(D); renderGuests(D); renderTray(D); renderPick(D); renderLeagues(D); renderSettle(D);
+  if (!$('#actModal').classList.contains('hidden') && actFor) renderAct(actFor);
 }
+const hm = iso => new Date(iso).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Seoul' });
 function renderMyAct(D) {
-  const me = S.me.name, a = D.att[me], isToday = S.sel === S.today;
+  const me = S.me.name, a = D.att[me], isToday = S.sel === S.today, now = nowStamp();
+  const before23 = now < prevDateOf(S.sel) + ' 23:00', before0530 = now < S.sel + ' 05:30';
   let h = '';
   if (D.closed) h += `<div class="closed">🔒 마감된 날입니다${D.closedBy ? ` (${esc(D.closedBy)})` : ''}. 아래에서 벌금을 확인하고 입금해 주세요.</div>`;
-  if (canEdit(D)) {
-    if (!a) h += `<div class="myact"><button class="primary" data-my="join" style="grid-column:1/-1">🧲 내 자석 붙이기 (참석)</button></div>`;
-    else if (a.status === 'rsvp') h += `<div class="myact">${isToday ? `<button class="forest" data-my="checkin">🏸 구장 도착</button>` : `<button class="forest" disabled>🏸 당일에 도착 체크</button>`}<button class="ghost" data-my="leave">자석 떼기</button></div>
-      ${isToday ? `<p class="muted" style="margin:6px 0 0">6시 15분이 지나 도착을 누르면 지각(2,000원)입니다.</p>` : ''}`;
-    else h += `<p class="muted" style="margin:8px 0 0">${a.status === 'absent' ? '결석 처리됐어요.' : `✅ ${a.arrivedAt ? new Date(a.arrivedAt).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }) + ' ' : ''}${ST_LABEL[a.status]}`}</p>`;
+  if (canEdit(D) && D.date >= S.today) {
+    if (!a) h += `<div class="myact"><button class="primary full" data-my="join">🧲 내 자석 붙이기 (참석)</button></div>
+      <p class="hint">${before23 ? `참석 신청 마감: ${prevDateOf(S.sel).slice(5).replace('-', '/')} 밤 11시` : '⚠️ 전날 밤 11시가 지나 지금 붙이면 <b>1,000원</b>이 붙어요'}</p>`;
+    else if (a.status === 'rsvp') {
+      h += `<div class="myact">
+        ${isToday ? `<button class="${a.departAt ? 'ghost' : 'gold'}" data-my="depart">🚗 ${a.departAt ? `출발 ${hm(a.departAt)}` : '출발 알림'}</button><button class="forest" data-my="checkin">🏸 구장 도착</button>` : ''}
+        <button class="ghost" data-my="pickup">${a.pickup ? '✅ 픽업해서 가요' : '🚙 픽업해서 가요'}</button>
+        <button class="ghost" data-my="leave">${before0530 ? '자석 떼기 (취소)' : '불참 처리 (5,000원)'}</button></div>
+        <p class="hint">내 지각 기준: <b>${myLateText(a)}</b> · 취소는 당일 05:30 전까지${a.lateReg ? ' · 늦은 신청 1,000원' : ''}</p>`;
+    } else h += `<p class="hint" style="font-size:14px">${a.status === 'absent' ? '❌ 불참 처리됐어요 (5,000원)' : `✅ ${a.arrivedAt ? hm(a.arrivedAt) + ' ' : ''}${ST_LABEL[a.status]}${a.status === 'late' ? ' (2,000원)' : ''}`}</p>`;
   }
   $('#myAct').innerHTML = h;
-  const n = Object.values(D.att).filter(x => x.status !== 'absent').length;
-  $('#wbSub').textContent = n ? `참석 ${n}명` : '아직 붙은 자석이 없어요';
+  const ppl = Object.values(D.att).filter(x => x.status !== 'absent' && !x.pending);
+  $('#wbSub').textContent = ppl.length ? `참석 ${ppl.length}명${ppl.some(x => x.guest) ? ` (게스트 ${ppl.filter(x => x.guest).length})` : ''} · 이름을 누르면 기록` : '아직 붙은 자석이 없어요';
 }
+const prevDateOf = d => new Date(Date.parse(d + 'T00:00:00Z') - 864e5).toISOString().slice(0, 10);
 function renderBoard(D) {
-  const all = charges(D), t = totals(D), r = rateOf(D), names = Object.keys(D.att).sort(byGrade), ed = canEdit(D);
-  if (!names.length) { $('#board').innerHTML = '<p class="muted" style="text-align:center">자석 통에서 자석을 붙여 주세요.</p>'; return; }
+  const all = charges(D), t = totals(D);
+  const names = Object.keys(D.att).sort((a, b) => (isGuest(D, a) - isGuest(D, b)) || byGrade(a, b));
+  if (!names.length) { $('#board').innerHTML = '<p class="muted" style="text-align:center;margin:8px 0">자석 통에서 자석을 붙여 주세요.</p>'; return; }
   $('#board').innerHTML = names.map(p => {
-    const a = D.att[p], x = t[p], mine = all.filter(c => c.name === p && c.src !== 'prize');
-    const playing = a.status === 'present' || a.status === 'late' || a.status === 'rsvp';
-    return `<div class="pl" id="pl-${esc(p)}">
-      ${magnet(p, a.status === 'absent' ? 'ghosted' : '')}
-      <div class="pl-top"><span><span class="pl-name">${esc(p)}</span><span class="st ${a.status}">${ST_LABEL[a.status]}</span></span>
-        <span class="pl-sum num">${x.losses}패 · ${won(x.amount)}</span></div>
-      <div class="tally">${mine.length ? drawStrokes(mine.flatMap(strokesOf)) : '<span class="none">아직 깨끗! ✨</span>'}</div>
-      ${x.prize ? `<div class="prize ${x.prize < 0 ? 'minus' : 'plus'}">${x.prize < 0 ? '🥇 1등' : '💀 꼴등'} ${won(x.prize)}</div>` : ''}
-      ${ed && playing ? `<div class="pl-btns">
-        <button class="lose" data-mark="lose" data-p="${esc(p)}">패 +${r / 1000}천</button>
-        <button class="dbl" data-mark="dbl" data-p="${esc(p)}">더블 +${r / 1000 + 1}천</button>
-        <button class="deuce" data-mark="deuce" data-p="${esc(p)}">듀스 +${r / 1000 + 1}천</button>
-        <button class="ghost small" data-mark="undo" data-p="${esc(p)}" aria-label="마지막 표시 지우기">↶</button></div>` : ''}
-      ${isOff() ? `<div class="pl-off">운영: ${['rsvp', 'present', 'late', 'absent'].map(s => `<button class="${a.status === s ? 'on' : ''}" data-status="${s}" data-p="${esc(p)}">${ST_LABEL[s]}</button>`).join('')}<button data-remove="${esc(p)}">빼기</button></div>` : ''}
-    </div>`;
+    const a = D.att[p], x = t[p], cols = all.filter(c => c.name === p).flatMap(strokesOf);
+    const tag = a.guest ? (a.pending ? '<span class="st pending">승인 대기</span>' : '<span class="st guest">게스트</span>') : '';
+    return `<button type="button" class="pl" data-row="${esc(p)}">
+      ${a.guest ? `<span class="mag g-none ${p.length > 3 ? 'long' : ''}" aria-hidden="true"><span>${esc(p)}</span></span>` : magnet(p, a.status === 'absent' ? 'ghosted' : '', 'span')}
+      <span class="info"><span class="line"><span class="nm">${esc(p)}</span>${tag}<span class="st ${a.status}">${ST_LABEL[a.status]}</span>
+        ${x.guest ? '<span class="chip">게스트비 3천</span>' : ''}${x.prize ? `<span class="chip ${x.prize < 0 ? 'minus' : 'plus'}">${x.prize < 0 ? '🥇' : '💀'}${won(x.prize)}</span>` : ''}
+        <span class="sum num">${won(x.amount)}</span></span>
+      <span class="tally">${drawStrokes(cols, MAX_STROKES)}</span></span>
+    </button>`;
   }).join('');
 }
+function renderGuests(D) {
+  if (!canEdit(D) || D.date < S.today) { $('#guestArea').innerHTML = ''; return; }
+  const cnt = Object.values(D.att).filter(a => a.status !== 'absent').length, wk = [0, 6].includes(new Date(D.date + 'T00:00:00Z').getUTCDay()), max = wk ? 15 : 10;
+  const ok = cnt < max || isOff();
+  $('#guestArea').innerHTML = `<details style="margin-top:10px"><summary style="font-weight:700;cursor:pointer">👥 게스트 초대 <span class="muted">(${wk ? '주말 15명' : '평일 10명'} 미만일 때 · 지금 ${cnt}명)</span></summary>
+    ${ok ? `<form id="guestForm" class="row" style="margin-top:8px"><input id="guestName" placeholder="게스트 이름" maxlength="12" style="flex:1"><button class="primary">초대</button></form>
+    <p class="hint">${canApprove() ? '집행부·임원진이 초대하면 바로 승인됩니다.' : '집행부·임원진이 승인하면 현황판에 올라갑니다.'} 게스트비 3,000원(운동 전 입금)과 벌금 입금은 초대한 사람이 챙겨 주세요.</p>`
+      : `<p class="hint">오늘은 인원이 차서 게스트를 부를 수 없어요.</p>`}</details>`;
+}
+$('#guestArea').addEventListener('submit', async e => {
+  e.preventDefault();
+  const g = $('#guestName').value.trim(); if (!g) return;
+  if (await dayOp('addGuest', { guest: g })) toast(canApprove() ? `${g} 게스트 초대 완료` : `${g} 게스트 승인 요청을 보냈어요`);
+});
 function renderTray(D) {
   const away = S.members.map(m => m.name).filter(n => !D.att[n]).sort(byGrade);
-  $('#trayHint').textContent = isOff() ? '(운영진은 누구 자석이든 붙일 수 있어요)' : '(내 자석만 붙일 수 있어요)';
+  $('#trayHint').textContent = isOff() ? '(집행부는 누구 자석이든 붙일 수 있어요)' : '(내 자석만 붙일 수 있어요)';
   $('#tray').innerHTML = away.length ? away.map(n => magnet(n, isOff() || n === S.me.name ? '' : 'ghosted')).join('') : '<span class="empty">모두 붙었어요 🎉</span>';
-}
-function renderRate(D) {
-  $$('#rateBtns button').forEach(b => { b.classList.toggle('on', b.dataset.rate === (D.rate || 'auto')); b.disabled = !canEdit(D); });
-  const r = rateOf(D);
-  $('#rateNow').textContent = `지금 1패 = ${won(r)} (${r <= 2000 ? '파랑' : '빨강'} ${r / 1000}개)`;
 }
 async function dayOp(op, extra = {}) {
   const date = S.sel;
@@ -973,32 +1034,63 @@ async function dayOp(op, extra = {}) {
 }
 $('#myAct').addEventListener('click', async e => {
   const b = e.target.closest('[data-my]'); if (!b) return;
-  const op = b.dataset.my;
-  if (op === 'leave' && !confirm('자석을 뗄까요? (참석 취소)')) return;
+  const op = b.dataset.my, a = dayOf(S.sel).att[S.me.name];
+  if (op === 'leave' && !confirm(nowStamp() < S.sel + ' 05:30' ? '자석을 뗄까요? (참석 취소)' : '05:30이 지나 취소하면 불참 벌금 5,000원입니다. 불참 처리할까요?')) return;
+  if (op === 'join' && nowStamp() >= prevDateOf(S.sel) + ' 23:00' && !confirm('전날 밤 11시가 지나 신청하면 1,000원이 붙어요. 참석할까요?')) return;
   b.disabled = true;
-  if (await dayOp(op)) {
-    if (op === 'join') { toast('자석 착! 🧲 참석 신청 완료'); const el = document.querySelector(`#pl-${CSS.escape(S.me.name)} .mag`); el && el.classList.add('pop'); }
-    if (op === 'checkin') { const a = dayOf(S.sel).att[S.me.name]; toast(a && a.status === 'late' ? '⏰ 지각! 검은 짝대기 2개 (2,000원)' : '🏸 도착 완료! 오늘도 화이팅'); }
+  const extra = op === 'pickup' ? { value: !(a && a.pickup) } : {};
+  if (await dayOp(op, extra)) {
+    if (op === 'join') toast('자석 착! 🧲 참석 신청 완료');
+    if (op === 'depart') toast('🚗 출발 알림 완료! 조심히 오세요');
+    if (op === 'checkin') { const x = dayOf(S.sel).att[S.me.name]; toast(x && x.status === 'late' ? '⏰ 지각! 검은 짝대기 2개 (2,000원)' : '🏸 도착 완료! 오늘도 화이팅'); }
   }
 });
-$('#board').addEventListener('click', async e => {
-  const mag = e.target.closest('[data-mag]'); if (mag) return openProfile(mag.dataset.mag);
-  const b = e.target.closest('button'); if (!b) return;
-  const p = b.dataset.p;
+// 이름(줄)을 누르면 기록 창
+let actFor = null;
+function renderAct(n) {
+  const D = dayOf(S.sel), a = D.att[n]; if (!a) { closeModal($('#actModal')); return; }
+  const list = charges(D).filter(c => c.name === n), x = totals(D)[n], r = rateOf();
+  const playing = a.status !== 'absent' && !a.pending && canEdit(D) && (S.sel === S.today || isOff());
+  $('#actName').innerHTML = `${esc(n)} ${a.guest ? `<span class="st guest">게스트 · ${esc(a.by)} 초대</span>` : roleTag((member(n) || {}).role, (member(n) || {}).title)}`;
+  $('#actBody').innerHTML = `
+    <div class="tally" style="height:40px;background-size:40px 40px;min-width:0">${drawStrokes(list.flatMap(strokesOf))}</div>
+    <div style="margin:8px 0">${list.length ? list.map(c => `<div class="settle-row" style="padding:5px 2px"><span>${esc(c.label)}${c.at ? ` <span class="muted">${hm(c.at)}${c.by ? ' · ' + esc(c.by) : ''}</span>` : ''}</span><b class="num">${won(c.amount)}</b></div>`).join('') : '<p class="muted">아직 깨끗! ✨</p>'}
+      <div class="settle-total"><span>합계</span><span class="num">${won(x.amount)}</span></div></div>
+    ${playing ? `<h3>게임 결과 기록 <span class="muted">(지금 ${r === 2000 ? '07:00 전' : '07:00 이후'})</span></h3><div class="acts">
+      <button class="lose" data-mark="lose">패<br>+${r / 1000}천</button><button class="dbl" data-mark="dbl">더블패<br>+${r / 1000 + 1}천</button><button class="deuce" data-mark="deuce">듀스패<br>+${r / 1000 + 1}천</button></div>
+      <button class="ghost" data-mark="undo" style="width:100%;margin-top:8px">↶ 마지막 패 지우기</button>` : ''}
+    ${a.pending && canApprove() ? `<button class="forest" data-act="approve" style="width:100%;margin-top:10px">✅ 게스트 승인</button>` : ''}
+    ${a.guest && a.status === 'rsvp' && !a.pending && (a.by === S.me.name || isOff()) && S.sel === S.today ? `<button class="forest" data-act="gcheckin" style="width:100%;margin-top:10px">🏸 게스트 구장 도착</button>` : ''}
+    ${a.guest && a.by === S.me.name && !isOff() && canEdit(D) ? `<button class="ghost" data-act="gleave" style="width:100%;margin-top:8px">게스트 취소</button>` : ''}
+    ${isOff() ? `<h3>집행부</h3><div class="ops">${['rsvp', 'present', 'late', 'absent'].map(s2 => `<button class="${a.status === s2 ? 'on' : ''}" data-status="${s2}">${ST_LABEL[s2]}</button>`).join('')}
+      <button class="${a.lateReg ? 'on' : ''}" data-act="lateReg">늦은 신청 1천</button><button class="${a.pickup ? 'on' : ''}" data-act="pickup">픽업</button><button data-act="remove" style="color:var(--red)">자석 빼기</button></div>
+      ${a.departAt || a.arrivedAt ? `<p class="hint">${a.departAt ? `출발 ${hm(a.departAt)}` : ''}${a.arrivedAt ? ` · 도착 ${hm(a.arrivedAt)}` : ''}</p>` : ''}` : ''}
+    ${!a.guest ? `<button class="ghost" data-act="card" style="width:100%;margin-top:12px">🧲 멤버 카드 보기</button>` : ''}`;
+}
+$('#board').addEventListener('click', e => { const row = e.target.closest('[data-row]'); if (!row) return; actFor = row.dataset.row; renderAct(actFor); openModal('actModal'); });
+$('#actBody').addEventListener('click', async e => {
+  const b = e.target.closest('button'); if (!b || !actFor) return;
+  const n = actFor, a = dayOf(S.sel).att[n];
   if (b.dataset.mark) {
     const k = b.dataset.mark;
-    if (await dayOp(k === 'undo' ? 'undoMark' : 'mark', { name: p, kind: k }) && k !== 'undo') toast(`${p} ${k === 'lose' ? '패' : k === 'dbl' ? '더블패' : '듀스패'} 기록`);
-  } else if (b.dataset.status) await dayOp('setStatus', { name: p, status: b.dataset.status });
-  else if (b.dataset.remove) { if (confirm(`${b.dataset.remove}님 자석을 뗄까요? 보드 표시도 지워집니다.`)) await dayOp('leave', { name: b.dataset.remove }); }
+    if (await dayOp(k === 'undo' ? 'undoMark' : 'mark', { name: n, kind: k }) && k !== 'undo') toast(`${n} ${k === 'lose' ? '패' : k === 'dbl' ? '더블패' : '듀스패'} 기록`);
+  } else if (b.dataset.status) await dayOp('setStatus', { name: n, status: b.dataset.status });
+  else if (b.dataset.act === 'approve') { if (await dayOp('approveGuest', { name: n })) toast(`${n} 게스트 승인`); }
+  else if (b.dataset.act === 'gcheckin') await dayOp('checkin', { name: n });
+  else if (b.dataset.act === 'gleave') { if (confirm(`${n} 게스트를 취소할까요?`)) await dayOp('leave', { name: n }); }
+  else if (b.dataset.act === 'lateReg') await dayOp('lateReg', { name: n, value: !a.lateReg });
+  else if (b.dataset.act === 'pickup') await dayOp('pickup', { name: n, value: !a.pickup });
+  else if (b.dataset.act === 'remove') { if (confirm(`${n} 자석을 뺄까요? 보드 표시도 지워집니다.`)) await dayOp('leave', { name: n }); }
+  else if (b.dataset.act === 'card') { closeModal($('#actModal')); openProfile(n); }
 });
 $('#tray').addEventListener('click', async e => {
   const b = e.target.closest('[data-mag]'); if (!b) return;
   const n = b.dataset.mag;
   if (n !== S.me.name && !isOff()) return openProfile(n);
-  if (!canEdit(dayOf(S.sel))) return toast('지난 날이나 마감된 날은 운영진만 고칠 수 있어요', true);
+  if (!canEdit(dayOf(S.sel))) return toast('지난 날이나 마감된 날은 집행부만 고칠 수 있어요', true);
+  if (n === S.me.name && nowStamp() >= prevDateOf(S.sel) + ' 23:00' && !confirm('전날 밤 11시가 지나 신청하면 1,000원이 붙어요. 참석할까요?')) return;
   if (await dayOp('join', { name: n })) toast(`${n} 자석 착! 🧲`);
 });
-$('#rateBtns').addEventListener('click', e => { const b = e.target.closest('[data-rate]'); if (b) dayOp('setRate', { rate: b.dataset.rate }); });
 
 /* ============ 리그 ============ */
 function shuffle(a) { a = [...a]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
@@ -1012,7 +1104,7 @@ function roundRobin(list) {
   }
   return shuffle(rounds);
 }
-const playingNames = D => Object.keys(D.att).filter(n => D.att[n].status !== 'absent').sort(byGrade);
+const playingNames = D => Object.keys(D.att).filter(n => D.att[n].status !== 'absent' && !D.att[n].pending).sort(byGrade);
 const pickedNames = () => $$('#leaguePick input:checked').map(i => i.value);
 function renderPick(D) {
   const names = playingNames(D);
@@ -1108,6 +1200,7 @@ function renderSettle(D) {
   const t = totals(D), names = Object.keys(t).sort((a, b) => t[b].amount - t[a].amount || byGrade(a, b));
   const sum = names.reduce((s, n) => s + Math.max(0, t[n].amount), 0);
   const me = S.me.name, mine = t[me], st = S.settings;
+  const myGuests = Object.keys(D.att).filter(n => D.att[n].guest && D.att[n].by === me && t[n] && t[n].amount > 0);
   const [, m, d] = S.sel.split('-');
   let box = '';
   if (mine && mine.amount > 0) {
@@ -1115,6 +1208,8 @@ function renderSettle(D) {
     box = `<div class="paybox">
       <div style="font-size:14px;opacity:.9">${D.closed ? '🏁 오늘 게임 끝! 총무 계좌로 입금해 주세요' : '지금까지 내 벌금 (게임이 끝나면 입금)'}</div>
       <div class="big game num">${won(mine.amount)}</div>
+      <div style="font-size:13px;opacity:.95">${mine.overdue ? '⚠️ 23:59가 지나 연체 2,000원이 붙었어요' : p.status === 'none' ? `⏰ ${+m}/${+d} 23:59까지 입금하세요. 넘기면 2,000원 추가` : ''}</div>
+      ${myGuests.length ? `<div style="font-size:13px;margin-top:4px;background:rgba(255,255,255,.14);border-radius:8px;padding:6px 8px">👥 내가 초대한 게스트: ${myGuests.map(g => `${esc(g)} ${won(t[g].amount)}`).join(', ')} — 게스트 입금도 꼭 확인해 주세요</div>` : ''}
       <div class="acct"><span>${esc(st.bank)} ${esc(st.number)}<br><small style="font-weight:500;opacity:.85">예금주 ${esc(st.holder)} · 입금자명 <b>${esc(me)}${m}${d}</b></small></span>
         <button class="small white" data-copy="${esc(st.bank + ' ' + st.number)}">복사</button></div>
       <div class="btns">
@@ -1128,8 +1223,9 @@ function renderSettle(D) {
   $('#payBox').innerHTML = box;
   $('#settle').innerHTML = names.length ? names.map(n => {
     const x = t[n], p = payOf(S.sel, n), bits = [];
-    if (x.losses) bits.push(`${x.losses}패`); if (x.late) bits.push('지각'); if (x.absent) bits.push('결석'); if (x.prize) bits.push(x.prize < 0 ? '🥇1등' : '💀꼴등');
-    return `<div class="settle-row ${n === me ? 'mine' : ''}"><div>${dot(n)}<b>${esc(n)}</b> <span class="muted">${bits.join(' · ') || '깨끗'}</span></div>
+    if (x.guest) bits.push('게스트비'); if (x.losses) bits.push(`${x.losses}패`); if (x.lateReg) bits.push('늦은 신청'); if (x.late) bits.push('지각'); if (x.absent) bits.push('불참'); if (x.overdue) bits.push('연체'); if (x.prize) bits.push(x.prize < 0 ? '🥇1등' : '💀꼴등');
+    const g = D.att[n] && D.att[n].guest ? ` <span class="st guest">게스트·${esc(D.att[n].by)}</span>` : '';
+    return `<div class="settle-row ${n === me ? 'mine' : ''}"><div>${g ? '' : dot(n)}<b>${esc(n)}</b>${g} <span class="muted">${bits.join(' · ') || '깨끗'}</span></div>
       <div class="row" style="gap:6px;flex-wrap:nowrap"><span class="amt num">${x.amount ? won(x.amount) : '0원'}</span>${x.amount > 0 ? `<span class="pst ${p.status}">${PST[p.status]}</span>` : ''}
       ${isOff() && x.amount > 0 ? (p.status === 'confirmed' ? `<button class="small ghost" data-pay="reset" data-p="${esc(n)}">취소</button>` : `<button class="small forest" data-pay="confirm" data-p="${esc(n)}" data-amt="${x.amount}">확인</button>`) : ''}</div></div>`;
   }).join('') + `<div class="settle-total"><span>합계</span><span class="num">${won(sum)}</span></div>` : '<p class="muted">참석자가 없습니다.</p>';
@@ -1163,7 +1259,7 @@ $('#closeArea').addEventListener('click', async e => {
   const D = dayOf(S.sel);
   if (!D.closed) {
     const waiting = Object.entries(D.att).filter(([, a]) => a.status === 'rsvp').map(([n]) => n);
-    if (waiting.length && !confirm(`아직 도착 체크를 안 한 사람: ${waiting.join(', ')}\n결석이면 먼저 '결석'으로 바꿔 주세요. 그대로 마감할까요?`)) return;
+    if (waiting.length && !confirm(`아직 도착 체크를 안 한 사람: ${waiting.join(', ')}\n안 왔으면 먼저 '불참'으로 바꿔 주세요. 그대로 마감할까요?`)) return;
   }
   if (await dayOp(D.closed ? 'reopen' : 'close')) toast(D.closed ? '마감을 풀었어요' : '🏁 마감! 멤버들에게 입금 안내가 떴어요');
 });
@@ -1172,10 +1268,10 @@ function shareText() {
   const names = Object.keys(t).sort((a, b) => t[b].amount - t[a].amount);
   const sum = names.reduce((s, n) => s + Math.max(0, t[n].amount), 0);
   let s = `🏸 우당탕탕 요절복통\n${y}.${m}.${d} 정산 (참석 ${playingNames(D).length}명)\n\n`;
-  s += names.map(n => { const x = t[n]; return `${n} : ${x.amount > 0 ? won(x.amount) : x.amount < 0 ? won(x.amount) + ' (1등)' : '0원 🎉'}${x.late ? ' ⏰지각' : ''}${x.absent ? ' ❌결석' : ''}`; }).join('\n');
+  s += names.map(n => { const x = t[n]; return `${n} : ${x.amount > 0 ? won(x.amount) : x.amount < 0 ? won(x.amount) + ' (1등)' : '0원 🎉'}${D.att[n] && D.att[n].guest ? ` (게스트·${D.att[n].by} 초대)` : ''}${x.late ? ' ⏰지각' : ''}${x.absent ? ' ❌불참' : ''}${x.overdue ? ' ⚠️연체' : ''}`; }).join('\n');
   s += `\n\n합계 ${won(sum)}`;
   (D.leagues || []).forEach((L, li) => { const r = standings(L); if (r.played) s += `\n\n🏆 리그${D.leagues.length > 1 ? ' ' + (li + 1) : ''} 순위\n` + r.rows.map(x => `${x.rank}. ${x.name} (${x.w}승${x.l}패 ${x.diff > 0 ? '+' : ''}${x.diff})`).join('\n'); });
-  s += `\n\n💳 ${st.bank} ${st.number} (${st.holder})\n입금자명: 이름+${m}${d}\n${location.origin + location.pathname}`;
+  s += `\n\n💳 ${st.bank} ${st.number} (${st.holder})\n입금자명: 이름+${m}${d} · ${+m}/${+d} 23:59까지 (넘기면 +2,000원)\n${location.origin + location.pathname}`;
   return s;
 }
 $('#shareBtn').onclick = async () => {
@@ -1235,11 +1331,11 @@ async function renderActivity() {
   const st = monthStats(S.view), names = S.members.map(x => x.name);
   if (actTab === 'att') {
     names.sort((a, b) => st[b].rate - st[a].rate || st[b].days - st[a].days || byGrade(a, b));
-    $('#actNote').textContent = `모임한 날 ${st.__clubDays}일 기준 · 지각·결석 횟수도 함께 보여요`;
+    $('#actNote').textContent = `모임한 날 ${st.__clubDays}일 기준 · 지각·불참 횟수도 함께 보여요`;
     $('#actList').innerHTML = names.map((n, i) => { const x = st[n], pct = Math.round(x.rate * 100);
       return `<div class="act-row">${magnet(n, 'sm')}<div><b>${i < 3 && x.days ? ['🥇', '🥈', '🥉'][i] + ' ' : ''}${esc(n)}</b>
         <div class="bar"><i style="width:${pct}%;background:linear-gradient(90deg,#58c48b,#1f9d55)"></i></div>
-        <div class="lbl"><span>참석 ${x.days}회${x.late ? ` · 지각 ${x.late}` : ''}${x.absent ? ` · 결석 ${x.absent}` : ''}</span></div></div>
+        <div class="lbl"><span>참석 ${x.days}회${x.late ? ` · 지각 ${x.late}` : ''}${x.absent ? ` · 불참 ${x.absent}` : ''}</span></div></div>
         <b class="num">${pct}%</b></div>`; }).join('');
   } else {
     names.sort((a, b) => st[b].paid - st[a].paid || st[b].charged - st[a].charged);
@@ -1270,12 +1366,12 @@ function openProfile(n) {
   const bg = badgesOf(n, st);
   $('#profileBody').innerHTML = `<div class="profile">
     ${magnet(n, 'xl')}
-    <h2 style="justify-content:center;margin:12px 0 0">${esc(n)} ${roleTag(m.role)}</h2>
+    <h2 style="justify-content:center;margin:12px 0 0">${esc(n)} ${roleTag(m.role, m.title)}</h2>
     <div class="muted">${m.grade}조 · ${GRADE_NAME[m.grade]} 자석${next ? ` · 다음 목표 ${next}조 ${GRADE_NAME[next]}` : ' · 최고 등급 👑'}</div>
     <div class="path">${[...GRADES].reverse().map(g => `<div class="step ${g === m.grade ? 'on' : GRADES.indexOf(g) > gi ? 'done' : ''}"><i class="dot g-${g}"></i>${g}</div>`).join('<span style="align-self:center;color:#ccb">›</span>')}</div>
     <div class="muted">${y}년 ${+mo}월 기록</div>
     <div class="stats"><div><b class="num">${Math.round(x.rate * 100)}%</b><span>참석률</span></div><div><b class="num">${Math.round(x.share * 1000) / 10}%</b><span>벌금 지분율</span></div><div><b class="num">${x.days}</b><span>참석 횟수</span></div></div>
-    <div class="stats"><div><b class="num">${x.late}</b><span>지각</span></div><div><b class="num">${x.absent}</b><span>결석</span></div><div><b class="num" style="font-size:16px">${won(x.charged)}</b><span>이번 달 벌금</span></div></div>
+    <div class="stats"><div><b class="num">${x.late}</b><span>지각</span></div><div><b class="num">${x.absent}</b><span>불참</span></div><div><b class="num" style="font-size:16px">${won(x.charged)}</b><span>이번 달 벌금</span></div></div>
     ${bg.length ? `<div class="badges">${bg.map(b => `<span>${b}</span>`).join('')}</div>` : ''}
     ${(m.gradeHistory || []).length > 1 ? `<h3>📈 급수 기록</h3><div class="muted" style="text-align:left">${m.gradeHistory.slice().reverse().map(h => `${kd(h.at)} · ${h.from ? `${h.from}조 → ` : ''}${h.to}조${h.note ? ' (' + esc(h.note) + ')' : ''}`).join('<br>')}</div>` : ''}
     ${isOff() && m.phone ? `<h3>📋 명부 정보 (운영진만)</h3><div class="muted" style="text-align:left">📞 <a href="tel:${esc(m.phone)}">${esc(m.phone.replace(/(\d{3})(\d{3,4})(\d{4})/, '$1-$2-$3'))}</a><br>🎂 ${esc(m.birth)}<br>🏠 ${esc(m.addr)}</div>` : ''}
@@ -1316,11 +1412,11 @@ function renderOps() {
       ${rows.map(r => `<div class="settle-row"><div>${dot(r.n)}<b>${esc(r.n)}</b> <span class="muted">${+r.date.slice(5, 7)}/${+r.date.slice(8)}</span> <span class="pst ${r.p.status}">${PST[r.p.status]}</span></div>
         <div class="row" style="gap:6px;flex-wrap:nowrap"><b class="num">${won(r.amt)}</b><button class="small forest" data-opspay="${r.date}|${esc(r.n)}" data-amt="${r.amt}">✅ 확인</button></div></div>`).join('') || '<p class="muted">모두 확인됐어요 👏</p>'}`;
   } else if (opsTab === 'members') {
-    body.innerHTML = `<p class="muted">${isAdmin() ? '직책(회장·부회장·총무)은 한 명씩 정할 수 있습니다. 🔑 관리 권한은 다른 멤버에게 보이지 않습니다.' : '급수(자석 색)는 운영진이 바꿀 수 있습니다. 직책은 관리자가 정합니다.'}</p>` +
-      [...S.members].sort((a, b) => ROLES.indexOf(a.role) - ROLES.indexOf(b.role) || byGrade(a.name, b.name)).map(m => `<div class="mrow">${magnet(m.name, 'sm')}<b>${esc(m.name)}${roleTag(m.role)}${isAdmin() && m.admin ? '<span class="admin-tag">🔑 관리</span>' : ''}</b>
+    body.innerHTML = `<p class="muted">${canSetRole() ? '회칙 제6·8조: 집행부(회장·부회장·총무) 각 1명, 임원진 4명(직위는 회장이 정함), 승인 전 회원은 인턴. 회장은 관리자만 바꿀 수 있습니다.' : '급수(자석 색)는 집행부가 바꿀 수 있습니다. 직책은 회장이 임명합니다.'}${isAdmin() ? ' 🔑 관리 권한은 다른 멤버에게 보이지 않습니다.' : ''}</p>` +
+      [...S.members].sort((a, b) => ROLES.indexOf(a.role) - ROLES.indexOf(b.role) || byGrade(a.name, b.name)).map(m => `<div class="mrow">${magnet(m.name, 'sm')}<b>${esc(m.name)}${roleTag(m.role, m.title)}${isAdmin() && m.admin ? '<span class="admin-tag">🔑 관리</span>' : ''}</b>
         <select data-grade-of="${esc(m.name)}" aria-label="급수">${GRADES.map(g => `<option value="${g}" ${g === m.grade ? 'selected' : ''}>${g}조</option>`).join('')}</select>
-        ${isAdmin() ? `<select data-role-of="${esc(m.name)}" aria-label="직책">${ROLES.map(r => `<option ${r === m.role ? 'selected' : ''}>${r}</option>`).join('')}</select>
-        ${m.adminFixed ? '' : `<label style="display:flex;gap:4px;align-items:center;font-size:13px"><input type="checkbox" data-admin-of="${esc(m.name)}" ${m.admin ? 'checked' : ''} style="width:auto">관리 권한</label>`}
+        ${canSetRole() ? `<select data-role-of="${esc(m.name)}" aria-label="직책">${ROLES.map(r => `<option ${r === m.role ? 'selected' : ''}>${r}</option>`).join('')}</select>` : ''}
+        ${isAdmin() ? `${m.adminFixed ? '' : `<label style="display:flex;gap:4px;align-items:center;font-size:13px"><input type="checkbox" data-admin-of="${esc(m.name)}" ${m.admin ? 'checked' : ''} style="width:auto">관리 권한</label>`}
         <button class="small ghost" data-resetpw="${esc(m.name)}">비번 초기화</button>${m.name !== S.me.name ? `<button class="small ghost" data-kick="${esc(m.name)}" style="color:var(--red)">탈퇴</button>` : ''}` : ''}</div>`).join('');
   } else if (opsTab === 'roster') {
     const list = [...S.members].sort((a, b) => a.name.localeCompare(b.name, 'ko'));
@@ -1362,7 +1458,11 @@ $('#opsBody').addEventListener('change', async e => {
   const s = e.target;
   try {
     if (s.dataset.gradeOf) { const before = gradeOf(s.dataset.gradeOf); await api('setGrade', { name: s.dataset.gradeOf, grade: s.value }); if (GRADES.indexOf(s.value) < GRADES.indexOf(before)) toast(`🎉 ${s.dataset.gradeOf} 승급!`); }
-    if (s.dataset.roleOf) { await api('setRole', { name: s.dataset.roleOf, role: s.value }); toast(`${s.dataset.roleOf} → ${s.value}`); }
+    if (s.dataset.roleOf) {
+      let title;
+      if (s.value === '임원') { title = prompt(`${s.dataset.roleOf}님의 임원 직위 (예: 경기이사, 홍보이사)`, '임원'); if (title === null) { renderOps(); return; } }
+      await api('setRole', { name: s.dataset.roleOf, role: s.value, title }); toast(`${s.dataset.roleOf} → ${title || s.value}`);
+    }
     if (s.dataset.adminOf) { await api('setAdmin', { name: s.dataset.adminOf, admin: s.checked }); toast(`${s.dataset.adminOf} 관리 권한 ${s.checked ? '줌' : '뺌'}`); }
     await refreshBoot(); renderOps(); renderDay();
   } catch (err) { toast(err.message, true); await refreshBoot(); renderOps(); }
