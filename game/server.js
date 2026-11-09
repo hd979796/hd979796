@@ -277,6 +277,36 @@ var WDTT = (function () {
     store.del('notices', b.id); return {};
   }
 
+  /* ---------- 가계부 (회계) ----------
+   * 보기: 회장·부회장·총무·관리자 / 쓰기·고치기: 총무·관리자 */
+  var LEDGER_IN = ['벌금', '게스트비', '연회비', '이월(시작 잔액)', '기타 수입'];
+  var LEDGER_OUT = ['셔틀콕·비품', '체육관 대관', '대회·송년회 등 행사', '경조사', '분기 아침식사', '전국대회 참가비 지원', '단체티·굿즈', '기타 지출'];
+  function canLedger(m) { return isOff(m); }
+  function canWriteLedger(m) { return roleOf(m) === '총무' || isAdmin(m); }
+  function ledgerList(me, b, store) {
+    if (!canLedger(me)) fail('가계부는 회장·부회장·총무만 볼 수 있어요');
+    return { entries: store.list('ledger').sort(function (a, c) { return String(a.date).localeCompare(String(c.date)) || String(a.at).localeCompare(String(c.at)); }), canWrite: canWriteLedger(me), categories: { in: LEDGER_IN, out: LEDGER_OUT } };
+  }
+  function ledgerSave(me, b, store, env) {
+    if (!canWriteLedger(me)) fail('가계부 기록은 총무가 해요');
+    var type = b.type === 'out' ? 'out' : 'in';
+    var cats = type === 'in' ? LEDGER_IN : LEDGER_OUT;
+    if (cats.indexOf(b.category) < 0) fail('항목을 골라 주세요');
+    var amount = Math.round(Number(b.amount) || 0);
+    if (amount <= 0 || amount > 100000000) fail('금액을 확인해 주세요');
+    checkDate(b.date);
+    var t = kst(env), id = b.id || env.uuid(), old = store.get('ledger', id) || {};
+    var e = { id: id, date: b.date, type: type, category: b.category, amount: amount, memo: String(b.memo || '').trim().slice(0, 80), by: old.by || me.name, at: old.at || t.iso };
+    if (b.id) { e.editedBy = me.name; e.editedAt = t.iso; }
+    store.put('ledger', id, e);
+    return ledgerList(me, b, store);
+  }
+  function ledgerDelete(me, b, store) {
+    if (!canWriteLedger(me)) fail('가계부 기록은 총무가 해요');
+    store.del('ledger', b.id);
+    return ledgerList(me, b, store);
+  }
+
   /* ---------- 멤버 관리 ---------- */
   function setRole(me, b, store) {
     // 회칙 제8조 ②: 회장 외 집행부·임원진은 회장이 임명 (관리자도 가능)
@@ -369,6 +399,9 @@ var WDTT = (function () {
       case 'pay': return pay(me, b, store, env);
       case 'noticeSave': return noticeSave(me, b, store, env);
       case 'noticeDelete': return noticeDelete(me, b, store);
+      case 'ledgerList': return ledgerList(me, b, store);
+      case 'ledgerSave': return ledgerSave(me, b, store, env);
+      case 'ledgerDelete': return ledgerDelete(me, b, store);
       case 'setRole': return setRole(me, b, store);
       case 'setHost': return setHost(me, b, store);
       case 'setAdmin': return setAdmin(me, b, store);

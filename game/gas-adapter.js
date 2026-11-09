@@ -12,6 +12,7 @@ var TABS = {
   days: ['id', 'data', '수정시각'],
   payments: ['id', '날짜', '이름', '금액', '상태', 'data'],
   notices: ['id', '제목', '작성자', '작성일', 'data'],
+  ledger: ['id', '날짜', '구분', '항목', '금액', '내용', '기록자', 'data'],
   settings: ['id', 'data']
 };
 
@@ -77,6 +78,7 @@ function sheetStore() {
     if (col === 'days') return [id, data, new Date().toISOString()];
     if (col === 'payments') return [id, o.date, o.name, o.amount || 0, ({ none: '미입금', claimed: '입금했어요', confirmed: '확인완료' })[o.status] || o.status, data];
     if (col === 'notices') return [id, o.title, o.author, t(o.at), data];
+    if (col === 'ledger') return [id, o.date, o.type === 'out' ? '지출' : '수입', o.category, o.type === 'out' ? -o.amount : o.amount, o.memo || '', o.by, data];
     return [id, data];
   }
   return {
