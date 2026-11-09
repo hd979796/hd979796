@@ -15,4 +15,4 @@ GitHub 계정 정지로 hd979796.github.io 주소가 막혔다. 이미 쓰고 �
 ## 참고
 - 데이터·비밀번호·통화 자동 정리 작업은 그대로. 백엔드 주소가 같아 다른 작업 수정 불필요.
 - 화면 위에 「이 애플리케이션은 Google Apps Script 사용자가 만들었습니다」 띠가 보이는 것은 정상.
-- 동의서 서명 페이지(github.io/sign)는 아직 막혀 있다. 필요하면 같은 방식으로 옮긴다.
+- 동의서 서명은 claude.ai 페이지(https://claude.ai/artifact/RNyXhZptTUuRaCK9j73L8t)로 연결했다.
