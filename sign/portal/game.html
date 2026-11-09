@@ -1,0 +1,837 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>우당탕탕 요절복통</title>
+<meta name="description" content="참석자 기록, 바를 정(正) 패배 보드, 랜덤 리그 대진표, 오늘 입금액 정산">
+<meta name="theme-color" content="#ff6b35">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fff8ef; --card:#ffffff; --ink:#2b2118; --muted:#8a7a6a; --line:#f0e2d0;
+  --brand:#ff6b35; --brand2:#ffc93c; --blue:#2f7cf6; --orange:#ff8a00; --red:#e5383b; --green:#1f9d55;
+  --radius:16px;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;font-size:16px;line-height:1.45;-webkit-tap-highlight-color:transparent}
+.wrap{max-width:760px;margin:0 auto;padding:12px 16px 80px}
+button{font:inherit;border:0;border-radius:12px;padding:10px 14px;cursor:pointer;background:#f3e9dc;color:var(--ink);font-weight:600}
+button:active{transform:scale(.97)}
+button.primary{background:var(--brand);color:#fff}
+button.ghost{background:transparent;border:1px solid var(--line)}
+button.small{padding:6px 10px;font-size:14px;border-radius:10px}
+button:disabled{opacity:.4}
+input,select{font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--ink);min-width:0}
+.card{background:var(--card);border-radius:var(--radius);padding:16px;margin:14px 0;box-shadow:0 2px 0 var(--line)}
+h2{font-size:19px;margin:0 0 12px;display:flex;align-items:center;gap:8px}
+h3{font-size:16px;margin:14px 0 8px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.muted{color:var(--muted);font-size:14px}
+.hidden{display:none!important}
+
+/* hero */
+.hero{border-radius:22px;overflow:hidden;margin-top:4px;box-shadow:0 4px 0 #e9d3b8}
+.hero svg{display:block;width:100%;height:auto}
+
+/* calendar */
+.cal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.cal-head b{font-size:18px}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal .dow{text-align:center;font-size:13px;color:var(--muted);padding:4px 0}
+.cal .dow:first-child{color:var(--red)} .cal .dow:last-child{color:var(--blue)}
+.day{aspect-ratio:1/1;border-radius:12px;background:#fbf4ea;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:600;position:relative;padding:0;font-size:15px}
+.day.empty{background:transparent;pointer-events:none}
+.day.today{background:var(--brand);color:#fff;box-shadow:0 0 0 3px #ffd9c7}
+.day.sel{outline:3px solid var(--brand2)}
+.day .cnt{font-size:10px;font-weight:700;color:var(--brand);line-height:1}
+.day.today .cnt{color:#fff}
+.day.sun{color:var(--red)} .day.sat{color:var(--blue)}
+.day.today.sun,.day.today.sat{color:#fff}
+
+/* players */
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{background:#fff3e0;border:1px dashed #f5c48f;border-radius:999px;padding:5px 12px;font-size:14px;font-weight:600}
+.rate{display:flex;gap:6px;flex-wrap:wrap}
+.rate button.on{background:var(--ink);color:#fff}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-top:8px}
+.legend i{display:inline-block;width:14px;height:4px;border-radius:2px;vertical-align:middle;margin-right:4px}
+
+.board{display:grid;gap:10px}
+/* 급수 자석: S 황금 · A 빨강 · B 주황 · C 녹색 · D 흰색 */
+.g-S{--c:#dcb043;--c2:#8f6b17;--ring:#b88d22}
+.g-A{--c:#d3262f;--c2:#86121a;--ring:#d3262f}
+.g-B{--c:#f6991c;--c2:#b0600a;--ring:#f6991c}
+.g-C{--c:#1f8045;--c2:#0e4d27;--ring:#1f8045}
+.g-D{--c:#f6f6f3;--c2:#b9b9b2;--ring:#f6f6f3}
+.g-none{--c:#bdb6ab;--c2:#857d72;--ring:#bdb6ab}
+.mag{width:60px;height:60px;border-radius:50%;flex:none;display:grid;place-items:center;padding:0;border:0;position:relative;
+  background:radial-gradient(circle at 32% 26%,rgba(255,255,255,.6),rgba(255,255,255,0) 40%),var(--c);
+  box-shadow:inset 0 0 0 4px var(--ring),inset 0 0 0 5px rgba(0,0,0,.12),inset 0 -5px 0 var(--c2),0 3px 6px rgba(0,0,0,.28)}
+.mag.g-S{box-shadow:inset 0 0 0 3px #f3d47a,inset 0 0 0 6px var(--ring),inset 0 -5px 0 var(--c2),0 3px 6px rgba(0,0,0,.28)}
+.mag span{background:#fff;color:#111;font-size:12px;font-weight:800;padding:2px 4px;border-radius:3px;max-width:54px;white-space:nowrap;overflow:hidden;text-overflow:clip;box-shadow:0 0 0 1px rgba(0,0,0,.18);letter-spacing:-.5px}
+.mag.long span{font-size:9.5px;letter-spacing:-.8px}
+.mag.sm.long span{font-size:8.5px}
+.mag.sm{width:46px;height:46px}.mag.sm span{font-size:10.5px;max-width:42px;padding:1px 3px}
+.dot{display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--c);box-shadow:inset 0 -2px 0 var(--c2),0 0 0 1px rgba(0,0,0,.15);vertical-align:-1px;margin-right:4px;flex:none}
+.gsel{width:auto}
+.tray{display:flex;flex-wrap:wrap;gap:8px;padding:10px;border-radius:12px;background:#f3f3ef;min-height:70px;margin-top:10px}
+.tray .empty{color:var(--muted);font-size:13px;align-self:center}
+.legend-g{display:flex;gap:10px;flex-wrap:wrap;font-size:13px;margin-top:8px;color:var(--muted)}
+details.members{margin-top:12px}
+details.members summary{cursor:pointer;font-weight:700;padding:6px 0}
+.mrow{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--line)}
+.mrow b{flex:1}
+/* 화이트보드 */
+.wb{background:#bfe1da;border:7px solid #fbfbf8;outline:3px solid #1d6b4c;border-radius:8px;padding:10px;margin-top:12px}
+.wb-title{font-family:'Black Han Sans','Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-weight:900;font-size:28px;letter-spacing:2px;text-align:center;color:#111;margin:2px 0 10px}
+.pl{background:#fff;border-radius:6px;padding:8px;display:grid;grid-template-columns:62px 1fr;gap:4px 10px;align-items:center}
+.pl .mag{grid-row:span 2;cursor:pointer}
+.pl-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.pl-name{font-size:17px;font-weight:800}
+.pl-sum{font-weight:800;color:var(--brand);font-variant-numeric:tabular-nums}
+.pl-btns{grid-column:1/-1}
+.tally{display:flex;flex-wrap:wrap;gap:4px;min-height:52px;padding:6px;border-radius:4px;
+  background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 44' width='44' height='44'%3E%3Cpath d='M6 7H34M20 7V33M20 20H31M10 18V33M4 33H36' stroke='%23d6ebe6' stroke-width='4.5' stroke-linecap='round' fill='none'/%3E%3C/svg%3E") 6px 6px/44px 44px repeat;border:1px solid #e3efec}
+.tally svg{width:40px;height:40px}
+.tally .none{color:var(--muted);font-size:13px;align-self:center;padding:2px 6px;background:rgba(255,255,255,.85);border-radius:6px}
+.pl-btns{display:grid;grid-template-columns:1fr 1fr auto;gap:6px}
+.board{gap:8px}
+.prize{grid-column:2;justify-self:start;font-weight:800;font-size:15px;padding:2px 10px;border-radius:999px}
+.prize.minus{background:#e3f6ea;color:#16794a}
+.prize.plus{background:#ffe5e5;color:#b3261e}
+.prize-line{margin:8px 0 0;padding:8px 10px;border-radius:10px;background:#fff7e0;font-size:14px;font-weight:600}
+.pl-btns .lose{background:#e8f0ff;color:#1c4fb8}
+.pl-btns .dbl{background:#ffe5e5;color:#b3261e}
+
+/* league */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pick{display:flex;flex-wrap:wrap;gap:6px}
+.pick label{display:flex;align-items:center;gap:6px;background:#fbf4ea;padding:6px 10px;border-radius:10px;font-weight:600;font-size:15px}
+.league{border:2px solid var(--line);border-radius:14px;padding:12px;margin-top:12px}
+.lg-head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.courts{display:grid;gap:10px;margin-top:8px}
+@media(min-width:640px){.courts.c2{grid-template-columns:1fr 1fr}.courts.c3{grid-template-columns:1fr 1fr 1fr}}
+.court{background:#fbf4ea;border-radius:12px;padding:8px}
+.court h4{margin:2px 4px 6px;font-size:14px}
+.match{display:grid;grid-template-columns:22px 1fr 52px 10px 52px 1fr;gap:4px;align-items:center;background:#fff;border-radius:10px;padding:6px;margin-bottom:6px;font-size:15px}
+.match .no{font-size:12px;color:var(--muted);text-align:center}
+.match .a{text-align:right;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.match .b{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.match input{width:52px;padding:6px 2px;text-align:center;font-variant-numeric:tabular-nums}
+.match .win{color:var(--green)} .match .lose{color:var(--muted);font-weight:500}
+.match.dbl{box-shadow:inset 0 0 0 2px #ffb4b4}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:14px}
+th,td{padding:7px 4px;text-align:center;border-bottom:1px solid var(--line)}
+th{color:var(--muted);font-weight:600;font-size:13px}
+td.n{text-align:left;font-weight:700}
+.medal{font-size:16px}
+.scroll{overflow-x:auto}
+
+/* settle */
+.settle-row{display:flex;justify-content:space-between;align-items:center;padding:10px 4px;border-bottom:1px dashed var(--line)}
+.settle-row b{font-size:17px}
+.settle-row .amt{font-size:19px;font-weight:800;color:var(--brand);font-variant-numeric:tabular-nums}
+.settle-total{display:flex;justify-content:space-between;padding:12px 4px 4px;font-weight:800;font-size:18px}
+.kakao{background:#fee500;color:#191600;width:100%;padding:14px;font-size:17px;margin-top:12px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:12px;font-size:15px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:9;max-width:90vw}
+.toast.on{opacity:1}
+.notice{background:#fff3e0;border-radius:12px;padding:10px 12px;font-size:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- 메인 이미지 -->
+  <div class="hero" aria-label="우당탕탕 요절복통">
+    <svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" role="img">
+      <title>우당탕탕 요절복통</title>
+      <defs>
+        <linearGradient id="sky" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#ffcf3c"/><stop offset="1" stop-color="#ff6b35"/>
+        </linearGradient>
+        <pattern id="dots" width="18" height="18" patternUnits="userSpaceOnUse">
+          <circle cx="4" cy="4" r="2.2" fill="#fff" opacity=".22"/>
+        </pattern>
+      </defs>
+      <rect width="720" height="300" fill="url(#sky)"/>
+      <rect width="720" height="300" fill="url(#dots)"/>
+      <!-- 폭발 말풍선 -->
+      <polygon fill="#fff" stroke="#2b2118" stroke-width="5" stroke-linejoin="round"
+        points="360,22 398,62 452,34 456,86 520,74 494,120 560,140 500,166 536,214 470,206 466,262 420,226 382,278 352,226 300,268 296,214 226,226 254,178 180,156 248,128 214,78 280,92 290,38 330,72"/>
+      <text x="370" y="146" text-anchor="middle" font-family="'Black Han Sans','Jua','Apple SD Gothic Neo','Malgun Gothic',sans-serif" font-size="62" font-weight="900" fill="#ff6b35" stroke="#2b2118" stroke-width="3" paint-order="stroke" transform="rotate(-6 370 130)">우당탕탕</text>
+      <text x="372" y="214" text-anchor="middle" font-family="'Black Han Sans','Jua','Apple SD Gothic Neo','Malgun Gothic',sans-serif" font-size="56" font-weight="900" fill="#2f7cf6" stroke="#2b2118" stroke-width="3" paint-order="stroke" transform="rotate(4 372 200)">요절복통</text>
+      <!-- 셔틀콕 -->
+      <g transform="translate(96 90) rotate(-30)">
+        <path d="M0 40 L-26 -30 L26 -30 Z" fill="#fff" stroke="#2b2118" stroke-width="4" stroke-linejoin="round"/>
+        <path d="M-13 -30 L-4 36 M13 -30 L4 36 M0 -30 L0 36" stroke="#2b2118" stroke-width="2"/>
+        <circle cx="0" cy="48" r="14" fill="#e5383b" stroke="#2b2118" stroke-width="4"/>
+      </g>
+      <path d="M140 150 q20 10 30 30 M150 132 q24 4 40 18" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round"/>
+      <!-- 라켓 -->
+      <g transform="translate(628 176) rotate(28)">
+        <ellipse cx="0" cy="-50" rx="38" ry="48" fill="none" stroke="#2b2118" stroke-width="7"/>
+        <path d="M-26 -82 L26 -18 M-36 -56 L20 -6 M-14 -96 L34 -36 M26 -82 L-26 -18 M36 -56 L-20 -6 M14 -96 L-34 -36" stroke="#2b2118" stroke-width="2" opacity=".5"/>
+        <rect x="-5" y="-2" width="10" height="70" rx="4" fill="#2b2118"/>
+        <rect x="-8" y="44" width="16" height="34" rx="6" fill="#2f7cf6" stroke="#2b2118" stroke-width="3"/>
+      </g>
+      <!-- 반짝이 -->
+      <g fill="#fff" stroke="#2b2118" stroke-width="3" stroke-linejoin="round">
+        <path d="M600 40 l8 18 18 8 -18 8 -8 18 -8 -18 -18 -8 18 -8z"/>
+        <path d="M70 230 l6 13 13 6 -13 6 -6 13 -6 -13 -13 -6 13 -6z"/>
+      </g>
+      <text x="704" y="290" text-anchor="end" font-family="sans-serif" font-size="16" font-weight="700" fill="#2b2118" opacity=".7">진 사람이 낸다!</text>
+    </svg>
+  </div>
+
+  <!-- 달력 -->
+  <section class="card">
+    <div class="cal-head">
+      <button class="small ghost" id="prevM" aria-label="이전 달">◀</button>
+      <b id="monthLabel"></b>
+      <button class="small ghost" id="nextM" aria-label="다음 달">▶</button>
+    </div>
+    <div class="cal" id="cal"></div>
+    <p class="muted" style="margin:10px 0 0">오늘 날짜를 눌러 참석자 이름을 넣으세요. 지난 날짜를 누르면 그날 기록을 볼 수 있습니다.</p>
+  </section>
+
+  <div id="dayArea" class="hidden">
+
+    <!-- 참석자 -->
+    <section class="card">
+      <h2>🙋 참석 <span class="muted" id="dayLabel"></span></h2>
+      <form id="addForm" class="row">
+        <input id="nameInput" placeholder="이름 (예: 박문철)" autocomplete="off" style="flex:1" list="memberList">
+        <select id="gradeInput" class="gsel" aria-label="급수">
+          <option value="S">S조</option><option value="A">A조</option><option value="B">B조</option><option value="C" selected>C조</option><option value="D">D조</option>
+        </select>
+        <button class="primary" type="submit">참석</button>
+      </form>
+      <datalist id="memberList"></datalist>
+      <div class="legend-g" id="gradeLegend"></div>
+      <p class="muted" style="margin:10px 0 0">아래 자석을 누르면 오늘 참석으로 보드판에 붙습니다.</p>
+      <div class="tray" id="tray"></div>
+      <details class="members">
+        <summary>📋 멤버 명단 · 급수 관리 (<span id="memberCount">0</span>명)</summary>
+        <div class="row" style="margin:6px 0">
+          <input id="bulkNames" placeholder="이름 여러 명 (띄어쓰기로 구분)" style="flex:1">
+          <select id="bulkGrade" class="gsel" aria-label="급수">
+            <option value="S">S조</option><option value="A">A조</option><option value="B">B조</option><option value="C" selected>C조</option><option value="D">D조</option>
+          </select>
+          <button class="small" id="bulkAdd">명단 추가</button>
+        </div>
+        <div id="memberRows"></div>
+      </details>
+    </section>
+
+    <!-- 자석 보드판 -->
+    <section class="card">
+      <h2>🧲 자석 보드판</h2>
+      <div class="row" style="justify-content:space-between">
+        <div class="rate" id="rateBtns">
+          <button class="small" data-rate="auto">자동(시간)</button>
+          <button class="small" data-rate="2000">7시 전 2,000</button>
+          <button class="small" data-rate="3000">7시 후 3,000</button>
+        </div>
+        <span class="muted" id="rateNow"></span>
+      </div>
+      <div class="legend">
+        <span><i style="background:var(--blue)"></i>2,000원</span>
+        <span><i style="background:var(--orange)"></i>3,000원</span>
+        <span><i style="background:var(--red)"></i>4,000원</span>
+        <span>더블패 = 21점에 10점 미만 / 25점에 13점 미만 (+1,000원)</span>
+      </div>
+      <div class="wb">
+        <div class="wb-title">우당탕탕 요절복통</div>
+        <div class="board" id="board"></div>
+      </div>
+    </section>
+
+    <!-- 리그 -->
+    <section class="card">
+      <h2>🎲 랜덤 리그 대진표</h2>
+      <div id="leagueSetup">
+        <div class="pick" id="leaguePick"></div>
+        <div class="row" style="margin:6px 0">
+          <button class="small ghost" id="pickAll">전체 선택</button>
+          <button class="small ghost" id="pickNone">전체 해제</button>
+        </div>
+        <div class="grid2">
+          <label class="muted">코트 수
+            <select id="lgCourts" style="width:100%"><option value="1">1코트</option><option value="2">2코트</option><option value="3">3코트</option></select>
+          </label>
+          <label class="muted">점수
+            <select id="lgTarget" style="width:100%"><option value="21">21점 게임</option><option value="25">25점 게임</option></select>
+          </label>
+          <label class="muted">1인당 경기 수
+            <select id="lgRounds" style="width:100%"></select>
+          </label>
+          <label class="muted">패배 비용
+            <select id="lgFee" style="width:100%"><option value="3000">3,000원</option><option value="2000">2,000원</option><option value="4000">4,000원</option><option value="0">없음</option></select>
+          </label>
+          <label class="muted">1등 −, 꼴등 + 금액
+            <select id="lgPrize" style="width:100%"><option value="3000">3,000원</option><option value="2000">2,000원</option><option value="0">없음</option></select>
+          </label>
+          <label class="muted">1등·꼴등 인원
+            <select id="lgPrizeN" style="width:100%"><option value="1">각 1명</option><option value="2">각 2명</option></select>
+          </label>
+        </div>
+        <button class="primary" id="makeLeague" style="width:100%;margin-top:10px">🎲 랜덤 대진표 만들기</button>
+        <p class="muted" style="margin:8px 0 0">모두 한 번씩 붙는 리그(4명이면 각자 3경기)를 무작위로 만듭니다. 사람이 많으면 코트를 2개로 나누고, 1인당 경기 수를 줄일 수 있습니다. 점수를 넣으면 진 사람에게 비용이 자동으로 붙습니다. 리그가 끝나면 1등은 3,000원을 빼고 꼴등은 3,000원을 더합니다(꼴등이 1등에게 주는 셈). 사람이 많으면 1등·꼴등을 2명씩 정할 수 있습니다.</p>
+      </div>
+      <div id="leagues"></div>
+    </section>
+
+    <!-- 정산 -->
+    <section class="card">
+      <h2>💰 오늘 정산</h2>
+      <div id="settle"></div>
+      <div class="row" style="margin-top:12px">
+        <input id="account" placeholder="입금 계좌 (예: 카카오뱅크 3333-00-0000000 홍길동)" style="flex:1">
+      </div>
+      <button class="kakao" id="shareBtn">💬 카카오톡으로 결과 공유</button>
+      <div class="row" style="margin-top:8px">
+        <button class="small ghost" id="copyBtn" style="flex:1">📋 결과 복사</button>
+        <button class="small ghost" id="resetDay" style="flex:1;color:var(--red)">이 날짜 기록 지우기</button>
+      </div>
+    </section>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(() => {
+'use strict';
+const KEY = 'wdtt-v1';
+const $ = s => document.querySelector(s);
+const won = n => n.toLocaleString('ko-KR') + '원';
+const pad = n => String(n).padStart(2, '0');
+const ymd = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid = () => Math.random().toString(36).slice(2, 9);
+// 더블패 기준: 이 점수 미만이면 +1,000원
+const DBL_LINE = { 21: 10, 25: 13 };
+
+function load() {
+  let v = null;
+  try { v = JSON.parse(localStorage.getItem(KEY)); } catch (e) {}
+  if (!v || !v.days) v = { days: {}, rate: 'auto', account: '' };
+  if (!v.members) v.members = (v.roster || []).map(name => ({ name, grade: 'C' }));
+  delete v.roster;
+  return v;
+}
+let db = load();
+const GRADES = ['S', 'A', 'B', 'C', 'D'];
+const GRADE_NAME = { S: 'S조 · 황금', A: 'A조 · 빨강', B: 'B조 · 주황', C: 'C조 · 녹색', D: 'D조 · 흰색' };
+const member = name => db.members.find(m => m.name === name);
+const gradeOf = name => (member(name) || {}).grade || 'none';
+const gIdx = name => { const i = GRADES.indexOf(gradeOf(name)); return i < 0 ? 9 : i; };
+const byGrade = (a, b) => gIdx(a) - gIdx(b);
+const dot = name => `<i class="dot g-${gradeOf(name)}" title="${gradeOf(name)}조"></i>`;
+const magnet = (name, extra = '') => `<button type="button" class="mag g-${gradeOf(name)} ${extra}${name.length > 3 ? ' long' : ''}" data-name="${esc(name)}" title="${esc(name)} (${gradeOf(name)}조)"><span>${esc(name)}</span></button>`;
+function setMember(name, grade) {
+  const m = member(name);
+  if (m) m.grade = grade; else db.members.push({ name, grade });
+}
+function save() { try { localStorage.setItem(KEY, JSON.stringify(db)); } catch (e) {} }
+
+const today = ymd(new Date());
+let view = new Date(); view.setDate(1);
+let selDate = null;
+
+function day(d = selDate) {
+  if (!db.days[d]) db.days[d] = { players: [], marks: [], leagues: [] };
+  return db.days[d];
+}
+function hasDay(d) { const x = db.days[d]; return x && x.players.length; }
+
+/* ---------- 달력 ---------- */
+function renderCal() {
+  const y = view.getFullYear(), m = view.getMonth();
+  $('#monthLabel').textContent = `${y}년 ${m + 1}월`;
+  const first = new Date(y, m, 1).getDay();
+  const last = new Date(y, m + 1, 0).getDate();
+  let h = '일월화수목금토'.split('').map(c => `<div class="dow">${c}</div>`).join('');
+  for (let i = 0; i < first; i++) h += '<div class="day empty"></div>';
+  for (let d = 1; d <= last; d++) {
+    const key = `${y}-${pad(m + 1)}-${pad(d)}`;
+    const dow = (first + d - 1) % 7;
+    const cls = ['day'];
+    if (key === today) cls.push('today');
+    if (key === selDate) cls.push('sel');
+    if (dow === 0) cls.push('sun'); if (dow === 6) cls.push('sat');
+    const n = hasDay(key) ? db.days[key].players.length : 0;
+    h += `<button class="${cls.join(' ')}" data-date="${key}">${d}${n ? `<span class="cnt">${n}명</span>` : ''}</button>`;
+  }
+  $('#cal').innerHTML = h;
+}
+$('#cal').addEventListener('click', e => {
+  const b = e.target.closest('[data-date]'); if (!b) return;
+  openDay(b.dataset.date);
+});
+$('#prevM').onclick = () => { view.setMonth(view.getMonth() - 1); renderCal(); };
+$('#nextM').onclick = () => { view.setMonth(view.getMonth() + 1); renderCal(); };
+
+function openDay(d) {
+  selDate = d;
+  $('#dayArea').classList.remove('hidden');
+  const [y, m, dd] = d.split('-');
+  $('#dayLabel').textContent = `${+m}월 ${+dd}일${d === today ? ' (오늘)' : ''}`;
+  renderAll();
+  if (d === today) setTimeout(() => $('#nameInput').focus(), 50);
+  $('#dayArea').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* ---------- 참석자 ---------- */
+$('#addForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const names = $('#nameInput').value.split(/[,\s]+/).map(s => s.trim()).filter(Boolean);
+  const g = $('#gradeInput').value;
+  names.forEach(n => { setMember(n, g); addPlayer(n); });
+  $('#nameInput').value = '';
+  renderAll();
+});
+// 명단에 있는 이름을 치면 급수를 자동으로 맞춰 줌
+$('#nameInput').addEventListener('input', e => {
+  const m = member(e.target.value.trim()); if (m) $('#gradeInput').value = m.grade;
+});
+function addPlayer(name) {
+  const D = day();
+  if (D.players.includes(name)) { toast(`${name}님은 이미 참석`); return; }
+  D.players.push(name);
+  save();
+}
+$('#tray').addEventListener('click', e => {
+  const b = e.target.closest('[data-name]'); if (!b) return;
+  addPlayer(b.dataset.name); renderAll();
+  toast(`${b.dataset.name} 참석!`);
+});
+$('#bulkAdd').onclick = () => {
+  const names = $('#bulkNames').value.split(/[,\s]+/).map(s => s.trim()).filter(Boolean);
+  if (!names.length) return;
+  names.forEach(n => setMember(n, $('#bulkGrade').value));
+  $('#bulkNames').value = ''; save(); renderAll();
+  toast(`${names.length}명 명단 추가`);
+};
+$('#memberRows').addEventListener('change', e => {
+  const sel = e.target.closest('select[data-m]'); if (!sel) return;
+  setMember(sel.dataset.m, sel.value); save(); renderAll();
+});
+$('#memberRows').addEventListener('click', e => {
+  const b = e.target.closest('[data-delm]'); if (!b) return;
+  if (!confirm(`${b.dataset.delm}님을 멤버 명단에서 지울까요? (지난 기록은 남습니다)`)) return;
+  db.members = db.members.filter(m => m.name !== b.dataset.delm); save(); renderAll();
+});
+function renderMembers() {
+  const D = day();
+  const sorted = [...db.members].sort((a, b) => GRADES.indexOf(a.grade) - GRADES.indexOf(b.grade) || a.name.localeCompare(b.name, 'ko'));
+  const away = sorted.filter(m => !D.players.includes(m.name));
+  $('#tray').innerHTML = away.length ? away.map(m => magnet(m.name)).join('')
+    : `<span class="empty">${db.members.length ? '모두 참석했어요 🎉' : '이름과 급수를 넣고 참석을 누르면 자석이 생깁니다.'}</span>`;
+  $('#memberCount').textContent = db.members.length;
+  $('#memberList').innerHTML = db.members.map(m => `<option value="${esc(m.name)}">`).join('');
+  $('#gradeLegend').innerHTML = GRADES.map(g => `<span><i class="dot g-${g}"></i>${GRADE_NAME[g]}</span>`).join('');
+  const opts = g => GRADES.map(x => `<option value="${x}" ${x === g ? 'selected' : ''}>${x}조</option>`).join('');
+  $('#memberRows').innerHTML = sorted.map(m => `<div class="mrow">
+      ${magnet(m.name, 'sm')}<b>${esc(m.name)}</b>
+      <select class="gsel" data-m="${esc(m.name)}" aria-label="${esc(m.name)} 급수">${opts(m.grade)}</select>
+      <button class="small ghost" data-delm="${esc(m.name)}" aria-label="삭제">✕</button>
+    </div>`).join('') || '<p class="muted">아직 명단이 없습니다.</p>';
+}
+
+/* ---------- 비용 계산 ---------- */
+function currentRate() {
+  if (db.rate === '2000') return 2000;
+  if (db.rate === '3000') return 3000;
+  return new Date().getHours() >= 19 ? 3000 : 2000;
+}
+// 보드에서 누른 패 + 리그 결과에서 나온 패를 합친 목록
+function charges(D = day()) {
+  const out = D.marks.map(m => ({ ...m, src: 'board' }));
+  D.leagues.forEach((L, li) => L.matches.forEach(mt => {
+    const r = result(mt, L.target);
+    if (!r || !L.fee) return;
+    out.push({ name: r.loser, amount: L.fee + (r.dbl ? 1000 : 0), dbl: r.dbl, src: 'league', label: `리그${li + 1}` });
+  }));
+  D.leagues.forEach((L, li) => {
+    const pz = prizes(L); if (!pz) return;
+    pz.top.forEach(n => out.push({ name: n, amount: -pz.amount, src: 'prize', kind: 'top', label: `리그${li + 1}` }));
+    pz.bottom.forEach(n => out.push({ name: n, amount: pz.amount, src: 'prize', kind: 'bottom', label: `리그${li + 1}` }));
+  });
+  return out;
+}
+// 리그가 모두 끝나면 1등은 −금액, 꼴등은 +금액 (같은 순위면 함께 적용)
+function prizes(L) {
+  const amount = L.prize ?? 3000;
+  if (!amount) return null;
+  const st = standings(L);
+  if (st.played < L.matches.length || st.rows.length < 2) return null;
+  const rows = st.rows, n = Math.max(1, Math.min(L.prizeN || 1, Math.floor(rows.length / 2)));
+  const topRank = rows[n - 1].rank, botRank = rows[rows.length - n].rank;
+  const top = rows.filter(x => x.rank <= topRank).map(x => x.name);
+  const bottom = rows.filter(x => x.rank >= botRank && !top.includes(x.name)).map(x => x.name);
+  return { amount, top, bottom };
+}
+function totals(D = day()) {
+  const t = {};
+  const blank = () => ({ amount: 0, count: 0, board: 0, league: 0, prize: 0, top: 0, bottom: 0 });
+  D.players.forEach(p => t[p] = blank());
+  charges(D).forEach(c => {
+    if (!t[c.name]) t[c.name] = blank();
+    t[c.name].amount += c.amount;
+    if (c.src === 'prize') { t[c.name].prize += c.amount; t[c.name][c.kind]++; }
+    else { t[c.name].count++; t[c.name][c.src]++; }
+  });
+  return t;
+}
+
+/* ---------- 바를 정(正) ---------- */
+const STROKES = [
+  'M6 7 H34', 'M20 7 V33', 'M20 20 H31', 'M10 18 V33', 'M4 33 H36'
+];
+const color = a => a >= 4000 ? 'var(--red)' : a >= 3000 ? 'var(--orange)' : 'var(--blue)';
+function tallySvg(list) {
+  if (!list.length) return '<span class="none">아직 깨끗! ✨</span>';
+  let h = '';
+  for (let i = 0; i < list.length; i += 5) {
+    const grp = list.slice(i, i + 5);
+    h += '<svg viewBox="0 0 40 40" aria-hidden="true">' + grp.map((c, k) =>
+      `<path d="${STROKES[k]}" stroke="${color(c.amount)}" stroke-width="4.5" stroke-linecap="round" fill="none"/>`
+    ).join('') + '</svg>';
+  }
+  return h;
+}
+
+function renderRate() {
+  document.querySelectorAll('#rateBtns button').forEach(b => b.classList.toggle('on', b.dataset.rate === (db.rate || 'auto')));
+  const r = currentRate();
+  $('#rateNow').textContent = `지금 1패 = ${won(r)} · 더블패 = ${won(r + 1000)}`;
+}
+$('#rateBtns').addEventListener('click', e => {
+  const b = e.target.closest('[data-rate]'); if (!b) return;
+  db.rate = b.dataset.rate; save(); renderAll();
+});
+
+function renderBoard() {
+  const D = day(), all = charges(D), t = totals(D);
+  const r = currentRate();
+  if (!D.players.length) { $('#board').innerHTML = '<p class="muted">참석자를 먼저 넣어 주세요.</p>'; return; }
+  $('#board').innerHTML = [...D.players].sort(byGrade).map(p => {
+    const mine = all.filter(c => c.name === p);
+    const lg = t[p].league;
+    return `<div class="pl">
+      ${magnet(p)}
+      <div class="pl-top">
+        <span class="pl-name">${esc(p)}</span>
+        <span class="pl-sum">${t[p].count}패 · ${won(t[p].amount)}</span>
+      </div>
+      <div class="tally">${tallySvg(mine.filter(c => c.src !== 'prize'))}</div>
+      ${t[p].prize ? `<div class="prize ${t[p].prize < 0 ? 'minus' : 'plus'}">${t[p].prize < 0 ? '🥇 1등' : '💀 꼴등'} ${t[p].prize < 0 ? '−' : '+'}${won(Math.abs(t[p].prize))}</div>` : ''}
+      ${lg ? `<div class="muted" style="grid-column:2">리그 패 ${lg}개 포함</div>` : ''}
+      <div class="pl-btns">
+        <button class="lose" data-act="lose" data-p="${esc(p)}">패 +${(r / 1000)}천</button>
+        <button class="dbl" data-act="dbl" data-p="${esc(p)}">더블패 +${((r + 1000) / 1000)}천</button>
+        <button class="small ghost" data-act="undo" data-p="${esc(p)}" title="마지막 표시 지우기">↶</button>
+      </div>
+    </div>`;
+  }).join('') + `<p class="muted" style="margin:2px 4px 0;font-size:13px">자석을 누르면 오늘 참석에서 뺄 수 있어요.</p>`;
+}
+$('#board').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  const D = day();
+  if (b.classList.contains('mag')) {
+    const name = b.dataset.name;
+    if (!confirm(`${name}님을 오늘 참석에서 뺄까요? 보드판 표시도 함께 지워집니다.`)) return;
+    D.players = D.players.filter(x => x !== name);
+    D.marks = D.marks.filter(m => m.name !== name);
+    save(); renderAll();
+    return;
+  }
+  const p = b.dataset.p, act = b.dataset.act;
+  if (!p) return;
+  const r = currentRate();
+  if (act === 'lose') D.marks.push({ id: uid(), name: p, amount: r, dbl: false, at: Date.now() });
+  if (act === 'dbl') D.marks.push({ id: uid(), name: p, amount: r + 1000, dbl: true, at: Date.now() });
+  if (act === 'undo') {
+    let i = -1; D.marks.forEach((m, k) => { if (m.name === p) i = k; });
+    if (i < 0) { toast('지울 보드 표시가 없어요 (리그 패는 점수를 지우세요)'); return; }
+    D.marks.splice(i, 1);
+  }
+  save(); renderAll();
+  if (act !== 'undo') toast(`${p} +${won(act === 'dbl' ? r + 1000 : r)}`);
+});
+
+/* ---------- 리그 ---------- */
+function shuffle(a) { a = [...a]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+// 원형 방식 라운드로빈: 한 라운드에 한 사람이 최대 한 경기
+function roundRobin(list) {
+  const a = [...list]; if (a.length % 2) a.push(null);
+  const n = a.length, rounds = [];
+  for (let r = 0; r < n - 1; r++) {
+    const pairs = [];
+    for (let i = 0; i < n / 2; i++) { const p = a[i], q = a[n - 1 - i]; if (p && q) pairs.push(Math.random() < .5 ? [p, q] : [q, p]); }
+    rounds.push(shuffle(pairs));
+    a.splice(1, 0, a.pop());
+  }
+  return shuffle(rounds);
+}
+const unpicked = new Set(); // 리그에서 뺀 사람 (새 참석자는 자동 선택)
+function pickedNames() { return [...document.querySelectorAll('#leaguePick input:checked')].map(i => i.value); }
+function renderPick() {
+  const D = day();
+  $('#leaguePick').innerHTML = D.players.length
+    ? [...D.players].sort(byGrade).map(p => `<label><input type="checkbox" value="${esc(p)}" ${unpicked.has(p) ? '' : 'checked'}> ${dot(p)}${esc(p)}</label>`).join('')
+    : '<span class="muted">참석자를 먼저 넣어 주세요.</span>';
+  renderRoundsOpt();
+}
+function renderRoundsOpt() {
+  const n = pickedNames().length;
+  const games = n - 1; // 모두 한 번씩이면 각자 n-1경기
+  const old = $('#lgRounds').value;
+  let h = `<option value="all">모두 한 번씩 (각 ${Math.max(games, 0)}경기)</option>`;
+  for (let k = 1; k < Math.max(games, 1); k++) h += `<option value="${k}">약 ${k}경기씩</option>`;
+  $('#lgRounds').innerHTML = h;
+  if ([...$('#lgRounds').options].some(o => o.value === old)) $('#lgRounds').value = old;
+  if (n >= 10 && $('#lgCourts').value === '1' && !$('#lgCourts').dataset.touched) $('#lgCourts').value = '2';
+  if (!$('#lgPrizeN').dataset.touched) $('#lgPrizeN').value = n >= 10 ? '2' : '1';
+}
+function syncUnpicked() { document.querySelectorAll('#leaguePick input').forEach(i => i.checked ? unpicked.delete(i.value) : unpicked.add(i.value)); renderRoundsOpt(); }
+$('#leaguePick').addEventListener('change', syncUnpicked);
+$('#lgCourts').addEventListener('change', () => $('#lgCourts').dataset.touched = '1');
+$('#lgPrizeN').addEventListener('change', () => $('#lgPrizeN').dataset.touched = '1');
+$('#pickAll').onclick = () => { document.querySelectorAll('#leaguePick input').forEach(i => i.checked = true); syncUnpicked(); };
+$('#pickNone').onclick = () => { document.querySelectorAll('#leaguePick input').forEach(i => i.checked = false); syncUnpicked(); };
+
+$('#makeLeague').onclick = () => {
+  const names = pickedNames();
+  if (names.length < 2) { toast('2명 이상 선택하세요'); return; }
+  const courts = +$('#lgCourts').value, target = +$('#lgTarget').value, fee = +$('#lgFee').value;
+  const prize = +$('#lgPrize').value, prizeN = +$('#lgPrizeN').value;
+  let rounds = roundRobin(shuffle(names));
+  const rv = $('#lgRounds').value;
+  if (rv !== 'all') {
+    // 홀수 인원은 매 라운드 1명이 쉬므로 라운드를 하나 더 써서 경기 수를 맞춤
+    const k = +rv + (names.length % 2 ? 1 : 0);
+    rounds = rounds.slice(0, k);
+  }
+  const matches = []; let no = 0;
+  rounds.forEach((pairs, ri) => pairs.forEach(([a, b]) => {
+    matches.push({ id: uid(), a, b, sa: '', sb: '', round: ri + 1, court: (no % courts) + 1, no: ++no });
+  }));
+  day().leagues.push({ id: uid(), courts, target, fee, prize, prizeN, players: names, matches, at: Date.now() });
+  save(); renderAll();
+  toast(`${matches.length}경기 대진표 완성!`);
+  setTimeout(() => document.querySelector('#leagues .league:last-child')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
+};
+
+function result(mt, target) {
+  if (mt.sa === '' || mt.sb === '' || mt.sa == null || mt.sb == null) return null;
+  const a = +mt.sa, b = +mt.sb;
+  if (!Number.isFinite(a) || !Number.isFinite(b) || a === b) return null;
+  const winner = a > b ? mt.a : mt.b, loser = a > b ? mt.b : mt.a;
+  const ls = Math.min(a, b);
+  const line = DBL_LINE[target] ?? Math.ceil(target / 2);
+  return { winner, loser, ws: Math.max(a, b), ls, dbl: ls < line };
+}
+
+// 순위: 득실차 → 동률이면 승자승(동률자끼리 승수 → 동률자끼리 득실) → 득점 → 승수
+function standings(L) {
+  const s = {};
+  L.players.forEach(p => s[p] = { name: p, g: 0, w: 0, l: 0, pf: 0, pa: 0 });
+  const done = [];
+  L.matches.forEach(mt => {
+    const r = result(mt, L.target); if (!r) return;
+    done.push(mt);
+    const a = +mt.sa, b = +mt.sb;
+    [[mt.a, a, b], [mt.b, b, a]].forEach(([p, f, ag]) => { if (!s[p]) return; s[p].g++; s[p].pf += f; s[p].pa += ag; });
+    s[r.winner].w++; s[r.loser].l++;
+  });
+  const arr = Object.values(s).map(x => ({ ...x, diff: x.pf - x.pa }));
+  arr.sort((x, y) => y.diff - x.diff);
+  // 득실차 같은 그룹끼리 승자승 적용
+  const out = [];
+  for (let i = 0; i < arr.length;) {
+    let j = i; while (j < arr.length && arr[j].diff === arr[i].diff) j++;
+    const grp = arr.slice(i, j);
+    if (grp.length > 1) {
+      const names = new Set(grp.map(g => g.name));
+      const h = {}; grp.forEach(g => h[g.name] = { w: 0, d: 0 });
+      done.forEach(mt => {
+        if (!names.has(mt.a) || !names.has(mt.b)) return;
+        const a = +mt.sa, b = +mt.sb;
+        h[a > b ? mt.a : mt.b].w++;
+        h[mt.a].d += a - b; h[mt.b].d += b - a;
+      });
+      grp.forEach(g => { g.hw = h[g.name].w; g.hd = h[g.name].d; });
+      grp.sort((x, y) => y.hw - x.hw || y.hd - x.hd || y.pf - x.pf || y.w - x.w);
+    }
+    out.push(...grp); i = j;
+  }
+  // 완전히 같은 기록은 같은 순위
+  let rank = 0;
+  out.forEach((x, k) => {
+    const p = out[k - 1];
+    const same = p && p.diff === x.diff && p.hw === x.hw && p.hd === x.hd && p.pf === x.pf && p.w === x.w;
+    x.rank = same ? p.rank : (rank = k + 1);
+  });
+  return { rows: out, played: done.length };
+}
+
+function standingsHtml(L) {
+  const st = standings(L);
+  const medals = ['🥇', '🥈', '🥉'];
+  const lastRank = st.rows.length ? st.rows[st.rows.length - 1].rank : 0;
+  return `<h3>🏆 순위 <span class="muted">(${st.played}/${L.matches.length}경기 완료)</span></h3>
+      <div class="scroll"><table>
+        <tr><th>순위</th><th style="text-align:left">이름</th><th>경기</th><th>승</th><th>패</th><th>득</th><th>실</th><th>득실</th></tr>
+        ${st.rows.map(x => `<tr>
+          <td>${st.played ? (x.rank <= 3 ? `<span class="medal">${medals[x.rank - 1]}</span>` : (x.rank === lastRank && st.rows.length > 3 ? '💀' : x.rank)) : '-'}</td>
+          <td class="n">${dot(x.name)}${esc(x.name)}</td><td>${x.g}</td><td>${x.w}</td><td>${x.l}</td><td>${x.pf}</td><td>${x.pa}</td>
+          <td style="font-weight:700;color:${x.diff > 0 ? 'var(--green)' : x.diff < 0 ? 'var(--red)' : 'inherit'}">${x.diff > 0 ? '+' : ''}${x.diff}</td>
+        </tr>`).join('')}
+      </table></div>
+      ${prizeLine(L, st)}`;
+}
+function prizeLine(L, st) {
+  const amount = L.prize ?? 3000;
+  if (!amount) return '';
+  const pz = prizes(L);
+  if (!pz) return `<p class="prize-line">🏁 리그가 끝나면 1등 −${won(amount)}, 꼴등 +${won(amount)} (${L.prizeN || 1}명씩) · 남은 경기 ${L.matches.length - st.played}</p>`;
+  return `<p class="prize-line">🥇 ${pz.top.map(esc).join(', ')} −${won(amount)} &nbsp;·&nbsp; 💀 ${pz.bottom.map(esc).join(', ')} +${won(amount)}</p>`;
+}
+function renderLeagues() {
+  const D = day();
+  $('#leagues').innerHTML = D.leagues.map((L, li) => {
+    const byCourt = Array.from({ length: L.courts }, () => []);
+    L.matches.forEach(mt => byCourt[mt.court - 1].push(mt));
+    return `<div class="league" data-li="${li}">
+      <div class="lg-head">
+        <b>리그 ${li + 1} · ${L.players.length}명 · ${L.matches.length}경기</b>
+        <span class="muted">${L.target}점 · 패 ${L.fee ? won(L.fee) : '무료'} · 더블패 ${DBL_LINE[L.target]}점 미만${(L.prize ?? 3000) ? ` · 1등/꼴등 ${L.prizeN || 1}명 ±${won(L.prize ?? 3000)}` : ''}</span>
+      </div>
+      <div class="courts c${L.courts}">
+        ${byCourt.map((list, ci) => `<div class="court">
+          ${L.courts > 1 ? `<h4>🏸 ${ci + 1}코트</h4>` : ''}
+          ${list.map(mt => {
+            const r = result(mt, L.target);
+            const ca = r ? (r.winner === mt.a ? 'win' : 'lose') : '', cb = r ? (r.winner === mt.b ? 'win' : 'lose') : '';
+            return `<div class="match${r && r.dbl ? ' dbl' : ''}" id="m-${mt.id}">
+              <span class="no">${mt.no}</span>
+              <span class="a ${ca}">${esc(mt.a)} ${dot(mt.a)}</span>
+              <input inputmode="numeric" pattern="[0-9]*" data-mid="${mt.id}" data-side="sa" value="${esc(mt.sa)}" aria-label="${esc(mt.a)} 점수">
+              <span style="text-align:center">:</span>
+              <input inputmode="numeric" pattern="[0-9]*" data-mid="${mt.id}" data-side="sb" value="${esc(mt.sb)}" aria-label="${esc(mt.b)} 점수">
+              <span class="b ${cb}">${dot(mt.b)}${esc(mt.b)}</span>
+            </div>`;
+          }).join('')}
+        </div>`).join('')}
+      </div>
+      <div id="st-${L.id}">${standingsHtml(L)}</div>
+      <p class="muted" style="margin:6px 0 0">득실차 순으로 순위를 매기고, 같으면 승자승(맞대결)으로 정합니다.</p>
+      <div class="row" style="margin-top:8px;justify-content:flex-end">
+        <button class="small ghost" data-del="${li}" style="color:var(--red)">이 리그 삭제</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+// 점수 입력: 다시 그리지 않고 저장 후 해당 부분만 갱신 (입력 포커스 유지)
+$('#leagues').addEventListener('input', e => {
+  const i = e.target.closest('input[data-mid]'); if (!i) return;
+  i.value = i.value.replace(/\D/g, '').slice(0, 2);
+  const D = day();
+  D.leagues.forEach(L => L.matches.forEach(mt => {
+    if (mt.id !== i.dataset.mid) return;
+    mt[i.dataset.side] = i.value;
+    // 이 경기 줄과 순위표만 갱신
+    const r = result(mt, L.target), row = document.getElementById('m-' + mt.id);
+    row.classList.toggle('dbl', !!(r && r.dbl));
+    row.querySelector('.a').className = 'a ' + (r ? (r.winner === mt.a ? 'win' : 'lose') : '');
+    row.querySelector('.b').className = 'b ' + (r ? (r.winner === mt.b ? 'win' : 'lose') : '');
+    document.getElementById('st-' + L.id).innerHTML = standingsHtml(L);
+  }));
+  save();
+  renderBoard(); renderSettle();
+});
+$('#leagues').addEventListener('click', e => {
+  const b = e.target.closest('[data-del]'); if (!b) return;
+  if (!confirm('이 리그를 삭제할까요? 리그에서 붙은 비용도 빠집니다.')) return;
+  day().leagues.splice(+b.dataset.del, 1); save(); renderAll();
+});
+
+/* ---------- 정산 & 공유 ---------- */
+function renderSettle() {
+  const D = day(), t = totals(D);
+  const names = Object.keys(t).sort((a, b) => t[b].amount - t[a].amount);
+  const sum = names.reduce((s, n) => s + t[n].amount, 0);
+  $('#settle').innerHTML = names.length ? names.map(n => `<div class="settle-row">
+      <div>${dot(n)}<b>${esc(n)}</b> <span class="muted">${t[n].count}패${t[n].league ? ` (리그 ${t[n].league})` : ''}${t[n].top ? ' · 🥇1등 ' + won(t[n].prize) : ''}${t[n].bottom ? ' · 💀꼴등 +' + won(t[n].prize) : ''}</span></div>
+      <span class="amt">${amtText(t[n].amount)}</span>
+    </div>`).join('') + `<div class="settle-total"><span>합계</span><span>${won(sum)}</span></div>`
+    : '<p class="muted">참석자가 없습니다.</p>';
+  $('#account').value = db.account || '';
+}
+$('#account').addEventListener('input', e => { db.account = e.target.value; save(); });
+
+function amtText(a) { return a > 0 ? won(a) : a < 0 ? `−${won(-a)}` : '0원 🎉'; }
+function shareText() {
+  const D = day(), t = totals(D);
+  const [y, m, d] = selDate.split('-');
+  const names = Object.keys(t).sort((a, b) => t[b].amount - t[a].amount);
+  const sum = names.reduce((s, n) => s + t[n].amount, 0);
+  let s = `🏸 우당탕탕 요절복통\n${y}.${m}.${d} 정산 (참석 ${D.players.length}명)\n\n`;
+  s += names.map(n => {
+    const x = t[n], a = x.amount;
+    const tag = (x.top ? ' 🥇' : '') + (x.bottom ? ' 💀' : '');
+    return `${n}${tag} : ${a > 0 ? won(a) + ' 입금' : a < 0 ? `−${won(-a)} (받을 돈)` : '0원 🎉'} (${x.count}패${x.prize ? `, 1등/꼴등 ${x.prize > 0 ? '+' : '−'}${won(Math.abs(x.prize))}` : ''})`;
+  }).join('\n');
+  s += `\n\n합계 ${won(sum)}`;
+  D.leagues.forEach((L, li) => {
+    const st = standings(L); if (!st.played) return;
+    s += `\n\n🏆 리그${D.leagues.length > 1 ? ' ' + (li + 1) : ''} 순위\n` + st.rows.map(x => `${x.rank}. ${x.name} (${x.w}승${x.l}패 득실${x.diff > 0 ? '+' : ''}${x.diff})`).join('\n');
+  });
+  if (db.account) s += `\n\n💳 ${db.account}`;
+  return s;
+}
+async function copy(text) {
+  try { await navigator.clipboard.writeText(text); return true; }
+  catch (e) {
+    const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select();
+    let ok = false; try { ok = document.execCommand('copy'); } catch (_) {}
+    ta.remove(); return ok;
+  }
+}
+$('#shareBtn').onclick = async () => {
+  const text = shareText();
+  if (navigator.share) {
+    try { await navigator.share({ title: '우당탕탕 요절복통 정산', text }); return; }
+    catch (e) { if (e.name === 'AbortError') return; }
+  }
+  if (await copy(text)) toast('결과를 복사했어요. 카카오톡 단톡방에 붙여넣기 하세요!');
+  else alert(text);
+};
+$('#copyBtn').onclick = async () => { toast(await copy(shareText()) ? '복사 완료!' : '복사 실패'); };
+$('#resetDay').onclick = () => {
+  if (!confirm(`${selDate} 기록(참석자, 보드, 리그)을 모두 지울까요?`)) return;
+  delete db.days[selDate]; save(); renderAll();
+};
+
+/* ---------- 공통 ---------- */
+let tt;
+function toast(m) { const t = $('#toast'); t.textContent = m; t.classList.add('on'); clearTimeout(tt); tt = setTimeout(() => t.classList.remove('on'), 2200); }
+function renderAll() {
+  renderCal();
+  if (!selDate) return;
+  renderMembers(); renderRate(); renderBoard(); renderPick(); renderLeagues(); renderSettle();
+}
+// 7시가 지나면 요금 표시 갱신
+setInterval(() => { if (selDate) renderRate(); }, 60000);
+
+renderCal();
+openDay(today);
+window.scrollTo(0, 0);
+})();
+</script>
+</body>
+</html>

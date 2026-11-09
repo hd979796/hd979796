@@ -1,0 +1,466 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1f4e8c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="동의서 서명">
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3GwHAAAEhUlEQVR4nO3d63XUWBCF0WISgYggGNKAYMiITODHjAcw3e1+SapbZ+8EfLV8Pres5WW9e//xy4+CUP8cfQA4kgCIJgCiCYBoAiCaAIgmAKIJgGgCIJoAiCYAogmAaAIgmgCIJgCiCYBoAiCaAIgmAKIJgGgCIJoAiCYAogmAaAIgmgCIJgCiCYBoAiCaAIgmAKIJgGgCIJoAiCYAogmAaAIgmgCIJgCiCYBoAiCaAIgmAKIJgGgCIJoAiCYAogmAaAIgmgCIJgCiCYBoAiCaALjL92+fjz7CUwiAm72Mf0IEAuAmr0e/egQC4GHfv31eNgQBcLW3Rr5iBALgKteOe7UIBMCbbh31ShEIgIvuHfMqvxcIgLOeMeDuEQiAzXWOQACc9OzRdo1AAPxlq7F2/L1AAPxhj4F2ikAA/G/PYXaJQABU1f6D/PDp665f7xwBsLsu468SANXnduQIAgiXeuvzQgDB0sdfJYBYxv8vAbC5ruOvEkCkPX/6dx5/lQDiJD/xOUUAQdz3/00AIYz/NAEEMP7zBMBTrTT+KgGM54nPZQIYzBOftwlgKPf91xHAQMZ/PQEMY/y3EQB3W338VQIYxROf2wlgCE987iOAAdz3308AizP+xwhgYcb/OAFwlYnjrxoYQMovgynXubVRAUx6feclbn2eZ0wA017feY7xP9eIAM6NYloExv98ywcw8dWdHSSMv2rxAKa+uvMUf+awjWUDmPzqztdWPnt3SwbwyKs7V+O+f1vLBfDoIFaKwPi3t1QAzxrEChEY/z6WCSDltZ1HSB1/1SIBbPnazo488dlP+wC2HkO3CLqdZ7rWAew1hi6jc9+/v7YB7D2GoyMw/mO0DOCoMaZ8XeP/pWUAR36Djv4k2Jrx/6llAFU5EUwPrru2AVTNj8Ctz/FaB1A1NwLj76F9AFXzIjD+PpYIoGpeBHsx/suWCaBqRgT+zKGXpQKoWjuClT9JplougKo1I3Df39OSAVStFYHx97VsAFVrRGD8vS0dQNUaEezF+G+3fABVfSPwxKe/EQFU9Yug26cDp40JoKpPBO771/Hu/ccvP44+xLMl/fQ1/seM+gR4kTKKlOvc0sgAquaPY/r17WVsAFVzRzL1uo4wOoAqY+Gy8QFUzYpg0rV0EBFA1YzhTLiGbmICqFp7QCufvbOoAKrWHNKKZ15FXABVBsUvkQFUrRPBKudcVWwAVf3H1f18E0QHUNV3ZF3PNU18AFX9xtbtPJMJ4D9dRtflHCkE8BvjyyOAV46MQID7E8AJRwzR+I8hgDP2HKTxH0cAF+wxTOM/lgDesOVAjf94AriCoc4lgCs9OwJR9SCAGzxrtMbfhwBu9Mh4P3z6avzNCOAO9wzZ8Hsa+Z/h9nbpP9EZfm8CIJpbIKIJgGgCIJoAiCYAogmAaAIgmgCIJgCiCYBoAiCaAIgmAKIJgGgCIJoAiCYAogmAaAIgmgCIJgCiCYBoAiCaAIgmAKIJgGgCIJoAiCYAogmAaAIgmgCIJgCiCYBoAiCaAIgmAKIJgGgCIJoAiPYTCblsmBi1ZXIAAAAASUVORK5CYII=">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui}[hidden]{display:none!important}img{max-width:100%}</style></head><body>
+<title>동의서 서명</title>
+<style>
+/* Layout: four big step buttons on top, the document below, bottom sheets for signing and sending. */
+:root{
+  --bg:#eef0f3; --surface:#ffffff; --fg:#1c2230; --muted:#5f6878; --line:#d5d9e0;
+  --accent:#1f4e8c; --accent-fg:#ffffff; --accent-soft:#e4edf8;
+  --ink:#16308f; --danger:#b3261e; --ok:#1b7f4b; --ok-soft:#e3f3ea; --sel:#e8a317;
+  --font:-apple-system,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#15181e; --surface:#1f232b; --fg:#e8eaee; --muted:#9aa3b2; --line:#343a46;
+  --accent:#6ea2e6; --accent-fg:#0d1726; --accent-soft:#23324a; --ink:#16308f;
+  --danger:#ff7b6f; --ok:#5ccf8a; --ok-soft:#1f3a2c; --sel:#f0b43c; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#15181e; --surface:#1f232b; --fg:#e8eaee; --muted:#9aa3b2; --line:#343a46;
+  --accent:#6ea2e6; --accent-fg:#0d1726; --accent-soft:#23324a; --ink:#16308f;
+  --danger:#ff7b6f; --ok:#5ccf8a; --ok-soft:#1f3a2c; --sel:#f0b43c; color-scheme:dark }
+
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font);font-size:15px;line-height:1.45}
+*{box-sizing:border-box}
+button{font:inherit;color:inherit}
+#app{height:100%;display:flex;flex-direction:column;min-height:0}
+
+.top{background:var(--surface);border-bottom:1px solid var(--line);flex:none;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:10px 8px;
+  display:flex;flex-direction:column;gap:8px}
+.title{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.title b{font-size:17px}
+.title span{font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.step{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:8px 4px 7px;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:3px;min-height:64px;position:relative;overflow:hidden}
+.step input[type=file]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:0;z-index:1}
+.step:focus-within{outline:2px solid var(--accent);outline-offset:1px}
+label.big{text-align:center;box-sizing:border-box}
+.step:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.step .n{width:20px;height:20px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.step .l{font-weight:700;font-size:14px;white-space:nowrap}
+.step .s{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.step.next{border-color:var(--accent);background:var(--accent-soft)}
+.step.done{border-color:var(--ok);background:var(--ok-soft)}
+.step.done .n{background:var(--ok);color:#fff}
+.step.done .s{color:var(--ok)}
+.hint{font-size:12.5px;color:var(--muted);min-height:1.2em}
+.inapp{background:rgba(179,38,30,.1);border:1px solid var(--danger);color:var(--fg);border-radius:10px;padding:9px 11px;font-size:13.5px;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.inapp a,.inapp button{font:inherit;font-weight:700;background:var(--danger);color:#fff;border:0;border-radius:8px;padding:8px 12px;text-decoration:none;cursor:pointer}
+.inapp .grow{flex:1 1 200px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+#stage{flex:1 1 auto;min-height:0;overflow:auto;padding:10px max(12px,env(safe-area-inset-left,0px)) 24px max(12px,env(safe-area-inset-right,0px))}
+#pages{display:flex;flex-direction:column;align-items:center;gap:12px}
+.page{position:relative;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.18),0 6px 18px rgba(0,0,0,.08);flex:none}
+.page canvas.pg{display:block}
+.page .ov{position:absolute;inset:0;touch-action:pan-y}
+.page .num{position:absolute;top:-1px;left:-1px;background:var(--accent);color:var(--accent-fg);font-size:11px;padding:1px 7px;border-bottom-right-radius:6px;pointer-events:none}
+.item{position:absolute;touch-action:none;cursor:move;user-select:none;-webkit-user-select:none}
+.item img{display:block;width:100%;height:100%;pointer-events:none}
+.item.selected{outline:2px dashed var(--sel);outline-offset:2px}
+.item .del,.item .rs{position:absolute;display:none;align-items:center;justify-content:center;background:var(--surface);border:1px solid var(--sel);border-radius:50%;width:26px;height:26px;font-size:15px;line-height:1;cursor:pointer;padding:0}
+.item.selected .del,.item.selected .rs{display:flex}
+.item .del{top:-15px;right:-15px;color:var(--danger)}
+.item .rs{bottom:-15px;right:-15px;cursor:nwse-resize;touch-action:none;font-size:12px}
+
+.empty{max-width:520px;margin:20px auto 0;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 16px}
+.empty h2{margin:0 0 6px;font-size:17px;text-wrap:balance}
+.empty p{margin:0 0 8px;color:var(--muted);font-size:14px}
+.empty ol{margin:6px 0 0;padding-left:20px;font-size:14px}
+.empty li{margin:4px 0}
+.empty .big{display:block;width:100%;margin-top:14px;border:0;border-radius:12px;background:var(--accent);color:var(--accent-fg);font-weight:700;font-size:16px;padding:14px;cursor:pointer}
+
+.sheet{position:fixed;inset:0;background:rgba(10,14,24,.55);display:flex;align-items:flex-end;justify-content:center;z-index:20;
+  padding:0 max(0px,env(safe-area-inset-left,0px)) env(safe-area-inset-bottom,0px) max(0px,env(safe-area-inset-right,0px))}
+.card{background:var(--surface);border-radius:16px 16px 0 0;width:100%;max-width:720px;padding:14px max(16px,env(safe-area-inset-left,0px)) 18px max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:10px;max-height:92%;overflow:auto}
+.card h3{margin:0;font-size:17px}
+.card p{margin:0;color:var(--muted);font-size:13.5px}
+.row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.grow{flex:1 1 auto;min-width:0}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px 14px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;min-height:42px;font-size:15px}
+.btn:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.btn.primary{background:var(--accent);color:var(--accent-fg);border-color:var(--accent);font-weight:700}
+#sigCanvas{width:100%;height:230px;background:#fff;border:1px dashed #9aa3b2;border-radius:10px;touch-action:none;display:block}
+.sigline{position:relative}
+.sigline::after{content:"";position:absolute;left:8%;right:8%;bottom:50px;border-top:1px solid #c8ccd3;pointer-events:none}
+.status{font-size:14px;padding:10px 12px;border-radius:10px;background:var(--accent-soft);color:var(--fg)}
+.status.err{background:rgba(179,38,30,.12);color:var(--danger)}
+.status.ok{background:var(--ok-soft);color:var(--ok)}
+.steps-list{margin:0;padding-left:20px;font-size:14px}
+.steps-list li{margin:4px 0}
+.fax{display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.fax b{font-size:20px;letter-spacing:.02em;font-variant-numeric:tabular-nums;user-select:all;-webkit-user-select:all}
+.fax span{font-size:12px;color:var(--muted)}
+input[type=text]{font:inherit;border:1px solid var(--line);border-radius:10px;padding:9px 10px;background:var(--surface);color:var(--fg);min-width:0;width:100%}
+.toast{position:fixed;left:50%;bottom:calc(28px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:9px 15px;border-radius:20px;font-size:13.5px;z-index:30;pointer-events:none;opacity:0;transition:opacity .2s;max-width:90%;text-align:center}
+.toast.show{opacity:1}
+@media (prefers-reduced-motion:reduce){.toast{transition:none}}
+@media (max-width:360px){.step .l{font-size:13px}.step .s{display:none}}
+</style>
+
+<div id="app">
+  <header class="top">
+    <div class="title"><b>동의서 서명</b><span id="fileName">개인정보처리 동의서 · 출력·스캔 없이</span></div>
+    <div class="steps">
+      <label class="step next" id="bOpen"><input type="file" id="fileInput" accept="application/pdf,.pdf" aria-label="PDF 열기"><span class="n">1</span><span class="l">PDF 열기</span><span class="s" id="sOpen">동의서 파일</span></label>
+      <button class="step" id="bCheck" type="button"><span class="n">2</span><span class="l">전체 체크</span><span class="s" id="sCheck">동의함 ✓</span></button>
+      <button class="step" id="bSign" type="button"><span class="n">3</span><span class="l">사인하기</span><span class="s" id="sSign">고객 서명</span></button>
+      <button class="step" id="bSend" type="button"><span class="n">4</span><span class="l">팩스 발송</span><span class="s" id="sSend">공유하기</span></button>
+    </div>
+    <div class="hint" id="hint">포탈에서 저장한 동의서 PDF를 여세요.</div>
+    <div class="inapp" id="inapp" hidden><span class="grow" id="inappMsg">카카오톡 안의 브라우저에서는 PDF 저장이 안 됩니다. 크롬으로 열어 주세요.</span><a id="inappOpen" href="#" hidden>크롬으로 열기</a><button type="button" id="inappCopy">주소 복사</button></div>
+  </header>
+
+  <main id="stage">
+    <div class="empty" id="empty">
+      <h2>개인정보처리 동의서, 휴대폰에서 바로 서명</h2>
+      <p>포탈 동의서발행에서 "발행"을 눌러 PDF로 저장한 뒤 여기서 엽니다. 파일은 이 휴대폰 안에서만 처리됩니다.</p>
+      <ol>
+        <li><b>PDF 열기</b></li>
+        <li><b>전체 체크</b> 동의함 칸 전체에 ✓</li>
+        <li><b>사인하기</b> 고객 서명. 동의일자는 오늘 날짜로 자동 기입</li>
+        <li><b>팩스 발송</b> 공유하기 → 모바일팩스(또는 카카오톡) 선택 → 전송</li>
+      </ol>
+      <label class="big" for="fileInput">PDF 열기</label>
+    </div>
+    <div id="pages"></div>
+  </main>
+</div>
+
+<div class="sheet" id="sigModal" hidden>
+  <div class="card">
+    <h3 id="sigTitle">고객 서명</h3>
+    <p id="sigDesc">아래 칸에 손가락으로 서명해 주세요.</p>
+    <div class="sigline"><canvas id="sigCanvas"></canvas></div>
+    <div class="row">
+      <button class="btn" id="sigClear" type="button">다시 쓰기</button>
+      <span class="grow"></span>
+      <button class="btn" id="sigCancel" type="button">취소</button>
+      <button class="btn primary" id="sigOk" type="button">서명 넣기</button>
+    </div>
+  </div>
+</div>
+
+<div class="sheet" id="doneModal" hidden>
+  <div class="card">
+    <h3>팩스 발송</h3>
+    <div class="status" id="doneStatus">PDF를 만들고 있습니다…</div>
+    <div class="row">
+      <button class="btn primary" id="shareBtn" type="button" hidden>공유하기 · 모바일팩스 / 카카오톡</button>
+      <button class="btn" id="saveAgain" type="button">PDF 파일로 저장</button>
+    </div>
+    <div class="inapp" id="inapp2" hidden><span class="grow">카카오톡 안의 브라우저라 저장이 막혔습니다. 크롬으로 열어 같은 순서로 진행하세요.</span><a id="inappOpen2" href="#" hidden>크롬으로 열기</a></div>
+    <div class="fax"><div class="grow"><span>수신 팩스번호</span><br><b id="faxShow">—</b></div><button class="btn" id="copyFax" type="button">복사</button></div>
+    <ol class="steps-list" id="sendSteps">
+      <li><b>공유하기</b>를 누르고 뜨는 목록에서 <b>모바일팩스</b>를 고릅니다. 사무실로 보낼 때는 카카오톡을 골라도 됩니다.</li>
+      <li>모바일팩스에서 위 팩스번호를 넣고 전송합니다.</li>
+    </ol>
+    <div class="row"><span class="grow"></span><button class="btn" id="doneClose" type="button">닫기</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script>
+(function(){
+'use strict';
+var $=function(id){return document.getElementById(id)};
+var INK='#16308f';
+var state={ bytes:null, pdf:null, pages:[], items:[], zoom:1, fitScale:1, sel:null, nextId:1, fileName:'', custName:'', fax:'', rendered:{}, signed:false };
+var ls={get:function(k){try{return localStorage.getItem(k)}catch(e){return null}},set:function(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+if(window.pdfjsLib){ pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'; }
+
+window.addEventListener('error',function(e){ try{ $('hint').textContent='오류: '+(e.message||'알 수 없음')+' (새로고침 후 다시 시도)'; }catch(x){} });
+window.addEventListener('unhandledrejection',function(e){ try{ var r=e.reason; $('hint').textContent='오류: '+(r&&r.message||r||'알 수 없음'); }catch(x){} });
+if(!window.pdfjsLib||!window.PDFLib){ $('hint').textContent='PDF 라이브러리를 불러오지 못했습니다. 인터넷 연결을 확인하고 새로고침하세요.'; }
+var UA=navigator.userAgent||'', INAPP=/KAKAOTALK|NAVER\(inapp|Instagram|FBAN|FBAV|Line\/|DaumApps|SamsungBrowser\/[0-9.]+ .*wv|; wv\)/i.test(UA), ANDROID=/Android/i.test(UA);
+(function(){ if(!INAPP) return; var intent='intent://'+location.host+location.pathname+location.search+'#Intent;scheme=https;package=com.android.chrome;end';
+  ['inappOpen','inappOpen2'].forEach(function(id){ var a=$(id); if(!a) return; if(ANDROID){ a.href=intent; a.hidden=false; } });
+  if(!ANDROID) $('inappMsg').textContent='카카오톡 안의 브라우저에서는 PDF 저장이 안 됩니다. 오른쪽 아래 메뉴(…)에서 "Safari로 열기"를 눌러 주세요.';
+  $('inapp').hidden=false;
+  $('inappCopy').addEventListener('click',function(){ var u=location.href.split('#')[0]; var ok=function(){toast('주소를 복사했습니다. 크롬 주소창에 붙여넣으세요')};
+    if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(u).then(ok).catch(function(){toast(u)}); else toast(u); });
+})();
+var toastT; function toast(msg){var t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove('show')},2600)}
+function hint(msg){ $('hint').textContent=msg; }
+function setStep(id,cls,sub){ var b=$(id); b.classList.remove('next','done'); if(cls) b.classList.add(cls); if(sub!=null) b.querySelector('.s').textContent=sub; }
+function refreshSteps(){
+  var checks=state.items.filter(function(i){return i.type==='check'}).length;
+  var hasSig=state.items.some(function(i){return i.type==='sig'}), hasDate=state.items.some(function(i){return i.type==='date'});
+  setStep('bOpen', state.pdf?'done':'next', state.pdf?(state.custName||'열림'):'동의서 파일');
+  setStep('bCheck', !(state.pdf&&state.textReady)?'':(checks?'done':'next'), checks?checks+'곳 체크':'동의함 ✓');
+  setStep('bSign', !state.pdf?'':(hasSig&&hasDate?'done':(checks?'next':'')), hasSig&&hasDate?'서명·날짜 완료':(hasSig?'날짜 확인':'고객 서명'));
+  setStep('bSend', !state.pdf?'':(hasSig&&hasDate?'next':''), state.fax?('FAX '+state.fax.slice(-4)):'공유하기');
+}
+
+/* ---------- open ---------- */
+function pick(){ try{ $('fileInput').click(); }catch(e){} }
+$('fileInput').addEventListener('change',function(){ if(this.files&&this.files[0]) loadFile(this.files[0]); this.value=''; });
+$('stage').addEventListener('dragover',function(e){e.preventDefault()});
+$('stage').addEventListener('drop',function(e){e.preventDefault(); var f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0]; if(f) loadFile(f)});
+function loadFile(file){
+  if(!/pdf$/i.test(file.name)&&file.type!=='application/pdf'){toast('PDF 파일만 열 수 있습니다');return}
+  var r=new FileReader();
+  r.onload=function(){ state.fileName=file.name; state.custName=''; state.fax=''; openBytes(new Uint8Array(r.result), []); };
+  r.onerror=function(){ toast('파일을 읽지 못했습니다'); };
+  r.readAsArrayBuffer(file);
+}
+function openBytes(bytes, items){
+  if(!window.pdfjsLib){ hint('PDF 라이브러리를 불러오지 못했습니다. 인터넷 연결을 확인하고 새로고침하세요.'); toast('라이브러리 로드 실패'); return }
+  state.bytes=bytes; state.items=items||[]; state.sel=null; state.pdf=null; state.pages=[]; state.signed=false; state.textReady=false;
+  $('fileName').textContent=state.fileName||'문서'; hint('문서를 여는 중…');
+  pdfjsLib.getDocument({data:bytes.slice(0)}).promise.then(function(pdf){
+    state.pdf=pdf; var ps=[]; for(var i=1;i<=pdf.numPages;i++) ps.push(pdf.getPage(i)); return Promise.all(ps);
+  }).then(function(pages){
+    state.pages=pages.map(function(p){var v=p.getViewport({scale:1});return {page:p,w:v.width,h:v.height,text:[]}});
+    computeFit(); renderAll();
+    return Promise.all(state.pages.map(function(pg){ return pg.page.getTextContent().then(function(tc){
+      pg.text=tc.items.filter(function(it){return it.str&&it.str.trim()}).map(function(it){ var t=it.transform, fs=Math.hypot(t[0],t[1])||it.height||10;
+        return {str:it.str.trim(), x:t[4], xEnd:t[4]+it.width, cy:pg.h-t[5]-fs*0.35, fs:fs}; }); }); }));
+  }).then(function(){ state.textReady=true; readFormInfo(); refreshSteps(); hint('2단계 "전체 체크"를 누르세요. 서류를 직접 누르면 ✓가 하나씩 추가됩니다.'); })
+  .catch(function(e){ console.error(e); hint('PDF를 열 수 없습니다: '+(e&&e.message||e)); toast('PDF를 열 수 없습니다'); });
+}
+function readFormInfo(){
+  var fax=null, name=null;
+  state.pages.forEach(function(pg){ pg.text.forEach(function(t){ var m;
+    if(!fax&&(m=t.str.match(/FAX\s*[:：]?\s*([0-9][0-9\-\s]{7,}[0-9])/i))) fax=m[1].replace(/\s+/g,'');
+    if(!name&&(m=t.str.match(/동의자\s*[:：]\s*(\S+)/))) name=m[1]; }); });
+  state.fax=fax||ls.get('faxNo')||''; if(fax) ls.set('faxNo',fax);
+  state.custName=name||'';
+  if(name||fax) toast((name?'동의자 '+name:'')+(fax?(name?' · ':'')+'수신 FAX '+fax:'')+' 확인');
+}
+function computeFit(){ var avail=$('stage').clientWidth-26, maxW=0; state.pages.forEach(function(p){if(p.w>maxW)maxW=p.w}); state.fitScale=Math.max(0.2,Math.min(avail/maxW,900/maxW)); }
+function scale(){return state.fitScale*state.zoom}
+
+/* ---------- render ---------- */
+function renderAll(){
+  var wrap=$('pages'); wrap.innerHTML=''; $('empty').hidden=true; state.rendered={};
+  var s=scale(), dpr=Math.min(window.devicePixelRatio||1,3);
+  state.pages.forEach(function(p,idx){
+    var div=document.createElement('div'); div.className='page'; div.dataset.idx=idx;
+    div.style.width=Math.round(p.w*s)+'px'; div.style.height=Math.round(p.h*s)+'px';
+    var c=document.createElement('canvas'); c.className='pg'; var vp=p.page.getViewport({scale:s*dpr});
+    c.width=Math.floor(vp.width); c.height=Math.floor(vp.height); c.style.width=Math.round(p.w*s)+'px'; c.style.height=Math.round(p.h*s)+'px';
+    div.appendChild(c);
+    var ov=document.createElement('div'); ov.className='ov'; ov.dataset.idx=idx; div.appendChild(ov);
+    var n=document.createElement('span'); n.className='num'; n.textContent=(idx+1)+' / '+state.pages.length; div.appendChild(n);
+    wrap.appendChild(div);
+    state.rendered[idx]=p.page.render({canvasContext:c.getContext('2d',{willReadFrequently:true}),viewport:vp}).promise.then(function(){return {canvas:c,k:s*dpr}}).catch(function(e){console.error(e)});
+    ov.addEventListener('click',onOverlayClick);
+  });
+  renderItems();
+}
+function renderItems(){
+  var s=scale();
+  document.querySelectorAll('.ov').forEach(function(ov){ov.querySelectorAll('.item').forEach(function(n){n.remove()})});
+  state.items.forEach(function(it){
+    var ov=document.querySelector('.ov[data-idx="'+it.page+'"]'); if(!ov) return;
+    var el=document.createElement('div'); el.className='item'+(state.sel===it.id?' selected':''); el.dataset.id=it.id;
+    el.style.left=(it.x*s)+'px'; el.style.top=(it.y*s)+'px'; el.style.width=(it.w*s)+'px'; el.style.height=(it.h*s)+'px';
+    var img=document.createElement('img'); img.alt=it.type==='check'?'체크':it.type==='hand'?'손글씨':'서명'; img.src=it.png; el.appendChild(img);
+    var del=document.createElement('button'); del.className='del'; del.type='button'; del.textContent='×'; del.setAttribute('aria-label','지우기');
+    del.addEventListener('click',function(e){e.stopPropagation(); removeItem(it.id)});
+    var rs=document.createElement('span'); rs.className='rs'; rs.textContent='⤡'; rs.title='크기 조절';
+    rs.addEventListener('pointerdown',function(e){startResize(e,it)});
+    el.appendChild(del); el.appendChild(rs);
+    el.addEventListener('pointerdown',function(e){ if(e.target===rs||e.target===del) return; startDrag(e,it) });
+    el.addEventListener('click',function(e){ e.stopPropagation(); select(it.id); });
+    ov.appendChild(el);
+  });
+  refreshSteps();
+}
+function select(id){ state.sel=id; document.querySelectorAll('.item').forEach(function(n){n.classList.toggle('selected',n.dataset.id==id)}) }
+function removeItem(id){ state.items=state.items.filter(function(i){return i.id!==id}); if(state.sel===id)state.sel=null; renderItems(); }
+function startDrag(e,it){
+  if(e.button&&e.button!==0) return; e.preventDefault(); select(it.id);
+  var s=scale(), sx=e.clientX, sy=e.clientY, ox=it.x, oy=it.y, el=e.currentTarget, pg=state.pages[it.page];
+  try{el.setPointerCapture(e.pointerId)}catch(err){}
+  function mv(ev){ var dx=(ev.clientX-sx)/s, dy=(ev.clientY-sy)/s; it.x=Math.max(0,Math.min(pg.w-it.w,ox+dx)); it.y=Math.max(0,Math.min(pg.h-it.h,oy+dy)); el.style.left=(it.x*s)+'px'; el.style.top=(it.y*s)+'px'; }
+  function up(){ el.removeEventListener('pointermove',mv); el.removeEventListener('pointerup',up); el.removeEventListener('pointercancel',up); }
+  el.addEventListener('pointermove',mv); el.addEventListener('pointerup',up); el.addEventListener('pointercancel',up);
+}
+function startResize(e,it){
+  e.preventDefault(); e.stopPropagation();
+  var s=scale(), sx=e.clientX, ow=it.w, ratio=it.h/it.w, h=e.currentTarget, el=h.parentNode, pg=state.pages[it.page];
+  try{h.setPointerCapture(e.pointerId)}catch(err){}
+  function mv(ev){ var w=Math.max(6,ow+(ev.clientX-sx)/s); w=Math.min(w,pg.w-it.x); it.w=w; it.h=w*ratio; el.style.width=(it.w*s)+'px'; el.style.height=(it.h*s)+'px'; }
+  function up(){ h.removeEventListener('pointermove',mv); h.removeEventListener('pointerup',up); h.removeEventListener('pointercancel',up); }
+  h.addEventListener('pointermove',mv); h.addEventListener('pointerup',up); h.addEventListener('pointercancel',up);
+}
+/* tapping the document adds one ✓ (for a box the auto check missed) */
+function onOverlayClick(e){
+  if(e.target!==e.currentTarget) return;
+  if(state.sel){ select(null); return }
+  var idx=+e.currentTarget.dataset.idx, r=e.currentTarget.getBoundingClientRect(), s=scale();
+  addItem({type:'check',page:idx,cx:(e.clientX-r.left)/s,cy:(e.clientY-r.top)/s,w:11,h:11,png:checkPng()});
+}
+function addItem(o){ var it={id:state.nextId++,type:o.type,page:o.page,w:o.w,h:o.h,png:o.png};
+  var pg=state.pages[o.page]; it.x=Math.max(0,Math.min(pg.w-it.w,o.cx-it.w/2)); it.y=Math.max(0,Math.min(pg.h-it.h,o.cy-it.h/2));
+  state.items.push(it); state.sel=it.id; renderItems(); return it; }
+function placeSig(idx,x,y,sig,w){ w=w||Math.min(70,state.pages[idx].w*0.16); var h=w*sig.ratio; if(h>26){h=26;w=h/sig.ratio} addItem({type:'sig',page:idx,cx:x,cy:y,w:w,h:h,png:sig.png}); }
+function placeHand(idx,x,y,hand,w){ w=w||Math.min(40,state.pages[idx].w*0.1); var h=w*hand.ratio; if(h>18){h=18;w=h/hand.ratio} addItem({type:'hand',page:idx,cx:x,cy:y,w:w,h:h,png:hand.png}); }
+$('stage').addEventListener('click',function(e){ if(e.target===e.currentTarget||e.target.id==='pages') select(null); });
+var rsT; window.addEventListener('resize',function(){ if(!state.pdf) return; clearTimeout(rsT); rsT=setTimeout(function(){computeFit();renderAll()},200); });
+
+/* ---------- auto placement from the printed form ---------- */
+function findText(re){ var out=[]; state.pages.forEach(function(pg,idx){ pg.text.forEach(function(t){ if(re.test(t.str)) out.push({page:idx,t:t}) }) }); return out; }
+function findBoxNear(r,t){ var k=r.k, g=r.canvas.getContext('2d'), py=Math.round(t.cy*k), W=r.canvas.width;
+  if(py<0||py>=r.canvas.height) return null;
+  var y0=Math.max(0,py-Math.round(1*k)), rows=Math.min(r.canvas.height-y0,Math.round(2*k)+1);
+  var img=g.getImageData(0,y0,W,rows).data;
+  function dark(px){ if(px<0||px>=W) return false; for(var rr=0;rr<rows;rr++){ var i=(rr*W+px)*4; if((img[i]*0.3+img[i+1]*0.59+img[i+2]*0.11)<140&&img[i+3]>100) return true } return false }
+  function runs(from,dir,maxPt){ var out=[], inRun=false, start=0, n=Math.round(maxPt*k);
+    for(var i=1;i<=n;i++){ var px=from+dir*i, d=dark(px); if(d&&!inRun){inRun=true;start=px} else if(!d&&inRun){inRun=false; out.push([Math.min(start,px-dir),Math.max(start,px-dir)]); if(out.length>=2) break} }
+    return out; }
+  function pickSide(from,dir){ var rs=runs(from,dir,40); if(rs.length<2) return null; var a=rs[0], b=rs[1];
+    var lo=Math.min(a[0],a[1],b[0],b[1]), hi=Math.max(a[0],a[1],b[0],b[1]), size=(hi-lo)/k; if(size<6||size>24) return null;
+    return {cx:(lo+hi)/2/k, size:size, dist:Math.abs((lo+hi)/2-from)/k}; }
+  var L=pickSide(Math.round(t.x*k)-Math.round(1.5*k),-1), R=pickSide(Math.round(t.xEnd*k)+Math.round(1.5*k),1);
+  if(L&&R) return L.dist<=R.dist?L:R; return L||R;
+}
+async function autoCheckAll(){
+  if(!state.pdf){ toast('먼저 PDF를 여세요'); pick(); return }
+  if(!state.textReady){ toast('문서를 아직 읽는 중입니다. 잠시 후 다시 누르세요'); return }
+  var labels=findText(/^동의함$/), added=0;
+  if(!labels.length){ toast('"동의함" 글자를 찾지 못했습니다. 서류의 칸을 직접 눌러 ✓를 넣으세요'); return }
+  for(var i=0;i<labels.length;i++){ var L=labels[i], r=await state.rendered[L.page]; if(!r) continue;
+    var box=findBoxNear(r,L.t), cx, cy=L.t.cy, sz;
+    if(box){ cx=box.cx; sz=box.size*0.78; } else { cx=L.t.x-9; sz=10; }
+    var dup=state.items.some(function(it){return it.type==='check'&&it.page===L.page&&Math.abs(it.x+it.w/2-cx)<6&&Math.abs(it.y+it.h/2-cy)<6});
+    if(dup) continue;
+    addItem({type:'check',page:L.page,cx:cx,cy:cy,w:sz,h:sz,png:checkPng()}); added++; }
+  select(null); renderItems();
+  toast(added?'동의함 '+added+'곳에 체크했습니다':'이미 모두 체크되어 있습니다');
+  hint('서류를 훑어 빠진 칸이 없는지 보고, 3단계 "사인하기"를 누르세요.');
+}
+$('bCheck').addEventListener('click',autoCheckAll);
+function signSlot(){ var s=findText(/^\(서명\)$/); if(!s.length) return null; s.sort(function(a,b){return a.page-b.page||a.t.cy-b.t.cy||a.t.x-b.t.x}); return s[0]; }
+function dateRow(){ var y=findText(/^년$/), m=findText(/^월$/), d=findText(/^일$/), row=null;
+  y.forEach(function(Y){ var M=m.find(function(q){return q.page===Y.page&&Math.abs(q.t.cy-Y.t.cy)<3&&q.t.x>Y.t.x}), D=d.find(function(q){return M&&q.page===Y.page&&Math.abs(q.t.cy-Y.t.cy)<3&&q.t.x>M.t.x}); if(M&&D&&!row) row={page:Y.page,y:Y.t,m:M.t,d:D.t}; });
+  return row; }
+
+/* ---------- sign flow: signature -> month -> day ---------- */
+var flow=null; /* {step:'sig'|'m'|'d', pending:null|{page,x,y}} */
+var copy={ sig:['고객 서명','고객에게 휴대폰을 건네 아래 칸에 서명을 받으세요. 이 서명은 저장되지 않습니다. 동의일자는 오늘 날짜로 자동 기입됩니다.','서명 넣기'],
+  m:['동의일자 · 월','오늘 날짜의 "월"을 숫자로 써 주세요. 예: 11','다음 (일)'],
+  d:['동의일자 · 일','오늘 날짜의 "일"을 숫자로 써 주세요. 예: 7','넣기'],
+  free:['손글씨','쓴 뒤 서류에서 넣을 자리를 누르세요.','넣기'] };
+$('bSign').addEventListener('click',function(){ if(!state.pdf){ toast('먼저 PDF를 여세요'); pick(); return } if(!state.textReady){ toast('문서를 아직 읽는 중입니다. 잠시 후 다시 누르세요'); return }
+  state.items=state.items.filter(function(i){return i.type==='check'}); renderItems();
+  flow={step:'sig'}; openPad('sig'); });
+function textPng(txt,pt){ var k=4, c=document.createElement('canvas'), g=c.getContext('2d'), font='600 '+(pt*k)+'px -apple-system,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif';
+  g.font=font; var w=Math.ceil(g.measureText(txt).width)+k*2, h=Math.ceil(pt*k*1.3); c.width=w; c.height=h; g=c.getContext('2d'); g.font=font; g.fillStyle=INK; g.textBaseline='middle'; g.fillText(txt,k,h/2);
+  return {png:c.toDataURL('image/png'),w:w/k,h:h/k}; }
+function placeDate(){ var d=new Date(), mo=String(d.getMonth()+1), da=String(d.getDate()), row=dateRow();
+  state.items=state.items.filter(function(i){return i.type!=='date'});
+  if(row){ var two=function(v){return (v.length<2?'0':'')+v}, put=function(txt,x0,x1,cy){ var w=x1-x0; txt.split('').forEach(function(ch,i){ var t=textPng(ch,11); addItem({type:'date',page:row.page,cx:x0+w*(i+0.5)/txt.length,cy:cy,w:t.w,h:t.h,png:t.png}); }); };
+    put(two(mo),row.y.xEnd,row.m.x,row.m.cy); put(two(da),row.m.xEnd,row.d.x,row.d.cy); return true; }
+  var full=textPng(d.getFullYear()+'년 '+mo+'월 '+da+'일',11), pg=state.pages[state.pages.length-1];
+  addItem({type:'date',page:state.pages.length-1,cx:pg.w*0.5,cy:pg.h*0.9,w:full.w,h:full.h,png:full.png}); return false; }
+function openPad(step){ var c=copy[step]; $('sigTitle').textContent=c[0]; $('sigDesc').textContent=c[1]; $('sigOk').textContent=c[2]; $('sigModal').hidden=false; requestAnimationFrame(setupPad); }
+var pad={canvas:$('sigCanvas'),ctx:null,drawing:false,last:null,dirty:false};
+function setupPad(){ var c=pad.canvas, dpr=Math.min(window.devicePixelRatio||1,3), r=c.getBoundingClientRect();
+  c.width=Math.round(r.width*dpr); c.height=Math.round(r.height*dpr); pad.ctx=c.getContext('2d'); pad.ctx.scale(dpr,dpr);
+  pad.ctx.lineCap='round'; pad.ctx.lineJoin='round'; pad.ctx.strokeStyle=INK; pad.ctx.lineWidth=2.6; pad.dirty=false; }
+function pp(e){ var r=pad.canvas.getBoundingClientRect(); return {x:e.clientX-r.left,y:e.clientY-r.top} }
+pad.canvas.addEventListener('pointerdown',function(e){ e.preventDefault(); try{pad.canvas.setPointerCapture(e.pointerId)}catch(err){} pad.drawing=true; pad.last=pp(e);
+  pad.ctx.beginPath(); pad.ctx.arc(pad.last.x,pad.last.y,1.2,0,Math.PI*2); pad.ctx.fillStyle=INK; pad.ctx.fill(); pad.dirty=true; });
+pad.canvas.addEventListener('pointermove',function(e){ if(!pad.drawing) return; e.preventDefault(); var p=pp(e), l=pad.last; pad.ctx.beginPath(); pad.ctx.moveTo(l.x,l.y); pad.ctx.lineTo(p.x,p.y); pad.ctx.stroke(); pad.last=p; });
+function padEnd(){ pad.drawing=false }
+pad.canvas.addEventListener('pointerup',padEnd); pad.canvas.addEventListener('pointercancel',padEnd); pad.canvas.addEventListener('pointerleave',padEnd);
+pad.canvas.addEventListener('touchstart',function(e){e.preventDefault()},{passive:false}); pad.canvas.addEventListener('touchmove',function(e){e.preventDefault()},{passive:false});
+$('sigClear').addEventListener('click',function(){ pad.ctx.clearRect(0,0,pad.canvas.width,pad.canvas.height); pad.dirty=false; });
+$('sigCancel').addEventListener('click',function(){ $('sigModal').hidden=true; flow=null; refreshSteps(); });
+$('sigOk').addEventListener('click',function(){
+  if(!pad.dirty){ toast('먼저 써 주세요'); return }
+  var t=trimCanvas(pad.canvas); if(!t){ toast('먼저 써 주세요'); return }
+  var s={png:t.png,ratio:t.h/t.w}; $('sigModal').hidden=true; if(!flow) return;
+  if(flow.step==='sig'){ var slot=signSlot();
+    if(slot){ placeSig(slot.page,(slot.t.x+slot.t.xEnd)/2,slot.t.cy,s,Math.max(60,slot.t.xEnd-slot.t.x+36)); }
+    else { placeSig(0,state.pages[0].w*0.3,state.pages[0].h*0.85,s); toast('서명란을 찾지 못해 1쪽 아래에 넣었습니다. 끌어서 옮기세요'); }
+    var okDate=placeDate(); flow=null; select(null); renderItems();
+    var sl=signSlot(); if(sl){ var el=document.querySelector('.page[data-idx="'+sl.page+'"]'); if(el) el.scrollIntoView({block:'end'}); }
+    hint(okDate?'서명을 넣고 동의일자를 오늘 날짜로 기입했습니다. 위치가 어긋나면 끌어서 맞춘 뒤 4단계 "팩스 발송"을 누르세요.':'서명을 넣었습니다. 날짜 칸을 찾지 못해 마지막 쪽 아래에 오늘 날짜를 넣었으니 끌어서 날짜 칸에 맞추세요.');
+    toast('서명 · 동의일자 완료'); }
+});
+function trimCanvas(c){ var g=c.getContext('2d'), d=g.getImageData(0,0,c.width,c.height).data, minX=c.width,minY=c.height,maxX=-1,maxY=-1;
+  for(var y=0;y<c.height;y++) for(var x=0;x<c.width;x++){ if(d[(y*c.width+x)*4+3]>8){ if(x<minX)minX=x; if(x>maxX)maxX=x; if(y<minY)minY=y; if(y>maxY)maxY=y; } }
+  if(maxX<0) return null; var pad=6, w=maxX-minX+1+pad*2, h=maxY-minY+1+pad*2, o=document.createElement('canvas'); o.width=w; o.height=h;
+  o.getContext('2d').drawImage(c,minX-pad,minY-pad,w,h,0,0,w,h); return {png:o.toDataURL('image/png'),w:w,h:h}; }
+var checkCache=null;
+function checkPng(){ if(checkCache) return checkCache; var c=document.createElement('canvas'); c.width=c.height=96; var g=c.getContext('2d');
+  g.strokeStyle=INK; g.lineWidth=11; g.lineCap='round'; g.lineJoin='round'; g.beginPath(); g.moveTo(16,50); g.lineTo(40,76); g.lineTo(82,22); g.stroke();
+  checkCache=c.toDataURL('image/png'); return checkCache; }
+
+/* ---------- send ---------- */
+var lastOut=null;
+async function buildPdf(){
+  if(!window.PDFLib) throw new Error('PDF 생성 라이브러리를 불러오지 못했습니다');
+  var doc=await PDFLib.PDFDocument.load(state.bytes,{ignoreEncryption:true}), pages=doc.getPages(), cache={};
+  for(var i=0;i<state.items.length;i++){ var it=state.items[i], pg=pages[it.page]; if(!pg) continue;
+    var img=cache[it.png]; if(!img){ img=await doc.embedPng(it.png); cache[it.png]=img; }
+    var cb=pg.getCropBox(); pg.drawImage(img,{x:cb.x+it.x, y:cb.y+cb.height-it.y-it.h, width:it.w, height:it.h}); }
+  return await doc.save();
+}
+function outName(){ var n=(state.custName||'고객').replace(/[\\/:*?"<>|]/g,''), d=new Date(), p=function(v){return (v<10?'0':'')+v};
+  return '개인정보동의서_'+n+'_'+String(d.getFullYear()).slice(2)+p(d.getMonth()+1)+p(d.getDate())+'.pdf'; }
+function setStatus(msg,cls){ var s=$('doneStatus'); s.textContent=msg; s.className='status'+(cls?' '+cls:''); }
+$('bSend').addEventListener('click',async function(){
+  if(!state.pdf){ toast('먼저 PDF를 여세요'); pick(); return }
+  if(!state.items.length){ toast('전체 체크와 사인을 먼저 하세요'); return }
+  var hasSig=state.items.some(function(i){return i.type==='sig'}), hasDate=state.items.some(function(i){return i.type==='date'});
+  $('faxShow').textContent=state.fax||'서류에서 찾지 못함';
+  $('doneModal').hidden=false;
+  if(!hasSig||!hasDate) setStatus((!hasSig?'서명이 없습니다. ':'')+(!hasDate?'동의일자가 없습니다. ':'')+'3단계 사인하기를 먼저 하세요. 그래도 보내려면 아래 버튼을 누르세요.','err');
+  else setStatus('서명이 합쳐진 PDF를 만들고 있습니다…');
+  try{ lastOut={bytes:await buildPdf(),name:outName()}; }
+  catch(e){ console.error(e); setStatus('PDF를 만들지 못했습니다: '+(e&&e.message||e),'err'); return }
+  setupShare();
+  if(INAPP){ setStatus('카카오톡 안의 브라우저는 공유와 저장을 지원하지 않습니다. 크롬으로 열면 공유하기가 됩니다.','err'); $('inapp2').hidden=false; $('saveAgain').hidden=true; return }
+  if(hasSig&&hasDate){ if(!$('shareBtn').hidden) setStatus(lastOut.name+' 준비됨. "공유하기"를 누르고 모바일팩스를 고르세요.'); else { setStatus(lastOut.name+' 준비됨. 저장 창에서 확인을 누르세요.'); await saveOut(); } }
+});
+$('saveAgain').addEventListener('click',saveOut);
+$('doneClose').addEventListener('click',function(){ $('doneModal').hidden=true; });
+async function saveOut(){
+  if(!lastOut) return;
+  var dl=null; try{ dl=window.claude&&window.claude.use?await window.claude.use('downloads'):null; }catch(e){ dl=null; }
+  if(dl){
+    try{ var r=await dl.save({filename:lastOut.name,data:new Blob([lastOut.bytes],{type:'application/pdf'})});
+      setStatus(r.status==='saved'?'저장했습니다. 모바일팩스 앱에서 이 파일을 첨부해 보내세요.':'파일을 전달했습니다.','ok'); setStep('bSend','done','저장됨'); }
+    catch(e){ var c=e&&e.code;
+      if(c==='declined') setStatus('저장을 취소했습니다. 다시 저장하려면 "PDF 저장"을 누르세요.');
+      else if(c==='rate_limited') setStatus('저장 창이 이미 열려 있습니다. 잠시 후 다시 눌러 주세요.','err');
+      else setStatus('이 화면에서는 저장할 수 없습니다. claude 앱이나 브라우저에서 로그인한 뒤 열어 주세요.','err'); }
+    return;
+  }
+  if(window.claude){ setStatus('이 화면에서는 저장할 수 없습니다. claude 앱이나 브라우저에서 로그인한 뒤 열어 주세요.','err'); return }
+  if(INAPP){ setStatus('카카오톡 안의 브라우저는 PDF 저장을 지원하지 않습니다.','err'); $('inapp2').hidden=false; return }
+  try{ var blob=new Blob([lastOut.bytes],{type:'application/pdf'}), url=URL.createObjectURL(blob), a=document.createElement('a');
+    a.href=url; a.download=lastOut.name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(function(){URL.revokeObjectURL(url)},4000);
+    setStatus('다운로드했습니다. 모바일팩스 앱에서 다운로드 폴더의 파일을 첨부하세요.','ok'); setStep('bSend','done','저장됨'); }
+  catch(e){ setStatus('저장에 실패했습니다: '+(e&&e.message||e),'err'); }
+}
+function setupShare(){ var b=$('shareBtn'); b.hidden=true; $('saveAgain').hidden=false;
+  if(window.claude||!lastOut||!navigator.canShare) return;
+  try{ var f=new File([lastOut.bytes],lastOut.name,{type:'application/pdf'}); if(navigator.canShare({files:[f]})){ b.hidden=false; $('saveAgain').hidden=!!/Android|iPhone|iPad/i.test(UA);
+    b.onclick=function(){ navigator.share({files:[f],title:lastOut.name}).then(function(){setStatus('공유했습니다. 모바일팩스에서 수신번호를 넣고 전송을 마무리하세요.','ok'); setStep('bSend','done','공유됨')}).catch(function(){}) }; } }catch(e){}
+}
+$('copyFax').addEventListener('click',function(){ var v=state.fax; if(!v){toast('팩스번호가 없습니다');return}
+  var done=function(){toast('팩스번호를 복사했습니다')};
+  if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(v).then(done).catch(function(){ toast('번호를 길게 눌러 복사하세요'); }); }
+  else toast('번호를 길게 눌러 복사하세요'); });
+
+/* ---------- survive a live update ---------- */
+function boot(data){ try{ if(data&&data.bytes&&data.bytes.length){ state.fileName=data.fileName||''; state.nextId=data.nextId||1; openBytes(new Uint8Array(data.bytes),data.items||[]); } }catch(e){ console.error(e); } refreshSteps(); }
+try{ if(window.claude&&window.claude.hot&&window.claude.hot.snapshot){ window.claude.hot.snapshot(function(){ return state.bytes?{bytes:Array.from(state.bytes),items:state.items,fileName:state.fileName,nextId:state.nextId}:{}; }); } }catch(e){}
+try{ (window.claude&&window.claude.hot&&window.claude.hot.ready)?window.claude.hot.ready(boot):boot(window.claude&&window.claude.hot&&window.claude.hot.data||{}); }catch(e){ boot({}); }
+})();
+</script>
+
+</body></html>

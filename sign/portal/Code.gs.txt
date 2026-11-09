@@ -15,10 +15,12 @@ var NUM_FIELDS = ["premium", "prevPremium", "order", "portalNo", "all", "long", 
 
 function doGet(e) {
   var p = (e && e.parameter) || {};
-  /* 주소만 열면(action 없음) 업무포탈 화면을 보여준다. 화면 파일은 이 프로젝트의 portal.html */
+  /* 주소만 열면(action 없음) 화면을 보여준다. ?page=sign 동의서 서명, ?page=game 우당탕탕, 그 외 업무포탈 */
   if (!p.action) {
-    return HtmlService.createHtmlOutputFromFile("portal")
-      .setTitle("박문철보험대리점 업무포탈")
+    var PAGES = { portal: "박문철보험대리점 업무포탈", sign: "동의서 서명", game: "우당탕탕 요절복통" };
+    var pg = PAGES[p.page] ? p.page : "portal";
+    return HtmlService.createHtmlOutputFromFile(pg)
+      .setTitle(PAGES[pg])
       .addMetaTag("viewport", "width=device-width,initial-scale=1,viewport-fit=cover")
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
   }
