@@ -195,6 +195,14 @@ h3{font-size:16px;margin:14px 0 8px}
 .tray .empty{color:var(--muted);font-size:13px;align-self:center}
 
 /* 리그 */
+.lg-toggle{width:100%;display:flex;align-items:center;gap:8px;background:transparent;box-shadow:none;padding:2px 0;font-size:19px;font-weight:800;text-align:left}
+.lg-toggle:active{transform:none}
+.lg-toggle>span:first-child{white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:380px){.lg-toggle{font-size:17px}}
+.lg-toggle .lg-count{white-space:nowrap;flex:none;font-size:12px;font-weight:700;color:var(--forest);background:#e3f6ea;border-radius:999px;padding:2px 8px}
+.lg-toggle .lg-count:empty{display:none}
+.lg-toggle .chev{margin-left:auto;font-size:14px;color:var(--muted);transition:transform .2s}
+.lg-toggle[aria-expanded="true"] .chev{transform:rotate(180deg)}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .grid2 label{font-size:13px;color:var(--muted);font-weight:600}
 .pick{display:flex;flex-wrap:wrap;gap:6px}
@@ -376,8 +384,11 @@ td.n{text-align:left;font-weight:700;white-space:nowrap}
 
     <!-- 리그 -->
     <section class="card">
-      <h2>🎲 랜덤 리그 대진표</h2>
-      <div id="leagueSetup">
+      <button type="button" class="lg-toggle" id="lgToggle" aria-expanded="false" aria-controls="lgBody">
+        <span>🎲 랜덤 리그 대진표</span><span class="lg-count" id="lgCount"></span><span class="chev" aria-hidden="true">▼</span>
+      </button>
+      <div id="lgBody" hidden>
+      <div id="leagueSetup" style="margin-top:12px">
         <div class="pick" id="leaguePick"></div>
         <div class="row" style="margin:6px 0">
           <button class="small ghost" id="pickAll">전체 선택</button>
@@ -394,6 +405,7 @@ td.n{text-align:left;font-weight:700;white-space:nowrap}
         <button class="primary" id="makeLeague" style="width:100%;margin-top:10px">🎲 랜덤 대진표 만들기</button>
       </div>
       <div id="leagues"></div>
+      </div>
     </section>
 
     <!-- 정산 -->
@@ -1192,7 +1204,18 @@ function standingsHtml(L) {
     ${!amount ? '' : pz ? `<p class="prize-line">🥇 ${pz.top.map(esc).join(', ')} −${won(amount)} · 💀 ${pz.bottom.map(esc).join(', ')} +${won(amount)}</p>`
       : `<p class="prize-line">🏁 리그가 끝나면 1등 −${won(amount)}, 꼴등 +${won(amount)} (${L.prizeN || 1}명씩) · 남은 경기 ${L.matches.length - st.played}</p>`}`;
 }
+// 리그 칸은 접어 두고, 누르면 펼칩니다 (펼침 상태는 이 휴대폰에 기억)
+let lgOpen = false;
+try { lgOpen = localStorage.getItem('wdtt-league-open') === '1'; } catch (e) {}
+function setLgOpen(v) {
+  lgOpen = v; $('#lgBody').hidden = !v; $('#lgToggle').setAttribute('aria-expanded', String(v));
+  try { localStorage.setItem('wdtt-league-open', v ? '1' : '0'); } catch (e) {}
+}
+$('#lgToggle').onclick = () => setLgOpen(!lgOpen);
+setLgOpen(lgOpen);
 function renderLeagues(D) {
+  const nL = (D.leagues || []).length;
+  $('#lgCount').textContent = nL ? `${nL > 1 ? nL + "개 · " : ""}${D.leagues.reduce((t, L) => t + L.matches.filter(mt => result(mt, L.target)).length, 0)}/${D.leagues.reduce((t, L) => t + L.matches.length, 0)}경기` : '';
   if ($('#leagues').contains(document.activeElement) && document.activeElement.matches('input')) return; // 점수 입력 중에는 그대로 둠
   const ed = canEdit(D);
   $('#leagues').innerHTML = (D.leagues || []).map((L, li) => {
