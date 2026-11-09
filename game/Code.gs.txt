@@ -37,10 +37,12 @@ var WDTT = (function () {
   function roleOf(m) { return ROLES.indexOf(m.role) >= 0 ? m.role : '일반'; }
   function isAdmin(m) { return !!m.admin || ADMIN_NAMES.indexOf(m.name) >= 0; }
   function isOff(m) { return !!OFFICER[roleOf(m)] || isAdmin(m); }
+  var HOSTS = ['방장', '부방장']; // 벌금 강제 입력·조정 권한 (회장·관리자가 지정)
+  function isReferee(m) { return isOff(m) || HOSTS.indexOf(m.host) >= 0; }
   function canApprove(m) { return isOff(m) || roleOf(m) === '임원'; } // 게스트 승인: 집행부·임원진
   function canNotice(m) { return roleOf(m) === '회장' || isAdmin(m); } // 공지: 회장·관리자
   function pub(m, full) {
-    var o = { name: m.name, grade: m.grade, role: roleOf(m), title: roleOf(m) === '임원' ? (m.title || '') : '', joinedAt: m.joinedAt, gradeHistory: m.gradeHistory || [] };
+    var o = { name: m.name, grade: m.grade, role: roleOf(m), title: roleOf(m) === '임원' ? (m.title || '') : '', host: HOSTS.indexOf(m.host) >= 0 ? m.host : '', joinedAt: m.joinedAt, gradeHistory: m.gradeHistory || [] };
     if (full) { o.phone = m.phone; o.birth = m.birth; o.addr = m.addr || ''; }
     if (full === 'admin') { o.admin = isAdmin(m); o.adminFixed = ADMIN_NAMES.indexOf(m.name) >= 0; }
     return o;
@@ -184,6 +186,7 @@ var WDTT = (function () {
         a.status = b.status; a.by = me.name; a.at = t.iso;
         break;
       case 'mark': {
+        if (!isReferee(me) && !self && !guestOfMine) fail('다른 사람 패는 방장·부방장·집행부가 기록해요');
         if (!a || a.status === 'absent') fail('오늘 참석한 사람만 표시할 수 있어요');
         var rate = t.h >= 7 ? 3000 : 2000; // 회칙 제12조 ③: 07:00 전 2,000원, 07:00부터 3,000원
         var kind = b.kind === 'dbl' || b.kind === 'deuce' ? b.kind : 'lose';
@@ -191,7 +194,25 @@ var WDTT = (function () {
         break;
       }
       case 'undoMark': {
-        for (var i = D.marks.length - 1; i >= 0; i--) if (D.marks[i].name === target) { D.marks.splice(i, 1); break; }
+        if (!isReferee(me) && !self && !guestOfMine) fail('다른 사람 기록은 방장·부방장·집행부가 고쳐요');
+        for (var i = D.marks.length - 1; i >= 0; i--) if (D.marks[i].name === target && !D.marks[i].adj) { D.marks.splice(i, 1); break; }
+        break;
+      }
+      case 'adjust': { // 방장·부방장·집행부: 벌금 강제 입력·면제 (물리기 등)
+        if (!isReferee(me)) fail('벌금 조정은 방장·부방장·집행부만 할 수 있어요');
+        if (!a) fail('현황판에 없는 사람입니다');
+        var amt = Math.round(Number(b.amount) || 0);
+        if (!amt || Math.abs(amt) > 100000) fail('금액을 확인해 주세요');
+        var memo = String(b.memo || '').trim().slice(0, 40);
+        if (!memo) fail('사유를 적어 주세요 (예: 물리기 면제)');
+        D.marks.push({ id: env.uuid(), name: target, amount: amt, adj: true, memo: memo, at: t.iso, by: me.name });
+        break;
+      }
+      case 'delMark': {
+        var mk = D.marks.filter(function (x) { return x.id === b.id; })[0];
+        if (!mk) fail('기록을 찾을 수 없습니다');
+        if (!isReferee(me)) fail('기록 삭제는 방장·부방장·집행부만 할 수 있어요');
+        D.marks = D.marks.filter(function (x) { return x.id !== b.id; });
         break;
       }
       case 'setRate':
@@ -257,6 +278,36 @@ var WDTT = (function () {
     store.del('notices', b.id); return {};
   }
 
+  /* ---------- 가계부 (회계) ----------
+   * 보기: 회장·부회장·총무·관리자 / 쓰기·고치기: 총무·관리자 */
+  var LEDGER_IN = ['벌금', '게스트비', '연회비', '이월(시작 잔액)', '기타 수입'];
+  var LEDGER_OUT = ['셔틀콕·비품', '체육관 대관', '대회·송년회 등 행사', '경조사', '분기 아침식사', '전국대회 참가비 지원', '단체티·굿즈', '기타 지출'];
+  function canLedger(m) { return isOff(m); }
+  function canWriteLedger(m) { return roleOf(m) === '총무' || isAdmin(m); }
+  function ledgerList(me, b, store) {
+    if (!canLedger(me)) fail('가계부는 회장·부회장·총무만 볼 수 있어요');
+    return { entries: store.list('ledger').sort(function (a, c) { return String(a.date).localeCompare(String(c.date)) || String(a.at).localeCompare(String(c.at)); }), canWrite: canWriteLedger(me), categories: { in: LEDGER_IN, out: LEDGER_OUT } };
+  }
+  function ledgerSave(me, b, store, env) {
+    if (!canWriteLedger(me)) fail('가계부 기록은 총무가 해요');
+    var type = b.type === 'out' ? 'out' : 'in';
+    var cats = type === 'in' ? LEDGER_IN : LEDGER_OUT;
+    if (cats.indexOf(b.category) < 0) fail('항목을 골라 주세요');
+    var amount = Math.round(Number(b.amount) || 0);
+    if (amount <= 0 || amount > 100000000) fail('금액을 확인해 주세요');
+    checkDate(b.date);
+    var t = kst(env), id = b.id || env.uuid(), old = store.get('ledger', id) || {};
+    var e = { id: id, date: b.date, type: type, category: b.category, amount: amount, memo: String(b.memo || '').trim().slice(0, 80), by: old.by || me.name, at: old.at || t.iso };
+    if (b.id) { e.editedBy = me.name; e.editedAt = t.iso; }
+    store.put('ledger', id, e);
+    return ledgerList(me, b, store);
+  }
+  function ledgerDelete(me, b, store) {
+    if (!canWriteLedger(me)) fail('가계부 기록은 총무가 해요');
+    store.del('ledger', b.id);
+    return ledgerList(me, b, store);
+  }
+
   /* ---------- 멤버 관리 ---------- */
   function setRole(me, b, store) {
     // 회칙 제8조 ②: 회장 외 집행부·임원진은 회장이 임명 (관리자도 가능)
@@ -272,6 +323,13 @@ var WDTT = (function () {
     m.role = b.role;
     m.title = b.role === '임원' ? String(b.title || m.title || '임원').slice(0, 10) : '';
     store.put('members', m.name, m);
+    return { member: pub(m, 'admin') };
+  }
+  function setHost(me, b, store) {
+    if (!isAdmin(me) && roleOf(me) !== '회장') fail('방장·부방장은 회장·관리자가 정해요');
+    var h = HOSTS.indexOf(b.host) >= 0 ? b.host : '';
+    var m = store.get('members', cleanName(b.name)); if (!m) fail('멤버를 찾을 수 없습니다');
+    m.host = h; store.put('members', m.name, m);
     return { member: pub(m, 'admin') };
   }
   function setAdmin(me, b, store) {
@@ -342,7 +400,11 @@ var WDTT = (function () {
       case 'pay': return pay(me, b, store, env);
       case 'noticeSave': return noticeSave(me, b, store, env);
       case 'noticeDelete': return noticeDelete(me, b, store);
+      case 'ledgerList': return ledgerList(me, b, store);
+      case 'ledgerSave': return ledgerSave(me, b, store, env);
+      case 'ledgerDelete': return ledgerDelete(me, b, store);
       case 'setRole': return setRole(me, b, store);
+      case 'setHost': return setHost(me, b, store);
       case 'setAdmin': return setAdmin(me, b, store);
       case 'setGrade': return setGrade(me, b, store, env);
       case 'updateMe': return updateMe(me, b, store, env);
@@ -370,6 +432,7 @@ var TABS = {
   days: ['id', 'data', '수정시각'],
   payments: ['id', '날짜', '이름', '금액', '상태', 'data'],
   notices: ['id', '제목', '작성자', '작성일', 'data'],
+  ledger: ['id', '날짜', '구분', '항목', '금액', '내용', '기록자', 'data'],
   settings: ['id', 'data']
 };
 
@@ -435,6 +498,7 @@ function sheetStore() {
     if (col === 'days') return [id, data, new Date().toISOString()];
     if (col === 'payments') return [id, o.date, o.name, o.amount || 0, ({ none: '미입금', claimed: '입금했어요', confirmed: '확인완료' })[o.status] || o.status, data];
     if (col === 'notices') return [id, o.title, o.author, t(o.at), data];
+    if (col === 'ledger') return [id, o.date, o.type === 'out' ? '지출' : '수입', o.category, o.type === 'out' ? -o.amount : o.amount, o.memo || '', o.by, data];
     return [id, data];
   }
   return {
