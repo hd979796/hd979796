@@ -8,24 +8,38 @@
  */
 var WDTT = (function () {
   var GRADES = ['S', 'A', 'B', 'C', 'D'];
-  var ROLES = ['회장', '부회장', '총무', '일반'];
-  var OFFICER = { '회장': 1, '부회장': 1, '총무': 1 }; // 운영진: 입금 확인·결석·급수·마감
+  var ROLES = ['회장', '부회장', '총무', '임원', '일반', '인턴']; // 회칙 제6조: 집행부 3인 + 임원진 4인, 제3조: 인턴
+  var OFFICER = { '회장': 1, '부회장': 1, '총무': 1 }; // 집행부: 입금 확인·결석·급수·마감
   var ADMIN_NAMES = []; // 코드에 적힌 관리자 (handle에서 채움)
-  var LATE_MIN = 18 * 60 + 15; // 18:15 이후 입장은 지각
+  /* 회칙 제12조 ④ 지각비: 06:10 이후 도착. 강북권·의정부 밖에서 05:30 전에 출발 알림 → 06:30, 픽업 → 06:15 */
+  var LATE_BASE = 6 * 60 + 10, LATE_PICKUP = 6 * 60 + 15, LATE_FAR = 6 * 60 + 30;
+  var NEAR_RE = /의정부|강북구|도봉구|노원구/; // 서울 강북권·의정부
+  var GUEST_FEE = 3000, MAX_MEMBERS = 50, MAX_EXEC = 4;
+  function isFar(m) { return !!(m && m.addr) && !NEAR_RE.test(m.addr); }
+  function lateMinOf(m, a, date) {
+    var t = LATE_BASE;
+    if (a && a.pickup) t = LATE_PICKUP;
+    if (isFar(m) && a && a.departStamp && a.departStamp < date + ' 05:30') t = LATE_FAR;
+    return t;
+  }
+  function isWeekend(date) { var w = new Date(date + 'T00:00:00Z').getUTCDay(); return w === 0 || w === 6; }
+  function prevDate(d) { return new Date(Date.parse(d + 'T00:00:00Z') - 864e5).toISOString().slice(0, 10); }
   var STATUS = ['rsvp', 'present', 'late', 'absent'];
 
   function UserError(msg) { var e = new Error(msg); e.user = true; return e; }
   function fail(msg) { throw UserError(msg); }
   function kst(env) {
     var ms = env.now(), d = new Date(ms + 9 * 3600 * 1000);
-    return { date: d.toISOString().slice(0, 10), h: d.getUTCHours(), m: d.getUTCMinutes(), iso: new Date(ms).toISOString() };
+    var iso = d.toISOString();
+    return { date: iso.slice(0, 10), h: d.getUTCHours(), m: d.getUTCMinutes(), iso: new Date(ms).toISOString(), stamp: iso.slice(0, 10) + ' ' + iso.slice(11, 16) };
   }
   function roleOf(m) { return ROLES.indexOf(m.role) >= 0 ? m.role : '일반'; }
   function isAdmin(m) { return !!m.admin || ADMIN_NAMES.indexOf(m.name) >= 0; }
   function isOff(m) { return !!OFFICER[roleOf(m)] || isAdmin(m); }
+  function canApprove(m) { return isOff(m) || roleOf(m) === '임원'; } // 게스트 승인: 집행부·임원진
   function canNotice(m) { return roleOf(m) === '회장' || isAdmin(m); } // 공지: 회장·관리자
   function pub(m, full) {
-    var o = { name: m.name, grade: m.grade, role: roleOf(m), joinedAt: m.joinedAt, gradeHistory: m.gradeHistory || [] };
+    var o = { name: m.name, grade: m.grade, role: roleOf(m), title: roleOf(m) === '임원' ? (m.title || '') : '', joinedAt: m.joinedAt, gradeHistory: m.gradeHistory || [] };
     if (full) { o.phone = m.phone; o.birth = m.birth; o.addr = m.addr || ''; }
     if (full === 'admin') { o.admin = isAdmin(m); o.adminFixed = ADMIN_NAMES.indexOf(m.name) >= 0; }
     return o;
@@ -57,6 +71,7 @@ var WDTT = (function () {
     if (GRADES.indexOf(b.grade) < 0) fail('급수를 골라 주세요');
     if (!b.agree) fail('개인정보 수집에 동의해 주세요');
     if (store.get('members', name)) fail('이미 가입된 이름입니다. 로그인해 주세요');
+    if (store.list('members').length >= MAX_MEMBERS) fail('회원 정원(' + MAX_MEMBERS + '명)이 찼습니다. 운영진에게 문의해 주세요');
     var t = kst(env), role = '일반'; // 직책은 가입 후 관리자가 정합니다
     var salt = env.uuid();
     var m = {
@@ -103,31 +118,65 @@ var WDTT = (function () {
     var t = kst(env), date = checkDate(b.date), off = isOff(me);
     var D = store.get('days', date) || newDay(date);
     var target = b.name ? cleanName(b.name) : me.name, self = target === me.name;
-    var op = b.op;
+    var op = b.op, a = D.att[target];
+    var guestOfMine = !!(a && a.guest && a.by === me.name);
+    var cutoff = t.stamp >= date + ' 05:30'; // 회칙 제10조 ②: 취소는 당일 05:30 전까지
     if (!off) {
       if (D.closed) fail('마감된 날입니다. 운영진에게 말해 주세요');
       if (date < t.date) fail('지난 날짜는 운영진만 고칠 수 있어요');
-      if (!self && (op === 'join' || op === 'leave' || op === 'checkin')) fail('본인 자석만 움직일 수 있어요');
-      if (op === 'setStatus' || op === 'close' || op === 'reopen') fail('운영진(회장·총무·관리자)만 할 수 있어요');
-      if ((op === 'mark' || op === 'checkin') && date !== t.date) fail('오늘 날짜에서만 할 수 있어요');
+      if (['join', 'leave', 'checkin', 'depart', 'pickup'].indexOf(op) >= 0 && !self && !guestOfMine) fail('본인 자석만 움직일 수 있어요');
+      if (['setStatus', 'close', 'reopen', 'lateReg'].indexOf(op) >= 0) fail('집행부(회장·부회장·총무)만 할 수 있어요');
+      if (op === 'approveGuest' && !canApprove(me)) fail('게스트 승인은 집행부·임원진만 할 수 있어요');
+      if (['mark', 'checkin', 'depart'].indexOf(op) >= 0 && date !== t.date) fail('오늘 날짜에서만 할 수 있어요');
     }
-    var a = D.att[target];
     switch (op) {
       case 'join':
         if (!store.get('members', target)) fail('가입한 멤버가 아닙니다');
-        if (!a) D.att[target] = { status: 'rsvp', rsvpAt: t.iso };
+        if (!a) {
+          // 회칙 제10조 ①: 전날 23:00 이후 등록은 벌금 1,000원
+          D.att[target] = { status: 'rsvp', rsvpAt: t.iso, lateReg: t.stamp >= prevDate(date) + ' 23:00' };
+        }
         break;
       case 'leave':
+        if (!a) break;
+        if (!off && cutoff) { a.status = 'absent'; a.cancelAt = t.iso; a.lateCancel = true; break; } // 05:30 이후 취소 = 불참 5,000원
         delete D.att[target];
         D.marks = D.marks.filter(function (x) { return x.name !== target; });
         break;
+      case 'depart':
+        if (!a) fail('먼저 자석을 붙여 주세요');
+        a.departAt = t.iso; a.departStamp = t.stamp; break;
+      case 'pickup':
+        if (!a) fail('먼저 자석을 붙여 주세요');
+        a.pickup = !!b.value; break;
       case 'checkin': {
         if (!a) fail('먼저 자석을 붙여 주세요');
+        if (a.pending) fail('승인 전 게스트입니다');
         if (a.status === 'present' || a.status === 'late') break;
         a.arrivedAt = t.iso;
-        a.status = (date === t.date && t.h * 60 + t.m > LATE_MIN) ? 'late' : 'present';
+        var limit = lateMinOf(a.guest ? null : store.get('members', target), a, date);
+        a.lateLimit = limit;
+        a.status = (date === t.date && t.h * 60 + t.m >= limit) ? 'late' : 'present';
         break;
       }
+      case 'addGuest': {
+        // 회칙 제11조: 평일 10명 미만, 주말 15명 미만일 때만. 집행부·임원진 승인
+        var g = cleanName(b.guest);
+        if (!/^[가-힣A-Za-z0-9]{1,12}$/.test(g)) fail('게스트 이름을 넣어 주세요');
+        if (store.get('members', g)) fail('멤버 이름과 같아요. 다른 이름(예: ' + g + '친구)으로 넣어 주세요');
+        if (D.att[g]) fail('이미 현황판에 있는 이름이에요');
+        var cnt = Object.keys(D.att).filter(function (k) { return D.att[k].status !== 'absent'; }).length, max = isWeekend(date) ? 15 : 10;
+        if (!off && cnt >= max) fail('오늘 참석이 ' + cnt + '명이라 게스트를 부를 수 없어요 (' + (isWeekend(date) ? '주말 15명' : '평일 10명') + ' 미만일 때만)');
+        D.att[g] = { status: 'rsvp', guest: true, fee: GUEST_FEE, by: me.name, rsvpAt: t.iso, pending: !canApprove(me) };
+        if (!D.att[g].pending) { D.att[g].approvedBy = me.name; }
+        break;
+      }
+      case 'approveGuest':
+        if (!a || !a.guest) fail('게스트를 찾을 수 없습니다');
+        a.pending = false; a.approvedBy = me.name; break;
+      case 'lateReg':
+        if (!a) fail('참석자가 아닙니다');
+        a.lateReg = !!b.value; break;
       case 'setStatus':
         if (STATUS.indexOf(b.status) < 0) fail('상태가 올바르지 않습니다');
         if (!a) a = D.att[target] = { rsvpAt: t.iso };
@@ -135,7 +184,7 @@ var WDTT = (function () {
         break;
       case 'mark': {
         if (!a || a.status === 'absent') fail('오늘 참석한 사람만 표시할 수 있어요');
-        var rate = D.rate === '2000' ? 2000 : D.rate === '3000' ? 3000 : (t.h >= 19 ? 3000 : 2000);
+        var rate = t.h >= 7 ? 3000 : 2000; // 회칙 제12조 ③: 07:00 전 2,000원, 07:00부터 3,000원
         var kind = b.kind === 'dbl' || b.kind === 'deuce' ? b.kind : 'lose';
         D.marks.push({ id: env.uuid(), name: target, base: rate, amount: rate + (kind === 'lose' ? 0 : 1000), dbl: kind === 'dbl', deuce: kind === 'deuce', at: t.iso, by: me.name });
         break;
@@ -209,13 +258,19 @@ var WDTT = (function () {
 
   /* ---------- 멤버 관리 ---------- */
   function setRole(me, b, store) {
-    if (!isAdmin(me)) fail('직책은 관리자만 정할 수 있어요');
+    // 회칙 제8조 ②: 회장 외 집행부·임원진은 회장이 임명 (관리자도 가능)
+    if (!isAdmin(me) && roleOf(me) !== '회장') fail('직책은 회장·관리자만 정할 수 있어요');
     if (ROLES.indexOf(b.role) < 0) fail('직책이 올바르지 않습니다');
     var m = store.get('members', cleanName(b.name)); if (!m) fail('멤버를 찾을 수 없습니다');
-    if (b.role !== '일반') { // 회장·부회장·총무는 한 명씩
-      store.list('members').forEach(function (x) { if (x.role === b.role && x.name !== m.name) { x.role = '일반'; store.put('members', x.name, x); } });
+    if (b.role === '회장' && !isAdmin(me)) fail('회장은 회원 추천·동의로 뽑습니다. 관리자가 바꿔 주세요');
+    var all = store.list('members');
+    if (OFFICER[b.role]) { // 회장·부회장·총무는 한 명씩
+      all.forEach(function (x) { if (x.role === b.role && x.name !== m.name) { x.role = '일반'; store.put('members', x.name, x); } });
     }
-    m.role = b.role; store.put('members', m.name, m);
+    if (b.role === '임원' && m.role !== '임원' && all.filter(function (x) { return x.role === '임원'; }).length >= MAX_EXEC) fail('임원진은 ' + MAX_EXEC + '명까지예요');
+    m.role = b.role;
+    m.title = b.role === '임원' ? String(b.title || m.title || '임원').slice(0, 10) : '';
+    store.put('members', m.name, m);
     return { member: pub(m, 'admin') };
   }
   function setAdmin(me, b, store) {
@@ -297,6 +352,6 @@ var WDTT = (function () {
     }
   }
 
-  return { handle: handle, GRADES: GRADES, ROLES: ROLES, LATE_MIN: LATE_MIN };
+  return { handle: handle, GRADES: GRADES, ROLES: ROLES };
 })();
 if (typeof module !== 'undefined') module.exports = WDTT;
