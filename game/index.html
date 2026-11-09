@@ -66,6 +66,8 @@ h3{font-size:16px;margin:14px 0 8px}
 .role{display:inline-block;font-size:11px;font-weight:800;border-radius:6px;padding:1px 6px;margin-left:4px;vertical-align:2px}
 .role.회장{background:linear-gradient(#ffe08a,#e2a91f);color:#3a2800}
 .role.총무{background:#dff0ff;color:#1c4fb8}
+.role.host{background:#2b2118;color:#ffd863}
+.chip.adj{background:#eef0f3;color:#3b4350}
 .role.임원{background:#e3f6ea;color:#16794a}
 .role.인턴{background:#f1ece5;color:#7a6c5d}
 .role.부회장{background:linear-gradient(#f2f4f7,#cfd5dd);color:#3b4350}
@@ -371,7 +373,7 @@ td.n{text-align:left;font-weight:700;white-space:nowrap}
           <label>코트 수<select id="lgCourts"><option value="1">1코트</option><option value="2">2코트</option><option value="3">3코트</option></select></label>
           <label>점수<select id="lgTarget"><option value="21">21점 게임</option><option value="25">25점 게임</option></select></label>
           <label>1인당 경기 수<select id="lgRounds"></select></label>
-          <label>패배 비용<select id="lgFee"><option value="3000">3,000원</option><option value="2000">2,000원</option><option value="4000">4,000원</option><option value="0">없음</option></select></label>
+          <label>리그 패 벌금<select id="lgFee"><option value="0">자동 안 함 (현황판에서 직접)</option><option value="3000">자동 3,000원</option><option value="2000">자동 2,000원</option></select></label>
           <label>1등 −, 꼴등 + 금액<select id="lgPrize"><option value="3000">3,000원</option><option value="2000">2,000원</option><option value="0">없음</option></select></label>
           <label>1등·꼴등 인원<select id="lgPrizeN"><option value="1">각 1명</option><option value="2">각 2명</option></select></label>
         </div>
@@ -484,6 +486,7 @@ td.n{text-align:left;font-weight:700;white-space:nowrap}
       <li><b>07:00부터</b> 지면 <b>3,000원</b>, 빨간 짝대기 3개 <span class="ex" data-ex="r,r,r"></span></li>
       <li><b>더블패</b>(21점에 10점 미만, 25점에 13점 미만)와 <b>듀스패</b>(20:20·24:24 듀스까지 가서 짐)는 <b>+1,000원</b>. 3,000원 이상은 모두 빨간 짝대기 <span class="ex" data-ex="r,r,r"></span></li>
       <li>한 줄에 正 6개(30,000원)까지 보이고, 넘으면 "+금액"으로 표시됩니다.</li>
+      <li>내 패는 내가 기록하고, 다른 사람 기록·수정·<b>벌금 조정</b>(물리기 등 특수한 경우)은 <b>방장·부방장·집행부</b>가 합니다.</li>
     </ul>
     <h3>👥 게스트 (회칙 제11조)</h3>
     <ul>
@@ -494,7 +497,8 @@ td.n{text-align:left;font-weight:700;white-space:nowrap}
     <h3>🎲 랜덤 리그</h3>
     <ul>
       <li>참석자끼리 모두 한 번씩 붙도록 무작위 대진표. 사람이 많으면 코트를 나눕니다.</li>
-      <li>리그에서 지면 3,000원, 더블·듀스패 +1,000원. 순위는 득실차, 같으면 승자승. 끝나면 <b>1등 −3,000원, 꼴등 +3,000원</b>.</li>
+      <li>리그 패 벌금은 기본으로 <b>자동 반영하지 않습니다</b>. 방장·부방장이 현황판에서 직접 기록합니다. (대진표 만들 때 자동으로 바꿀 수 있음)</li>
+      <li>순위는 득실차, 같으면 승자승. 끝나면 <b>1등 −3,000원, 꼴등 +3,000원</b>.</li>
     </ul>
     <h3>💰 입금 (회칙 제12조 ③-2)</h3>
     <ul>
@@ -616,6 +620,8 @@ const gIdx = n => { const i = GRADES.indexOf(gradeOf(n)); return i < 0 ? 9 : i; 
 const byGrade = (a, b) => gIdx(a) - gIdx(b) || a.localeCompare(b, 'ko');
 const dot = n => `<i class="dot g-${gradeOf(n)}"></i>`;
 const roleTag = (r, title) => r && r !== '일반' ? `<span class="role ${esc(r)}">${esc(r === '임원' ? (title || '임원') : r)}</span>` : '';
+const isReferee = () => !!(S.me && (isOff() || S.me.host)); // 방장·부방장·집행부: 벌금 강제 입력
+const hostTag = h => h ? `<span class="role host">${esc(h)}</span>` : '';
 const canSetRole = () => !!(S.me && (S.me.admin || S.me.role === '회장')); // 회칙 제8조 ②
 function magnet(n, extra = '', tag = 'button') {
   const cls = ['mag', 'g-' + gradeOf(n), extra];
@@ -749,7 +755,7 @@ function renderHud() {
   const me = S.me; if (!me) return;
   $('#hudMag').innerHTML = magnet(me.name, 'sm');
   $('#hudName').textContent = me.name;
-  $('#hudRole').innerHTML = roleTag(me.role, me.title);
+  $('#hudRole').innerHTML = roleTag(me.role, me.title) + hostTag(me.host);
   $('#hudGrade').textContent = `${me.grade}조 · ${GRADE_NAME[me.grade]} 자석`;
   const st = monthStats(S.view || S.today.slice(0, 7))[me.name] || {};
   const rate = st.rate || 0;
@@ -872,7 +878,7 @@ function baseCharges(D) {
     if (a.status === 'late') out.push({ name: n, amount: 2000, src: 'late', label: '지각' });
     if (a.status === 'absent' && !a.pending) out.push({ name: n, amount: 5000, src: 'absent', label: a.lateCancel ? '05:30 이후 취소' : '불참' });
   });
-  (D.marks || []).forEach(m => out.push({ ...m, src: 'board', label: m.dbl ? '더블패' : m.deuce ? '듀스패' : '패' }));
+  (D.marks || []).forEach(m => out.push(m.adj ? { ...m, src: 'adj', label: `조정: ${m.memo}` } : { ...m, src: 'board', label: m.dbl ? '더블패' : m.deuce ? '듀스패' : '패' }));
   (D.leagues || []).forEach(L => L.matches.forEach(mt => {
     const r = result(mt, L.target); if (!r || !L.fee) return;
     out.push({ name: r.loser, amount: L.fee + (r.dbl || r.deuce ? 1000 : 0), dbl: r.dbl, deuce: r.deuce, src: 'league', label: `리그 ${r.dbl ? '더블패' : r.deuce ? '듀스패' : '패'}` });
@@ -899,12 +905,13 @@ function charges(D) {
   return out;
 }
 function totals(D) {
-  const t = {}, blank = () => ({ amount: 0, losses: 0, league: 0, prize: 0, late: 0, absent: 0, guest: 0, overdue: 0, lateReg: 0 });
+  const t = {}, blank = () => ({ amount: 0, losses: 0, league: 0, prize: 0, late: 0, absent: 0, guest: 0, overdue: 0, lateReg: 0, adjSum: 0 });
   Object.keys(D.att || {}).forEach(n => t[n] = blank());
   charges(D).forEach(c => {
     const x = t[c.name] || (t[c.name] = blank());
     x.amount += c.amount;
     if (c.src === 'prize') x.prize += c.amount;
+    else if (c.src === 'adj') x.adjSum += c.amount;
     else if (c.src === 'board' || c.src === 'league') { x.losses++; if (c.src === 'league') x.league++; }
     else x[c.src]++;
   });
@@ -938,7 +945,7 @@ const COL = { b: 'var(--blue)', r: 'var(--red)', k: 'var(--black)' };
 const MAX_STROKES = 30; // 한 줄에 正 6개 = 30,000원
 // 2,000원은 파랑, 3,000원 이상은 전부 빨강, 지각·불참·늦은 신청·연체는 검정. 게스트비는 짝대기 없이 표시
 function strokesOf(c) {
-  if (c.src === 'prize' || c.src === 'guest') return [];
+  if (c.src === 'prize' || c.src === 'guest' || c.src === 'adj') return [];
   const n = Math.max(0, Math.round(c.amount / 1000));
   if (['late', 'absent', 'lateReg', 'overdue'].includes(c.src)) return Array(n).fill(COL.k);
   return Array(n).fill(c.amount >= 3000 ? COL.r : COL.b);
@@ -1002,7 +1009,7 @@ function renderBoard(D) {
     return `<button type="button" class="pl" data-row="${esc(p)}">
       ${a.guest ? `<span class="mag g-none ${p.length > 3 ? 'long' : ''}" aria-hidden="true"><span>${esc(p)}</span></span>` : magnet(p, a.status === 'absent' ? 'ghosted' : '', 'span')}
       <span class="info"><span class="line"><span class="nm">${esc(p)}</span>${tag}<span class="st ${a.status}">${ST_LABEL[a.status]}</span>
-        ${x.guest ? '<span class="chip">게스트비 3천</span>' : ''}${x.prize ? `<span class="chip ${x.prize < 0 ? 'minus' : 'plus'}">${x.prize < 0 ? '🥇' : '💀'}${won(x.prize)}</span>` : ''}
+        ${x.guest ? '<span class="chip">게스트비 3천</span>' : ''}${x.adjSum ? `<span class="chip adj">조정 ${x.adjSum > 0 ? '+' : ''}${won(x.adjSum)}</span>` : ''}${x.prize ? `<span class="chip ${x.prize < 0 ? 'minus' : 'plus'}">${x.prize < 0 ? '🥇' : '💀'}${won(x.prize)}</span>` : ''}
         <span class="sum num">${won(x.amount)}</span></span>
       <span class="tally">${drawStrokes(cols, MAX_STROKES)}</span></span>
     </button>`;
@@ -1050,15 +1057,21 @@ let actFor = null;
 function renderAct(n) {
   const D = dayOf(S.sel), a = D.att[n]; if (!a) { closeModal($('#actModal')); return; }
   const list = charges(D).filter(c => c.name === n), x = totals(D)[n], r = rateOf();
-  const playing = a.status !== 'absent' && !a.pending && canEdit(D) && (S.sel === S.today || isOff());
-  $('#actName').innerHTML = `${esc(n)} ${a.guest ? `<span class="st guest">게스트 · ${esc(a.by)} 초대</span>` : roleTag((member(n) || {}).role, (member(n) || {}).title)}`;
+  const mineOrGuest = n === S.me.name || (a.guest && a.by === S.me.name);
+  const playing = a.status !== 'absent' && !a.pending && canEdit(D) && (S.sel === S.today || isOff()) && (isReferee() || mineOrGuest);
+  const ref = isReferee() && canEdit(D);
+  $('#actName').innerHTML = `${esc(n)} ${a.guest ? `<span class="st guest">게스트 · ${esc(a.by)} 초대</span>` : roleTag((member(n) || {}).role, (member(n) || {}).title) + hostTag((member(n) || {}).host)}`;
   $('#actBody').innerHTML = `
     <div class="tally" style="height:40px;background-size:40px 40px;min-width:0">${drawStrokes(list.flatMap(strokesOf))}</div>
-    <div style="margin:8px 0">${list.length ? list.map(c => `<div class="settle-row" style="padding:5px 2px"><span>${esc(c.label)}${c.at ? ` <span class="muted">${hm(c.at)}${c.by ? ' · ' + esc(c.by) : ''}</span>` : ''}</span><b class="num">${won(c.amount)}</b></div>`).join('') : '<p class="muted">아직 깨끗! ✨</p>'}
+    <div style="margin:8px 0">${list.length ? list.map(c => `<div class="settle-row" style="padding:5px 2px"><span>${esc(c.label)}${c.at ? ` <span class="muted">${hm(c.at)}${c.by ? ' · ' + esc(c.by) : ''}</span>` : ''}</span><span class="row" style="gap:6px;flex-wrap:nowrap"><b class="num">${won(c.amount)}</b>${ref && c.id && (c.src === 'board' || c.src === 'adj') ? `<button class="small ghost" data-delmark="${esc(c.id)}" aria-label="이 기록 지우기">✕</button>` : ''}</span></div>`).join('') : '<p class="muted">아직 깨끗! ✨</p>'}
       <div class="settle-total"><span>합계</span><span class="num">${won(x.amount)}</span></div></div>
     ${playing ? `<h3>게임 결과 기록 <span class="muted">(지금 ${r === 2000 ? '07:00 전' : '07:00 이후'})</span></h3><div class="acts">
       <button class="lose" data-mark="lose">패<br>+${r / 1000}천</button><button class="dbl" data-mark="dbl">더블패<br>+${r / 1000 + 1}천</button><button class="deuce" data-mark="deuce">듀스패<br>+${r / 1000 + 1}천</button></div>
       <button class="ghost" data-mark="undo" style="width:100%;margin-top:8px">↶ 마지막 패 지우기</button>` : ''}
+    ${ref ? `<h3>벌금 조정 <span class="muted">(방장·부방장·집행부)</span></h3>
+      <form id="adjForm" class="row" style="gap:6px"><select id="adjAmt" style="width:auto">${[1000, 2000, 3000, 5000, -1000, -2000, -3000, -5000].map(v => `<option value="${v}">${v > 0 ? '+' : '−'}${Math.abs(v).toLocaleString()}원</option>`).join('')}</select>
+      <input id="adjMemo" placeholder="사유 (예: 물리기 면제)" maxlength="40" style="flex:1;min-width:120px"><button class="primary">적용</button></form>
+      <p class="hint">특수한 경우(물리기 등)에 벌금을 더하거나 뺍니다. 위 목록의 ✕로 잘못된 기록을 지울 수 있어요.</p>` : ''}
     ${a.pending && canApprove() ? `<button class="forest" data-act="approve" style="width:100%;margin-top:10px">✅ 게스트 승인</button>` : ''}
     ${a.guest && a.status === 'rsvp' && !a.pending && (a.by === S.me.name || isOff()) && S.sel === S.today ? `<button class="forest" data-act="gcheckin" style="width:100%;margin-top:10px">🏸 게스트 구장 도착</button>` : ''}
     ${a.guest && a.by === S.me.name && !isOff() && canEdit(D) ? `<button class="ghost" data-act="gleave" style="width:100%;margin-top:8px">게스트 취소</button>` : ''}
@@ -1068,9 +1081,16 @@ function renderAct(n) {
     ${!a.guest ? `<button class="ghost" data-act="card" style="width:100%;margin-top:12px">🧲 멤버 카드 보기</button>` : ''}`;
 }
 $('#board').addEventListener('click', e => { const row = e.target.closest('[data-row]'); if (!row) return; actFor = row.dataset.row; renderAct(actFor); openModal('actModal'); });
+$('#actBody').addEventListener('submit', async e => {
+  if (e.target.id !== 'adjForm' || !actFor) return; e.preventDefault();
+  const amount = +$('#adjAmt').value, memo = $('#adjMemo').value.trim();
+  if (!memo) return toast('사유를 적어 주세요', true);
+  if (await dayOp('adjust', { name: actFor, amount, memo })) toast(`${actFor} ${amount > 0 ? '+' : '−'}${Math.abs(amount).toLocaleString()}원 (${memo})`);
+});
 $('#actBody').addEventListener('click', async e => {
-  const b = e.target.closest('button'); if (!b || !actFor) return;
+  const b = e.target.closest('button'); if (!b || !actFor || b.closest('#adjForm')) return;
   const n = actFor, a = dayOf(S.sel).att[n];
+  if (b.dataset.delmark) { if (confirm('이 기록을 지울까요?')) await dayOp('delMark', { id: b.dataset.delmark }); return; }
   if (b.dataset.mark) {
     const k = b.dataset.mark;
     if (await dayOp(k === 'undo' ? 'undoMark' : 'mark', { name: n, kind: k }) && k !== 'undo') toast(`${n} ${k === 'lose' ? '패' : k === 'dbl' ? '더블패' : '듀스패'} 기록`);
@@ -1157,7 +1177,7 @@ function renderLeagues(D) {
     L.matches.forEach(mt => byCourt[(mt.court - 1) % L.courts].push(mt));
     return `<div class="league">
       <div class="row between"><b>리그 ${li + 1} · ${L.players.length}명 · ${L.matches.length}경기</b>
-      <span class="muted">${L.target}점 · 패 ${L.fee ? won(L.fee) : '무료'}</span></div>
+      <span class="muted">${L.target}점 · 패 벌금 ${L.fee ? '자동 ' + won(L.fee) : '직접 기록'}</span></div>
       <div class="courts c${L.courts}">${byCourt.map((list, ci) => `<div class="court">${L.courts > 1 ? `<h4>🏸 ${ci + 1}코트</h4>` : ''}
         ${list.map(mt => { const r = result(mt, L.target), ca = r ? (r.winner === mt.a ? 'win' : 'lose') : '', cb = r ? (r.winner === mt.b ? 'win' : 'lose') : '';
           return `<div class="match${r && (r.dbl || r.deuce) ? ' dbl' : ''}" id="m-${mt.id}"><span class="no">${mt.no}</span>
@@ -1366,7 +1386,7 @@ function openProfile(n) {
   const bg = badgesOf(n, st);
   $('#profileBody').innerHTML = `<div class="profile">
     ${magnet(n, 'xl')}
-    <h2 style="justify-content:center;margin:12px 0 0">${esc(n)} ${roleTag(m.role, m.title)}</h2>
+    <h2 style="justify-content:center;margin:12px 0 0">${esc(n)} ${roleTag(m.role, m.title)}${hostTag(m.host)}</h2>
     <div class="muted">${m.grade}조 · ${GRADE_NAME[m.grade]} 자석${next ? ` · 다음 목표 ${next}조 ${GRADE_NAME[next]}` : ' · 최고 등급 👑'}</div>
     <div class="path">${[...GRADES].reverse().map(g => `<div class="step ${g === m.grade ? 'on' : GRADES.indexOf(g) > gi ? 'done' : ''}"><i class="dot g-${g}"></i>${g}</div>`).join('<span style="align-self:center;color:#ccb">›</span>')}</div>
     <div class="muted">${y}년 ${+mo}월 기록</div>
@@ -1409,13 +1429,15 @@ function renderOps() {
     body.innerHTML = `<div class="stats"><div><b class="num" style="font-size:16px">${won(due)}</b><span>이번 달 벌금</span></div><div><b class="num" style="font-size:16px;color:var(--green)">${won(got)}</b><span>확인된 입금</span></div><div><b class="num" style="font-size:16px;color:var(--red)">${won(due - got)}</b><span>남은 돈</span></div></div>
       <div class="demo" style="background:#fff7e0;color:#6b4e00">개인 카카오뱅크 계좌는 다른 앱과 자동 연동이 안 됩니다. 카카오뱅크 앱의 입금 알림에서 <b>입금자명(이름+날짜)</b>과 금액을 보고 아래에서 ✅확인을 눌러 주세요. ⏳는 본인이 "입금했어요"를 누른 사람입니다.</div>
       <h3>확인할 입금 (${rows.length}건${claimed ? ` · ⏳ ${claimed}건 대기` : ''})</h3>
+      ${claimed ? `<button class="forest" id="bulkConfirm" style="width:100%;margin-bottom:8px">⏳ "입금했어요" ${claimed}건 한 번에 확인</button><p class="hint" style="margin-top:0">통장 입금 내역과 맞는지 먼저 보고 눌러 주세요.</p>` : ''}
       ${rows.map(r => `<div class="settle-row"><div>${dot(r.n)}<b>${esc(r.n)}</b> <span class="muted">${+r.date.slice(5, 7)}/${+r.date.slice(8)}</span> <span class="pst ${r.p.status}">${PST[r.p.status]}</span></div>
         <div class="row" style="gap:6px;flex-wrap:nowrap"><b class="num">${won(r.amt)}</b><button class="small forest" data-opspay="${r.date}|${esc(r.n)}" data-amt="${r.amt}">✅ 확인</button></div></div>`).join('') || '<p class="muted">모두 확인됐어요 👏</p>'}`;
   } else if (opsTab === 'members') {
     body.innerHTML = `<p class="muted">${canSetRole() ? '회칙 제6·8조: 집행부(회장·부회장·총무) 각 1명, 임원진 4명(직위는 회장이 정함), 승인 전 회원은 인턴. 회장은 관리자만 바꿀 수 있습니다.' : '급수(자석 색)는 집행부가 바꿀 수 있습니다. 직책은 회장이 임명합니다.'}${isAdmin() ? ' 🔑 관리 권한은 다른 멤버에게 보이지 않습니다.' : ''}</p>` +
-      [...S.members].sort((a, b) => ROLES.indexOf(a.role) - ROLES.indexOf(b.role) || byGrade(a.name, b.name)).map(m => `<div class="mrow">${magnet(m.name, 'sm')}<b>${esc(m.name)}${roleTag(m.role, m.title)}${isAdmin() && m.admin ? '<span class="admin-tag">🔑 관리</span>' : ''}</b>
+      [...S.members].sort((a, b) => ROLES.indexOf(a.role) - ROLES.indexOf(b.role) || byGrade(a.name, b.name)).map(m => `<div class="mrow">${magnet(m.name, 'sm')}<b>${esc(m.name)}${roleTag(m.role, m.title)}${hostTag(m.host)}${isAdmin() && m.admin ? '<span class="admin-tag">🔑 관리</span>' : ''}</b>
         <select data-grade-of="${esc(m.name)}" aria-label="급수">${GRADES.map(g => `<option value="${g}" ${g === m.grade ? 'selected' : ''}>${g}조</option>`).join('')}</select>
-        ${canSetRole() ? `<select data-role-of="${esc(m.name)}" aria-label="직책">${ROLES.map(r => `<option ${r === m.role ? 'selected' : ''}>${r}</option>`).join('')}</select>` : ''}
+        ${canSetRole() ? `<select data-role-of="${esc(m.name)}" aria-label="직책">${ROLES.map(r => `<option ${r === m.role ? 'selected' : ''}>${r}</option>`).join('')}</select>
+        <select data-host-of="${esc(m.name)}" aria-label="방장"><option value="">방장 아님</option>${['방장', '부방장'].map(h => `<option ${h === m.host ? 'selected' : ''}>${h}</option>`).join('')}</select>` : ''}
         ${isAdmin() ? `${m.adminFixed ? '' : `<label style="display:flex;gap:4px;align-items:center;font-size:13px"><input type="checkbox" data-admin-of="${esc(m.name)}" ${m.admin ? 'checked' : ''} style="width:auto">관리 권한</label>`}
         <button class="small ghost" data-resetpw="${esc(m.name)}">비번 초기화</button>${m.name !== S.me.name ? `<button class="small ghost" data-kick="${esc(m.name)}" style="color:var(--red)">탈퇴</button>` : ''}` : ''}</div>`).join('');
   } else if (opsTab === 'roster') {
@@ -1437,6 +1459,13 @@ function renderOps() {
 $('#opsBody').addEventListener('click', async e => {
   const b = e.target.closest('button'); if (!b) return;
   try {
+    if (b.id === 'bulkConfirm') {
+      const mon = S.view, todo = [];
+      Object.values(S.days).filter(d => d.date.startsWith(mon)).forEach(D => Object.entries(totals(D)).forEach(([n, x]) => { const p = payOf(D.date, n); if (x.amount > 0 && p.status === 'claimed') todo.push([D.date, n, x.amount]); }));
+      if (!confirm(`${todo.length}건을 입금 확인 처리할까요?`)) return;
+      for (const [date, name, amount] of todo) { const r = await api('pay', { op: 'confirm', date, name, amount }); r.payments.forEach(p => S.payments[p.id] = p); }
+      renderOps(); renderSettle(dayOf(S.sel)); toast(`${todo.length}건 확인 ✅`); return;
+    }
     if (b.dataset.opspay) {
       const [date, name] = b.dataset.opspay.split('|');
       const r = await api('pay', { op: 'confirm', date, name, amount: +b.dataset.amt }); r.payments.forEach(p => S.payments[p.id] = p);
@@ -1463,6 +1492,7 @@ $('#opsBody').addEventListener('change', async e => {
       if (s.value === '임원') { title = prompt(`${s.dataset.roleOf}님의 임원 직위 (예: 경기이사, 홍보이사)`, '임원'); if (title === null) { renderOps(); return; } }
       await api('setRole', { name: s.dataset.roleOf, role: s.value, title }); toast(`${s.dataset.roleOf} → ${title || s.value}`);
     }
+    if (s.dataset.hostOf) { await api('setHost', { name: s.dataset.hostOf, host: s.value }); toast(`${s.dataset.hostOf} → ${s.value || '방장 아님'}`); }
     if (s.dataset.adminOf) { await api('setAdmin', { name: s.dataset.adminOf, admin: s.checked }); toast(`${s.dataset.adminOf} 관리 권한 ${s.checked ? '줌' : '뺌'}`); }
     await refreshBoot(); renderOps(); renderDay();
   } catch (err) { toast(err.message, true); await refreshBoot(); renderOps(); }
