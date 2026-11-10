@@ -448,8 +448,24 @@ tr.over td:first-child{box-shadow:inset 4px 0 var(--bad)}
 </section>
 
 <section class="view" id="v-pay" hidden>
+  <div class="card" id="cp-card">
+    <h2>월 카드결제 (장기 계속보험료) <em id="cp-sub"></em></h2>
+    <div class="row" id="cp-days"></div>
+    <div class="filters" style="margin-top:10px">
+      <input class="in" id="cp-q" type="search" placeholder="고객명 · 비고 검색" aria-label="고객 검색">
+      <button class="btn pri" type="button" id="cp-req">Claude에게 결제 요청</button>
+      <button class="btn" type="button" id="cp-imp-open">명단 붙여넣기 (엑셀)</button>
+    </div>
+    <div id="cp-imp" hidden style="margin-top:10px;border-top:1px dashed var(--line);padding-top:10px">
+      <p class="note" style="margin-bottom:6px">카드결제명단 엑셀에서 성함~비고 칸을 드래그 복사해 붙여넣으세요(머리글 줄 포함 가능). 주민번호는 저장하지 않고 생년 6자리만 남깁니다. 붙여넣으면 기존 명단을 바꿉니다.</p>
+      <textarea class="in" id="cp-imp-in" rows="5" placeholder="성함	주민번호	생년월일	금액	결제일	비고"></textarea>
+      <div class="row" style="margin-top:6px"><button class="btn" type="button" id="cp-imp-parse">미리보기</button><button class="btn pri" type="button" id="cp-imp-save" disabled>명단 저장</button><span class="note" id="cp-imp-note"></span></div>
+    </div>
+    <div class="tw"><table><thead><tr><th>고객</th><th>생년</th><th style="text-align:right">명단 금액</th><th>비고</th><th>이번 달 결과</th><th>계약 · 카드 · 승인</th><th></th></tr></thead><tbody id="cp-body"></tbody></table></div>
+    <p class="note" style="margin-top:8px">「Claude에게 결제 요청」을 누르면 사무실 Claude가 카드결제 스킬대로 포탈에서 결제하고 결과를 여기에 남깁니다. 해지카드·승인거절은 빨간색으로 표시되니 고객에게 안내하세요. 직접 결제했으면 「기록」으로 남기면 됩니다.</p>
+  </div>
   <div class="card">
-    <h2>카드결제 명단 <em>결제일별 · 카드번호는 적지 않습니다</em></h2>
+    <h2>갱신 건 카드결제 <em>자동차·일반 갱신 결제일별 · 카드번호는 적지 않습니다</em></h2>
     <div class="pays" id="pays"></div>
     <div class="row" style="margin-top:10px">
       <select class="in" id="pay-case" aria-label="고객 선택"></select>
@@ -574,7 +590,7 @@ const LINES={
   "일반":{key:"gen",title:"일반보험",sub:"기타전문인배상 · 하이기업종합플러스 · 승강기 · 생산물배상 · 화재",dateLabel:"만기일",status:STATUS,done:"갱신완료",fail:"미갱신",run:["미착수","설계완료","안내완료","보류"],kinds:["갱신","신규"],nameLabel:"계약자(업체명)",noLabel:"전계약 증권번호",premLabel:"갱신 보험료",prevLabel:"작년 보험료",reqs:["갱신설계","안내준비","카드결제"]}
 };
 const LINE_KEYS={long:"장기",cases:"자동차",gen:"일반"};
-const KINDS={"갱신설계":"갱신설계","안내준비":"안내 멘트·청약서 이미지","카드결제":"카드결제 화면 준비","증권출력":"증권 발행·출력","송장출력":"로젠택배 송장 접수","상해질병청구":"상해·질병 보험금 청구 접수","배상책임청구":"배상책임 사고접수·청구 진행","보험금검산":"실손 보험금 검산","자동차사고접수":"자동차 사고접수·보상 진행","배상책임접수":"배상책임 접수 (메일 발송)","상해질병접수":"상해·질병 청구 (PDF 출력)"};
+const KINDS={"갱신설계":"갱신설계","안내준비":"안내 멘트·청약서 이미지","카드결제":"카드결제 화면 준비","증권출력":"증권 발행·출력","송장출력":"로젠택배 송장 접수","상해질병청구":"상해·질병 보험금 청구 접수","배상책임청구":"배상책임 사고접수·청구 진행","보험금검산":"실손 보험금 검산","자동차사고접수":"자동차 사고접수·보상 진행","카드결제일괄":"월 카드결제 일괄 처리","배상책임접수":"배상책임 접수 (메일 발송)","상해질병접수":"상해·질병 청구 (PDF 출력)"};
 const CLAIM_KINDS=["상해질병청구","배상책임청구","보험금검산","자동차사고접수","배상책임접수","상해질병접수"];
 const CLAIM_FORM_LINK="https://script.google.com/macros/s/AKfycbwYo0OB6Z9ZlXPbNTyTeTdlbWuEoV4mRVbvV3fExseqeVQyhJuD7js_aM2mKDs-0xn4/exec";
 const TOOLS=[
@@ -597,7 +613,7 @@ const NAV_N={long:"n-long",cases:"n-cases",gen:"n-gen",claims:"n-claims",ship:"n
 const GIFT_MIN=400000; const SOON_DAYS=10;
 const GEN_PRODUCTS=["기타전문인배상책임","하이기업종합플러스","승강기배상책임","생산물배상책임","화재보험","영업배상책임","기타"];
 const GEN_KEYS={"전문인":/전문인/,"기업종합":/기업종합|기업플러스/,"승강기":/승강기/,"생산물":/생산물/,"화재":/화재/};
-let db=null, sampleFn=null, cases=[], reqs=[], tpls=[], notes=[], portal=null, sender={};
+let db=null, sampleFn=null, cases=[], reqs=[], tpls=[], notes=[], portal=null, sender={}, portalDocs=[];
 let calls=[], archive=[], todos=[], profiles={}, custRows=[], custLoaded=false;
 let who="대표", view="home", rFilter="open", clFilter="", curTpl=null, curNote=null, curCust="", twFilter="", crFilter="", shFilter="wait", MONTH="";
 const LF={"장기":{s:"",p:"",q:""},"자동차":{s:"",p:"",q:""},"일반":{s:"",p:"",q:""}}; /* 줄별 필터: 상태칩·상품칩·검색 */
@@ -714,7 +730,7 @@ function renderNav(){const open=reqs.filter(r=>r.status==="new"||r.status==="wor
   Object.keys(LINES).forEach(l=>{const k=LINES[l].key;const cs=cases.filter(c=>lineOf(c)===l);const hot=cs.filter(c=>isSoon(c)||isOver(c)||needPolicy(c)).length;const n2=cs.filter(c=>inMonth(c)&&!isDone(c)&&!isFail(c)).length;const el=$("#n-"+k);el.textContent=(hot||n2)||"";el.classList.toggle("hot",hot>0)});
   const cl=open.filter(r=>CLAIM_KINDS.includes(r.kind)).length;const nc=$("#n-claims");nc.textContent=cl||"";nc.classList.toggle("hot",cl>0);
   const sh=cases.filter(c=>(isGift(c)&&!c.waybillAt)||(isMail(c)&&!c.mailedAt)).length;const ns=$("#n-ship");ns.textContent=sh||"";ns.classList.toggle("hot",sh>0);
-  $("#n-pay").textContent=cases.filter(needPay).length||"";const ot=todos.filter(t=>!t.done).length;const nt=$("#n-todo");nt.textContent=ot||"";nt.classList.toggle("hot",ot>0);syncGroupBadges()}
+  {const m=cpMonth(),dd=cpDefaultDay(),pend=cpRoster().filter(r=>r.day===dd&&!r.auto&&!cpRes(r,m)).length;const np=$("#n-pay");np.textContent=(cases.filter(needPay).length+pend)||"";np.classList.toggle("hot",pend>0)}const ot=todos.filter(t=>!t.done).length;const nt=$("#n-todo");nt.textContent=ot||"";nt.classList.toggle("hot",ot>0);syncGroupBadges()}
 
 /* 줄별 숫자: 타일 4개 + 업무 대기 칩 */
 function lineStats(line){const all=cases.filter(c=>lineOf(c)===line),m=all.filter(inMonth);
@@ -958,7 +974,52 @@ $("#mail-print-all").onclick=()=>{const l=shipRows("mail").filter(c=>c.address&&
 $("#mail-print-sel").onclick=()=>{const ids=selIds("data-msel");const l=ids.map(id=>cases.find(c=>c.id===id)).filter(c=>c&&c.address);if(!l.length)return toast("왼쪽 칸에서 출력할 고객을 고르세요");doPrint(labelsHtml(l),l.map(c=>c.id),"mail")};
 $("#mail-done").onclick=()=>{const ids=selIds("data-msel");if(!ids.length)return toast("왼쪽 칸에서 고객을 고르세요");markShipped(ids,"mail")};
 
-function renderPay(){const days=["즉시","5","10","15","20","25","말일"];const list=cases.filter(c=>c.payDay&&!c.paidAt);const d=new Date().getDate();
+/* ---- 월 카드결제 (장기 계속보험료) ----
+   명단: portal/cardpay_roster {rows:[{name,birth6,amt,day,note,auto}]}  ·  결과: portal/cp-YYYY-MM-<고객키>-<결제일> {type:"cardpay",...} */
+const CP_DAYS=["5","10","20","25","말일"];let cpDay="",cpParsed=[];
+const cpRoster=()=>{const d=(portalDocs||[]).find(x=>x.id==="cardpay_roster");return d&&Array.isArray(d.rows)?d.rows:[]};
+const cpMonth=()=>MONTH||curMonth();
+const cpKey=(r,m)=>"cp-"+m+"-"+pkey(r.name).slice(1)+"-"+(r.day==="말일"?"end":r.day);
+const cpRes=(r,m)=>(portalDocs||[]).find(x=>x.id===cpKey(r,m||cpMonth()));
+const CP_ST={"승인":"s-갱신완료","대상없음":"s-보류","미처리":"s-미갱신","건너뜀":"s-안내완료"};
+function cpDefaultDay(){const d=new Date().getDate(),last=new Date(new Date().getFullYear(),new Date().getMonth()+1,0).getDate();if(d===last)return"말일";return CP_DAYS.find(x=>x!=="말일"&&+x>=d)||"말일"}
+function renderCardPay(){if(!$("#cp-body"))return;if(!cpDay)cpDay=cpDefaultDay();const rows=cpRoster(),m=cpMonth();
+  $("#cp-sub").textContent=`${m.replace("-","년 ")}월 · 명단 ${rows.length}명${rows.length?"":" — 「명단 붙여넣기」로 올려 주세요"}`;
+  $("#cp-days").innerHTML=CP_DAYS.map(d=>{const g=rows.filter(r=>r.day===d&&!r.auto),done=g.filter(r=>cpRes(r,m)).length,bad=g.filter(r=>(cpRes(r,m)||{}).status==="미처리").length;
+    return `<button class="fchip" type="button" data-cpd="${d}" aria-pressed="${d===cpDay}">${d==="말일"?d:d+"일"} <b>${done}/${g.length}</b>${bad?` <span style="color:var(--bad)">●${bad}</span>`:""}</button>`}).join("");
+  const q=norm($("#cp-q").value||"");const list=rows.filter(r=>r.day===cpDay&&(!q||norm(r.name+" "+(r.note||"")).includes(q)));
+  $("#cp-body").innerHTML=list.length?list.map((r,i)=>{const x=cpRes(r,m);const k=cpKey(r,m);
+    const res=r.auto?'<span class="chip s-보류">자동이체 · 결제 안 함</span>':x?`<span class="chip ${CP_ST[x.status]||""}">${esc(x.status)}</span>${x.reason?`<br><span class="note">${esc(x.reason)}</span>`:""}`:'<span class="chip s-안내완료">대기</span>';
+    const det=x&&x.status==="승인"?`${esc(x.contract||"")} · ${esc(x.card||"")} · ${won(x.amount)}<br><span class="note">승인 ${esc(x.approval||"")} · ${esc((x.at||"").slice(0,10))}</span>`:"";
+    return `<tr><td><button class="nm" type="button" data-cust="${esc(r.name)}">${esc(r.name)}</button></td><td>${esc(r.birth6||"")}</td><td class="num">${typeof r.amt==="number"?won(r.amt):esc(r.amt||"")}</td><td style="white-space:normal;min-width:160px">${esc(r.note||"")}</td><td>${res}</td><td style="white-space:normal">${det}</td><td>${r.auto?"":`<button class="btn sm" type="button" data-cprec="${i}">기록</button>`}</td></tr>
+    <tr data-cpform="${i}" hidden><td colspan="7"><form class="row" data-cpk="${esc(k)}" data-cpn="${esc(r.name)}" data-cpday="${esc(r.day)}">
+      <select class="in" name="status"><option>승인</option><option>대상없음</option><option>미처리</option><option>건너뜀</option></select>
+      <input class="in" name="contract" placeholder="계약번호" value="${esc(x&&x.contract||"")}" style="width:150px"><input class="in" name="card" placeholder="카드사" value="${esc(x&&x.card||"")}" style="width:90px">
+      <input class="in" name="amount" inputmode="numeric" placeholder="금액" value="${esc(x&&x.amount||"")}" style="width:110px"><input class="in" name="approval" placeholder="승인번호" value="${esc(x&&x.approval||"")}" style="width:120px">
+      <input class="in" name="reason" placeholder="사유 (예: 해지카드 — 고객 안내 필요)" value="${esc(x&&x.reason||"")}" style="flex:1 1 200px"><button class="btn pri sm" type="submit">저장</button></form></td></tr>`}).join(""):`<tr><td colspan="7"><div class="empty">${rows.length?"이 결제일 명단이 없습니다":"카드결제 명단이 아직 없습니다. 「명단 붙여넣기」로 엑셀 내용을 올려 주세요."}</div></td></tr>`;
+  $$("#cp-days [data-cpd]").forEach(b=>b.onclick=()=>{cpDay=b.dataset.cpd;renderCardPay()});
+  $$("#cp-body [data-cprec]").forEach(b=>b.onclick=()=>{const f=$(`#cp-body [data-cpform="${b.dataset.cprec}"]`);f.hidden=!f.hidden});
+  $$("#cp-body form[data-cpk]").forEach(f=>f.onsubmit=async e=>{e.preventDefault();if(!db)return toast("데이터 연결이 안 됐습니다");const fd=new FormData(f);const d={type:"cardpay",month:m,name:f.dataset.cpn,day:f.dataset.cpday,at:new Date().toISOString(),by:who};for(const[k,v]of fd.entries())d[k]=String(v).trim();d.amount=Number(String(d.amount).replace(/\D/g,""))||"";
+    try{await db.doc("portal/"+f.dataset.cpk).set(d);toast(`${d.name} ${d.status} 기록했습니다`)}catch(err){toast("저장 실패")}})}
+function cpParse(txt){const out=[];const lines=txt.split(/\r?\n/).filter(l=>l.trim());for(const l of lines){const c=l.split("\t").map(x=>x.trim());if(!c[0]||/^성함|^이름|^고객/.test(c[0]))continue;
+  const name=c[0].replace(/\s+/g,"");const rr=(c[1]||"").replace(/\D/g,"");const birth6=(rr.slice(0,6)||(c[2]||"").replace(/\D/g,"").slice(0,6));
+  const amtRaw=c[3]||"";const amt=/^[\d,]+$/.test(amtRaw)&&amtRaw.replace(/,/g,"").length<10?Number(amtRaw.replace(/,/g,"")):String(amtRaw).replace(/(\d{6})\s*-?\s*[1-8]\d{6}/g,"$1-*******");const dm=(c[4]||"").match(/(\d+)|말일/);const day=dm?(dm[0]==="말일"?"말일":dm[1]):"";
+  const mask=v=>String(v).replace(/(\d{6})\s*-?\s*[1-8]\d{6}/g,"$1-*******");const note=mask([c[5],c[6]].filter(Boolean).join(" / "));const auto=/자동이체/.test(note)&&!/카드/.test(note);
+  if(!day)continue;out.push({name,birth6,amt,day,note,auto});
+  /* 비고에 숨은 다른 고객 (예: "지태민10일") */
+  for(const mm of note.matchAll(/([가-힣]{2,4})\s*(\d{1,2})일/g)){if(mm[1]!==name&&!out.some(o=>o.name===mm[1]&&o.day===mm[2]))out.push({name:mm[1],birth6:"",amt:"",day:mm[2],note:`${name} 비고에서: ${note}`,auto:false})}}
+  return out}
+$("#cp-imp-open").onclick=()=>{const b=$("#cp-imp");b.hidden=!b.hidden;if(!b.hidden)$("#cp-imp-in").focus()};
+$("#cp-imp-parse").onclick=()=>{cpParsed=cpParse($("#cp-imp-in").value);$("#cp-imp-save").disabled=!cpParsed.length;
+  const by={};cpParsed.forEach(r=>{by[r.day]=(by[r.day]||0)+1});$("#cp-imp-note").textContent=cpParsed.length?`${cpParsed.length}명 인식 · `+CP_DAYS.map(d=>`${d==="말일"?d:d+"일"} ${by[d]||0}`).join(" · ")+` · 자동이체 ${cpParsed.filter(r=>r.auto).length}`:"인식된 줄이 없습니다. 성함·주민번호·생년월일·금액·결제일·비고 순서인지 확인하세요"};
+$("#cp-imp-save").onclick=async()=>{if(!db||!cpParsed.length)return;try{await db.doc("portal/cardpay_roster").set({rows:cpParsed,updatedAt:new Date().toISOString(),by:who});toast(`명단 ${cpParsed.length}명 저장했습니다`);$("#cp-imp-in").value="";cpParsed=[];$("#cp-imp").hidden=true;$("#cp-imp-save").disabled=true;$("#cp-imp-note").textContent=""}catch(e){toast("저장 실패")}};
+$("#cp-q").oninput=renderCardPay;
+$("#cp-req").onclick=async()=>{if(!db)return toast("데이터 연결이 안 됐습니다");const m=cpMonth(),d=cpDay||cpDefaultDay();const label=d==="말일"?"말일":d+"일";
+  const dup=reqs.find(r=>r.kind==="카드결제일괄"&&r.status!=="done"&&r.month===m&&r.day===d);if(dup)return toast(`${label} 결제 요청이 이미 대기 중입니다`);
+  const n=cpRoster().filter(r=>r.day===d&&!r.auto&&!cpRes(r,m)).length;
+  try{await db.collection("requests").doc("r"+Date.now()).set({kind:"카드결제일괄",name:`${label} 결제 ${n}명`,month:m,day:d,detail:`${m} ${label} 결제건 모두 처리 — card-payment-monthly 스킬. 결과는 업무포탈 카드결제 탭(portal/cp-…)에 기록`,status:"new",from:who,createdAt:new Date().toISOString()});toast(`${label} 결제 요청을 올렸습니다`)}catch(e){toast("요청 실패")}};
+
+function renderPay(){renderCardPay();const days=["즉시","5","10","15","20","25","말일"];const list=cases.filter(c=>c.payDay&&!c.paidAt);const d=new Date().getDate();
   const nextDay=days.find(x=>Number(x)>=d)||"말일";
   $("#pays").innerHTML=days.map(k=>{const items=list.filter(c=>String(c.payDay)===k);return `<div class="pay ${k===nextDay?"next":""}"><h3>${k==="즉시"||k==="말일"?k:k+"일"} <small>${items.length}건 · ${won(items.reduce((s,c)=>s+Number(c.premium||0),0))||"0원"}</small></h3><ul>${items.length?items.map(c=>`<li><span><b>${esc(c.name)}</b> ${isCar(c)?"":`<span class="chip l-${lineOf(c)}">${lineOf(c)}</span> `}${won(c.premium)}</span><span class="acts"><button class="btn" type="button" data-req="카드결제" data-id="${c.id}">결제 요청</button><button class="btn" type="button" data-paid="${c.id}">결제 완료</button></span></li>`).join(""):'<li style="color:var(--dim)">없음</li>'}</ul></div>`}).join("");
   const sel=$("#pay-case");const cur=sel.value;sel.innerHTML='<option value="">고객 선택</option>'+cases.filter(c=>!c.paidAt&&c.status!=="미갱신").sort((a,b)=>a.name.localeCompare(b.name)).map(c=>`<option value="${c.id}">${esc(c.name)} · ${esc(isCar(c)?c.car:(c.product||lineOf(c)))} · ${won(c.premium)||"보험료 미정"}</option>`).join("");sel.value=cur}
@@ -1170,7 +1231,7 @@ const apiDb={doc:p=>{const [col,id]=p.split("/");return{set:async d=>{await post
   batch:async writes=>{for(let i=0;i<writes.length;i+=50)await post({action:"batch",writes:writes.slice(i,i+50)});refresh()}};
 const apiSample={json:async(input,opts)=>{const msgs=Array.isArray(input)?input:[{role:"user",content:String(input)}];const sys=msgs.length>1?msgs[0].content:"";const prompt=msgs[msgs.length-1].content;if(opts&&opts.onText)opts.onText({text:"정리 중…"});const r=await post({action:"summarize",system:sys,prompt});if(!r.data){const e=new Error("JSON 아님");e.text=r.text;throw e}return r.data}};
 let refreshT=null;function refresh(){clearTimeout(refreshT);refreshT=setTimeout(loadAll,400)}
-async function loadAll(){if(!API||!KEY)return;try{const j=await call("all");const d=j.data||{};cases=d.cases||[];reqs=d.requests||[];tpls=(d.templates||[]).sort((a,b)=>(a.order||0)-(b.order||0));notes=d.notes||[];calls=d.calls||[];todos=d.todos||[];profiles={};(d.profiles||[]).forEach(p=>profiles[p.id]=p);portal=(d.portal||[]).find(x=>x.id==="snapshot")||null;sender=(d.portal||[]).find(x=>x.id==="sender")||sender||{};monthOpts();if(!custLoaded)loadCustomers();$("#db-note").textContent="연결됨 · "+new Date().toLocaleTimeString("ko-KR",{hour:"2-digit",minute:"2-digit"});render()}catch(e){$("#db-note").textContent="데이터를 불러오지 못했습니다: "+(e.message||"");if(/unauthorized/.test(e.message||""))showLogin("비밀번호가 맞지 않습니다")}}
+async function loadAll(){if(!API||!KEY)return;try{const j=await call("all");const d=j.data||{};cases=d.cases||[];reqs=d.requests||[];tpls=(d.templates||[]).sort((a,b)=>(a.order||0)-(b.order||0));notes=d.notes||[];calls=d.calls||[];todos=d.todos||[];profiles={};(d.profiles||[]).forEach(p=>profiles[p.id]=p);portal=(d.portal||[]).find(x=>x.id==="snapshot")||null;sender=(d.portal||[]).find(x=>x.id==="sender")||sender||{};portalDocs=d.portal||[];monthOpts();if(!custLoaded)loadCustomers();$("#db-note").textContent="연결됨 · "+new Date().toLocaleTimeString("ko-KR",{hour:"2-digit",minute:"2-digit"});render()}catch(e){$("#db-note").textContent="데이터를 불러오지 못했습니다: "+(e.message||"");if(/unauthorized/.test(e.message||""))showLogin("비밀번호가 맞지 않습니다")}}
 async function loadCustomers(){if(custLoaded||!API||!KEY)return;custLoaded=true;try{const j=await call("list",{col:"customers"});custRows=Array.isArray(j.data)?j.data:[];const m=await call("get",{col:"customers_meta",id:"meta"});$("#cust-meta").textContent=`보유고객 ${custRows.length.toLocaleString("ko-KR")}명 · ${(m.data&&m.data.updatedAt)||""}`;render()}catch(e){custLoaded=false;$("#cust-meta").textContent="명부를 불러오지 못했습니다"}}
 function showLogin(msg){$("#login").hidden=false;$("#login-url").value=API||DEFAULT_API;$("#login-note").textContent=msg||""}
 $("#login-form").onsubmit=async e=>{e.preventDefault();const url=$("#login-url").value.trim(),key=$("#login-key").value;if(!url||!key){$("#login-note").textContent="주소와 비밀번호를 넣어 주세요";return}
