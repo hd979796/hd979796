@@ -25,8 +25,6 @@ jobs:
           cp -r sign/. _site/
           mkdir -p _site/game
           cp -r game/. _site/game/
-          # 업무포탈은 Apps Script에서 운영한다. 여기서는 예전 주소로 온 사람을 새 주소로 넘기기만 한다.
-          for d in _site/portal _site/sign/portal; do rm -rf "$d"; mkdir -p "$d"; cp sign/portal/moved.html "$d/index.html"; done
       - uses: actions/configure-pages@v5
         with:
           enablement: true
