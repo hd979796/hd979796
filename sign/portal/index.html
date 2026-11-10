@@ -1005,7 +1005,8 @@ function cpParse(txt){const out=[];const lines=txt.split(/\r?\n/).filter(l=>l.tr
   const name=c[0].replace(/\s+/g,"");const rr=(c[1]||"").replace(/\D/g,"");const birth6=(rr.slice(0,6)||(c[2]||"").replace(/\D/g,"").slice(0,6));
   const amtRaw=c[3]||"";const amt=/^[\d,]+$/.test(amtRaw)&&amtRaw.replace(/,/g,"").length<10?Number(amtRaw.replace(/,/g,"")):String(amtRaw).replace(/(\d{6})\s*-?\s*[1-8]\d{6}/g,"$1-*******");const dm=(c[4]||"").match(/(\d+)|말일/);const day=dm?(dm[0]==="말일"?"말일":dm[1]):"";
   const mask=v=>String(v).replace(/(\d{6})\s*-?\s*[1-8]\d{6}/g,"$1-*******");const note=mask([c[5],c[6]].filter(Boolean).join(" / "));const auto=/자동이체/.test(note)&&!/카드/.test(note);
-  if(!day)continue;out.push({name,birth6,amt,day,note,auto});
+  if(!day)continue;if(out.some(o=>o.name===name&&o.day===day&&(o.birth6===birth6||!o.birth6||!birth6)))continue; /* 같은 사람·같은 결제일 중복 제외 */
+  out.push({name,birth6,amt,day,note,auto});
   /* 비고에 숨은 다른 고객 (예: "지태민10일") */
   for(const mm of note.matchAll(/([가-힣]{2,4})\s*(\d{1,2})일/g)){if(mm[1]!==name&&!out.some(o=>o.name===mm[1]&&o.day===mm[2]))out.push({name:mm[1],birth6:"",amt:"",day:mm[2],note:`${name} 비고에서: ${note}`,auto:false})}}
   return out}
