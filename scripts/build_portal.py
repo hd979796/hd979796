@@ -11,6 +11,12 @@ import re
 D = pathlib.Path(__file__).resolve().parent.parent / "sign" / "portal"
 
 
+def safe_scripts(t):
+    """Apps Script(HtmlService)는 내보낼 때 스크립트 주석을 지우는데, 줄 끝 주석이 있으면 "https://…"의 //까지 주석으로 잘라
+    문법 오류를 낸다(2026-11-10 업무포탈 접속 오류 원인). 스크립트 안의 ://를 같은 뜻의 :\\/\\/로 바꿔 막는다."""
+    return re.sub(r"(<script[^>]*>)(.*?)(</script>)", lambda m: m.group(1) + m.group(2).replace("://", ":\\/\\/") + m.group(3), t, flags=re.S)
+
+
 def uri(name, mime):
     return f"data:{mime};base64," + base64.b64encode((D / name).read_bytes()).decode()
 
@@ -21,7 +27,7 @@ s = s.replace('href="icon-180.png"', 'href="' + uri("icon-180.png", "image/png")
 s = re.sub(r'<link rel="manifest"[^>]*>\n?', "", s)
 s = s.replace('src="family.jpg"', 'src="' + uri("family.jpg", "image/jpeg") + '"')
 assert "family.jpg" not in s, "가족사진이 안에 들어가지 않았습니다"
-(D / "portal.html").write_text(s, encoding="utf-8")
+(D / "portal.html").write_text(safe_scripts(s), encoding="utf-8")
 print("portal.html", len(s), "bytes")
 
 
@@ -33,7 +39,7 @@ def single(src, out, icon=None):
         b = "data:image/png;base64," + base64.b64encode(icon.read_bytes()).decode()
         t = t.replace('href="icon.png"', 'href="' + b + '"')
     assert not re.search(r'(src|href)="(?!https?:|data:|#|mailto:|tel:|sms:|\$\{)[^"]+"', t), out
-    (D / out).write_text(t, encoding="utf-8")
+    (D / out).write_text(safe_scripts(t), encoding="utf-8")
     print(out, len(t), "bytes")
 
 single(R / "sign" / "index.html", "sign.html", R / "sign" / "icon.png")

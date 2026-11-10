@@ -174,13 +174,13 @@ var $=function(id){return document.getElementById(id)};
 var INK='#16308f';
 var state={ bytes:null, pdf:null, pages:[], items:[], zoom:1, fitScale:1, sel:null, nextId:1, fileName:'', custName:'', fax:'', rendered:{}, signed:false };
 var ls={get:function(k){try{return localStorage.getItem(k)}catch(e){return null}},set:function(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
-if(window.pdfjsLib){ pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'; }
+if(window.pdfjsLib){ pdfjsLib.GlobalWorkerOptions.workerSrc='https:\/\/cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'; }
 
 window.addEventListener('error',function(e){ try{ $('hint').textContent='오류: '+(e.message||'알 수 없음')+' (새로고침 후 다시 시도)'; }catch(x){} });
 window.addEventListener('unhandledrejection',function(e){ try{ var r=e.reason; $('hint').textContent='오류: '+(r&&r.message||r||'알 수 없음'); }catch(x){} });
 if(!window.pdfjsLib||!window.PDFLib){ $('hint').textContent='PDF 라이브러리를 불러오지 못했습니다. 인터넷 연결을 확인하고 새로고침하세요.'; }
 var UA=navigator.userAgent||'', INAPP=/KAKAOTALK|NAVER\(inapp|Instagram|FBAN|FBAV|Line\/|DaumApps|SamsungBrowser\/[0-9.]+ .*wv|; wv\)/i.test(UA), ANDROID=/Android/i.test(UA);
-(function(){ if(!INAPP) return; var intent='intent://'+location.host+location.pathname+location.search+'#Intent;scheme=https;package=com.android.chrome;end';
+(function(){ if(!INAPP) return; var intent='intent:\/\/'+location.host+location.pathname+location.search+'#Intent;scheme=https;package=com.android.chrome;end';
   ['inappOpen','inappOpen2'].forEach(function(id){ var a=$(id); if(!a) return; if(ANDROID){ a.href=intent; a.hidden=false; } });
   if(!ANDROID) $('inappMsg').textContent='카카오톡 안의 브라우저에서는 PDF 저장이 안 됩니다. 오른쪽 아래 메뉴(…)에서 "Safari로 열기"를 눌러 주세요.';
   $('inapp').hidden=false;

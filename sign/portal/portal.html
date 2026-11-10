@@ -575,17 +575,17 @@ const LINES={
 const LINE_KEYS={long:"장기",cases:"자동차",gen:"일반"};
 const KINDS={"갱신설계":"갱신설계","안내준비":"안내 멘트·청약서 이미지","카드결제":"카드결제 화면 준비","증권출력":"증권 발행·출력","송장출력":"로젠택배 송장 접수","상해질병청구":"상해·질병 보험금 청구 접수","배상책임청구":"배상책임 사고접수·청구 진행","보험금검산":"실손 보험금 검산","자동차사고접수":"자동차 사고접수·보상 진행","배상책임접수":"배상책임 접수 (메일 발송)","상해질병접수":"상해·질병 청구 (PDF 출력)"};
 const CLAIM_KINDS=["상해질병청구","배상책임청구","보험금검산","자동차사고접수","배상책임접수","상해질병접수"];
-const CLAIM_FORM_LINK="https://script.google.com/macros/s/AKfycbwYo0OB6Z9ZlXPbNTyTeTdlbWuEoV4mRVbvV3fExseqeVQyhJuD7js_aM2mKDs-0xn4/exec";
+const CLAIM_FORM_LINK="https:\/\/script.google.com/macros/s/AKfycbwYo0OB6Z9ZlXPbNTyTeTdlbWuEoV4mRVbvV3fExseqeVQyhJuD7js_aM2mKDs-0xn4/exec";
 const TOOLS=[
   {t:"사고접수",d:"배상책임 사고접수 · 상해·질병 보험금 청구를 한 화면에서 접수(메일 발송·청구 PDF)",u:CLAIM_FORM_LINK,i:"🚨",big:true},
-  {t:"보험금 검산방",d:"실손 1~5세대 약관 기준 예상 보험금 검산 · 보고서",u:"https://claude.ai/artifact/JFhBJgSRaiHtDum3oF4ZGB",i:"🧮"},
-  {t:"동의서 서명",d:"개인정보 동의서 휴대폰 서명 페이지",u:"https://claude.ai/artifact/RNyXhZptTUuRaCK9j73L8t",i:"✍️"},
-  {t:"하이 영업포탈",d:"현대해상 설계·청약·보상 포탈",u:"https://sp.hi.co.kr",i:"🏢"}];
+  {t:"보험금 검산방",d:"실손 1~5세대 약관 기준 예상 보험금 검산 · 보고서",u:"https:\/\/claude.ai/artifact/JFhBJgSRaiHtDum3oF4ZGB",i:"🧮"},
+  {t:"동의서 서명",d:"개인정보 동의서 휴대폰 서명 페이지",u:"https:\/\/claude.ai/artifact/RNyXhZptTUuRaCK9j73L8t",i:"✍️"},
+  {t:"하이 영업포탈",d:"현대해상 설계·청약·보상 포탈",u:"https:\/\/sp.hi.co.kr",i:"🏢"}];
 const STUDY_TOOLS=[
-  {t:"보험 공부방 · 약관 질문",d:"약관을 학습한 Claude에게 상담 중 바로 질문",u:"https://claude.ai/artifact/S6grncxvSnN47riuAdZcxX",i:"📖",big:true},
-  {t:"AI 사무실",d:"매뉴얼 · 통화 정리 · 사무실 DB",u:"https://claude.ai/artifact/UwS7YRZJcwGMfo2q7JhbBm",i:"🏠"},
-  {t:"자동차 갱신설계 매뉴얼",d:"만기명세 → 가설계 → 청약서 순서와 특약 규칙",u:"https://claude.ai/artifact/ShBURvuEzjhAwe6RpjPsJS",i:"🚗"},
-  {t:"하이 영업포탈",d:"담보 조회 · 설계",u:"https://sp.hi.co.kr",i:"🏢"}];
+  {t:"보험 공부방 · 약관 질문",d:"약관을 학습한 Claude에게 상담 중 바로 질문",u:"https:\/\/claude.ai/artifact/S6grncxvSnN47riuAdZcxX",i:"📖",big:true},
+  {t:"AI 사무실",d:"매뉴얼 · 통화 정리 · 사무실 DB",u:"https:\/\/claude.ai/artifact/UwS7YRZJcwGMfo2q7JhbBm",i:"🏠"},
+  {t:"자동차 갱신설계 매뉴얼",d:"만기명세 → 가설계 → 청약서 순서와 특약 규칙",u:"https:\/\/claude.ai/artifact/ShBURvuEzjhAwe6RpjPsJS",i:"🚗"},
+  {t:"하이 영업포탈",d:"담보 조회 · 설계",u:"https:\/\/sp.hi.co.kr",i:"🏢"}];
 const CLAIM_LOG_KINDS=["배상책임접수","상해질병접수"];
 const NAV_ALL=[["home","현황"],["long","장기"],["cases","자동차"],["gen","일반"],["claims","보상·청구"],["ship","발송"],["customers","고객"],["requests","요청함"],["pay","카드결제"],["calls","통화·할 일"],["templates","멘트"],["study","보험상담"]];
 /* 역할별 상단 메뉴. 대표: 상담·관리 5개만. 실장: 현황 · 보험(자동차·일반·장기 폴더) · 발송 · 고객 · 요청함 · 카드결제 */
@@ -1145,7 +1145,7 @@ $("#ne-save").onclick=async()=>{if(!db)return toast("데이터 연결이 안 됐
   try{if(curNote)await db.doc("notes/"+curNote).update(d);else await db.doc("notes/n"+Date.now()).set(d);$("#note-editor").hidden=true;toast("저장했습니다")}catch(e){toast("저장 실패")}};
 
 /* ---- boot: Apps Script API ---- */
-const DEFAULT_API="https://script.google.com/macros/s/AKfycbyATdbsyJxqsp2X_wlQO5L5TvyYsTqF9RCIU26u6R_OBdTXWbXfuCe42NzoTJICpI5_/exec"; /* 배포 후 여기에 웹앱 URL을 넣으면 로그인 창에 미리 채워진다 */
+const DEFAULT_API="https:\/\/script.google.com/macros/s/AKfycbyATdbsyJxqsp2X_wlQO5L5TvyYsTqF9RCIU26u6R_OBdTXWbXfuCe42NzoTJICpI5_/exec"; /* 배포 후 여기에 웹앱 URL을 넣으면 로그인 창에 미리 채워진다 */
 let API="",KEY="",pollT=null,custRowsLoaded=false;
 try{API=localStorage.getItem("api")||DEFAULT_API;KEY=localStorage.getItem("key")||""}catch(e){}
 async function call(action,params){const url=API+(API.includes("?")?"&":"?")+new URLSearchParams({action,key:KEY,...(params||{})});const r=await fetch(url,{redirect:"follow"});const j=await r.json();if(!j.ok)throw new Error(j.error||"error");return j}
