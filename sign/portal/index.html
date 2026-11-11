@@ -600,7 +600,7 @@ tr.over td:first-child{box-shadow:inset 4px 0 var(--bad)}
   </div>
   <div class="card">
     <h2 id="todo-day-title">할 일 목록</h2>
-    <div class="row" id="todo-day-bar" hidden style="margin-bottom:8px"><button class="btn" id="todo-day-all" type="button">전체 목록 보기</button></div>
+    <div class="row" style="margin-bottom:8px;gap:6px;flex-wrap:wrap"><button class="btn" id="todo-day-all" type="button" hidden>전체 목록 보기</button><button class="btn" id="todo-bulk" type="button" hidden></button><span class="note" id="todo-bulk-note"></span></div>
     <ul class="list" id="todo-list"></ul>
     <form class="row" id="todo-form" style="margin-top:10px"><input class="in" id="todo-in" placeholder="할 일 추가 (예: 김형기 고객 통화)" maxlength="80" style="flex:1" aria-label="할 일"><select class="in" id="todo-who"><option>대표님</option><option>실장님</option><option>Claude</option></select><input class="in" id="todo-due" type="date" aria-label="예정일" title="예정일(비우면 날짜 없음)"><button class="btn pri" type="submit">추가</button></form>
   </div>
@@ -804,7 +804,8 @@ function callsOf(name){const n=norm(name);if(!n)return[];return allCalls().filte
 function enrichCases(){const multi=new Set();const seen={};custRows.forEach(r=>{const k=norm(r.name);if(seen[k])multi.add(k);seen[k]=1});
   cases.forEach(c=>{if(c.address&&c.phone&&c.zip)return;if(multi.has(norm(c.name))&&!(profiles[pkey(c.name)]||{}).addr)return;const I=custInfo(c.name);
     if(!c.address&&I.addr){c.address=I.addr;c._autoAddr=1}if(!c.phone&&I.phone)c.phone=I.phone;if(!c.zip&&I.zip)c.zip=I.zip})}
-function render(){enrichCases();if(INS_VIEWS.includes(view))renderRail();renderHome();Object.keys(LINES).forEach(renderLine);renderClaims();renderShip();renderPay();renderReqs();renderTpls();renderNotes();renderCust();renderCalls();renderTodos();renderNav()}
+const VIEW_R={home:()=>{renderHome();Object.keys(LINES).forEach(renderLine)},claims:()=>renderClaims(),ship:()=>renderShip(),pay:()=>renderPay(),requests:()=>renderReqs(),templates:()=>renderTpls(),study:()=>renderNotes(),customers:()=>renderCust(),calls:()=>renderCalls(),todo:()=>renderTodos()};
+function render(){enrichCases();if(INS_VIEWS.includes(view)){renderRail();renderLine(LINE_KEYS[view])}const f=VIEW_R[view];if(f)f();renderNav()}
 function renderNav(){const open=reqs.filter(r=>r.status==="new"||r.status==="working");const n=$("#n-req");n.textContent=open.length||"";n.classList.toggle("hot",open.length>0);
   Object.keys(LINES).forEach(l=>{const k=LINES[l].key;const cs=cases.filter(c=>lineOf(c)===l);const hot=cs.filter(c=>isSoon(c)||isOver(c)||needPolicy(c)).length;const n2=cs.filter(c=>inMonth(c)&&!isDone(c)&&!isFail(c)).length;const el=$("#n-"+k);el.textContent=(hot||n2)||"";el.classList.toggle("hot",hot>0)});
   const cl=open.filter(r=>CLAIM_KINDS.includes(r.kind)).length;const nc=$("#n-claims");nc.textContent=cl||"";nc.classList.toggle("hot",cl>0);
@@ -1007,8 +1008,9 @@ function renderCal(){const [Y,M]=calMonth.split("-").map(Number);$("#cal-title")
 function renderTodos(){const open=todos.filter(t=>!t.done);$("#todo-n").textContent=`미완료 ${open.length} · 날짜 없음 ${open.filter(t=>!t.due).length}`;const td=today();
   const li=t=>{const over=t.due&&!t.done&&t.due<td;return `<li class="todo ${t.done?"done":""}"><input type="checkbox" data-tdone="${t.id}" ${t.done?"checked":""}><span><span class="t">${esc(t.text)}</span> <span class="d">${esc(t.who||"")} · ${esc(t.src||"")}${t.customer?" · "+esc(t.customer):""}</span></span><span class="acts"><input type="date" class="tdue ${over?"over":""}" data-tdue="${t.id}" value="${esc(t.due||"")}" title="${over?"예정일 지남":"예정일"}" aria-label="예정일"><span class="w">${ago(t.createdAt)}</span><button class="btn danger" type="button" data-tdel="${t.id}">삭제</button></span></li>`};
   if(view==="todo"){renderCal();let list;
-    if(calSel){list=calPool().filter(t=>t.due===calSel).sort((a,b)=>(!!a.done-!!b.done)||(a.order||0)-(b.order||0));$("#todo-day-title").textContent=kday(calSel)+" 할 일 "+list.length+"건";$("#todo-day-bar").hidden=false}
-    else{list=todoPool().sort((a,b)=>(a.due||"9999").localeCompare(b.due||"9999")||(b.order||0)-(a.order||0)).slice(0,120);$("#todo-day-title").textContent="할 일 목록 (날짜순 · 날짜 없는 일은 맨 아래)";$("#todo-day-bar").hidden=true}
+    if(calSel){list=calPool().filter(t=>t.due===calSel).sort((a,b)=>(!!a.done-!!b.done)||(a.order||0)-(b.order||0));$("#todo-day-title").textContent=kday(calSel)+" 할 일 "+list.length+"건";$("#todo-day-all").hidden=false}
+    else{list=todoPool().sort((a,b)=>(a.due||"9999").localeCompare(b.due||"9999")||(b.order||0)-(a.order||0)).slice(0,120);$("#todo-day-title").textContent="할 일 목록 (날짜순 · 날짜 없는 일은 맨 아래)";$("#todo-day-all").hidden=true}
+    {const tgt=bulkTargets();const b=$("#todo-bulk");b.hidden=!tgt.length||twFilter==="done";if(b.dataset.sure!=="1")b.textContent=calSel?`이 날 할 일 ${tgt.length}건 모두 완료`:`지난 날짜 할 일 ${tgt.length}건 모두 완료`;$("#todo-bulk-note").textContent=!calSel&&tgt.length?"통화 날짜에 이미 처리했을 일들입니다. 확인 후 한 번에 지우세요":""}
     $("#todo-list").innerHTML=list.map(li).join("")||`<li class="empty" style="display:block">${calSel?"이 날 할 일이 없습니다. 아래에서 추가하세요":"할 일이 없습니다"}</li>`}
   const home=open.sort((a,b)=>(b.order||0)-(a.order||0)).slice(0,6);$("#home-todo-n").textContent=`미완료 ${open.length}건`;$("#home-todo").innerHTML=home.map(li).join("")||'<li class="empty" style="display:block">할 일이 없습니다</li>';
   const rc=allCalls().filter(c=>!isPersonal(c)).slice(0,5);$("#home-calls").innerHTML=rc.map(c=>`<li><span class="chip room-${c.room||"park"}">${c.room==="hwang"?"실장":"대표"}</span><span><span class="t">${esc(c.who||"상대 미상")}</span> <span class="d">${esc((c.summary||"").slice(0,70))}</span></span><span class="w">${ago(c.at)}</span></li>`).join("")||'<li class="empty" style="display:block">아직 통화 기록이 없습니다</li>'}
@@ -1284,6 +1286,9 @@ $$("[data-tw]").forEach(c=>c.onclick=()=>{twFilter=c.dataset.tw;$$("[data-tw]").
 $("#cal").addEventListener("click",e=>{const d=e.target.closest("[data-day]");if(!d)return;calSel=calSel===d.dataset.day?"":d.dataset.day;if(calSel&&calSel.slice(0,7)!==calMonth)calMonth=calSel.slice(0,7);$("#todo-due").value=calSel;renderTodos();if(calSel)$("#todo-day-title").scrollIntoView({behavior:"smooth",block:"center"})});
 const calShift=n=>{const [Y,M]=calMonth.split("-").map(Number);calMonth=ymd(new Date(Y,M-1+n,1)).slice(0,7);renderTodos()};
 $("#cal-prev").onclick=()=>calShift(-1);$("#cal-next").onclick=()=>calShift(1);$("#cal-today").onclick=()=>{calMonth=today().slice(0,7);calSel=today();$("#todo-due").value=calSel;renderTodos()};
+function bulkTargets(){const td=today();return todos.filter(t=>!t.done&&(!twFilter||t.who===twFilter)&&(calSel?t.due===calSel:(t.due&&t.due<td)))}
+$("#todo-bulk").onclick=()=>{const b=$("#todo-bulk");const tgt=bulkTargets();if(!tgt.length||!db)return;if(b.dataset.sure!=="1"){b.dataset.sure="1";b.textContent=`정말 ${tgt.length}건 완료 처리`;b.classList.add("danger");setTimeout(()=>{b.dataset.sure="";b.classList.remove("danger");renderTodos()},4000);return}
+  b.dataset.sure="";b.classList.remove("danger");const at=new Date().toISOString();db.batch(tgt.map(t=>({op:"update",col:"todos",id:t.id,data:{done:true,doneAt:at}})));toast(`${tgt.length}건 완료 처리했습니다`)};
 $("#todo-day-all").onclick=()=>{calSel="";$("#todo-due").value="";renderTodos()};
 document.addEventListener("change",async e=>{const i=e.target.closest("input[data-tdue]");if(!i||!db)return;const t=todos.find(x=>x.id===i.dataset.tdue);const prev=t?t.due:"";if(t){t.due=i.value;renderTodos()}try{await db.doc("todos/"+i.dataset.tdue).update({due:i.value});toast(i.value?kday(i.value)+"로 예정일을 정했습니다":"예정일을 지웠습니다")}catch(err){if(t){t.due=prev;renderTodos()}toast("예정일 저장 실패")}});
 $("#todo-form").onsubmit=async e=>{e.preventDefault();const v=$("#todo-in").value.trim();if(!v||!db)return;const w=$("#todo-who").value;const due=$("#todo-due").value||"";try{await db.doc("todos/t"+Date.now()).set({text:v,who:w,src:"포탈",done:false,due,createdAt:new Date().toISOString(),order:Date.now(),room:w==="실장님"?"hwang":"park",customer:kname(v)});$("#todo-in").value=""}catch(err){toast("저장 실패")}};
@@ -1313,6 +1318,7 @@ let API="",KEY="",pollT=null,custRowsLoaded=false;
 try{API=localStorage.getItem("api")||DEFAULT_API;KEY=localStorage.getItem("key")||""}catch(e){}
 async function call(action,params){const url=API+(API.includes("?")?"&":"?")+new URLSearchParams({action,key:KEY,...(params||{})});const r=await fetch(url,{redirect:"follow"});const j=await r.json();if(!j.ok)throw new Error(j.error||"error");return j}
 async function post(body){const r=await fetch(API,{method:"POST",redirect:"follow",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({key:KEY,...body})});const j=await r.json();if(!j.ok){const e=new Error(j.message||j.error||"error");e.code=j.error;throw e}logUse(body);return j}
+let logQ=[];setInterval(()=>{if(!logQ.length||!API||!KEY||pendingW)return;const w=logQ.splice(0,50);fetch(API,{method:"POST",redirect:"follow",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({key:KEY,action:"batch",writes:w})}).catch(()=>{})},8000);
 function logUse(body){try{
   if(!body||body.col==="log"||!/^(set|update|delete|batch)$/.test(body.action))return;
   const items=body.action==="batch"?(body.writes||[]):[body];
@@ -1323,23 +1329,37 @@ function logUse(body){try{
       name:d.name||"",kind:d.kind||d.line||"",status:d.status||"",
       detail:String(d.detail||d.memo||d.text||d.title||"").slice(0,120),
       view:view||"",at:new Date().toISOString()};
-    fetch(API,{method:"POST",redirect:"follow",headers:{"Content-Type":"text/plain;charset=utf-8"},
-      body:JSON.stringify({key:KEY,action:"set",col:"log",id:"l"+Date.now()+"_"+i+Math.random().toString(36).slice(2,5),data:e})}).catch(()=>{});
+    logQ.push({op:"set",col:"log",id:"l"+Date.now()+"_"+i+Math.random().toString(36).slice(2,5),data:e});
   });
 }catch(err){}}
 /* db 흉내: 페이지 코드는 db.doc("col/id").set/update/delete 와 db.collection("col").doc(id) 만 쓴다 */
-const apiDb={doc:p=>{const [col,id]=p.split("/");return{set:async d=>{await post({action:"set",col,id,data:d});refresh()},update:async d=>{await post({action:"update",col,id,data:d});refresh()},delete:async()=>{await post({action:"delete",col,id});refresh()}}},collection:c=>({doc:id=>apiDb.doc(c+"/"+(id||"x"+Date.now()))}),
-  batch:async writes=>{for(let i=0;i<writes.length;i+=50)await post({action:"batch",writes:writes.slice(i,i+50)});refresh()}};
+/* 화면 먼저 바꾸고(즉시) 서버 저장은 뒤에서 순서대로. 실패하면 알리고 서버 내용으로 되돌린다 */
+let pendingW=0, wSeq=0, wChain=Promise.resolve(), renderQ=0;
+function softRender(){if(renderQ)return;renderQ=requestAnimationFrame(()=>{renderQ=0;render()})}
+function localApply(col,id,op,data){const A={cases:()=>cases,requests:()=>reqs,templates:()=>tpls,notes:()=>notes,calls:()=>calls,todos:()=>todos,portal:()=>portalDocs};
+  if(col==="profiles"){if(op==="delete")delete profiles[id];else profiles[id]=op==="update"?{...(profiles[id]||{}),...data,id}:{...data,id};return}
+  const g=A[col];if(!g)return;const a=g();const i=a.findIndex(x=>x.id===id);
+  if(op==="delete"){if(i>=0)a.splice(i,1)}else if(op==="update"&&i>=0)Object.assign(a[i],data);else{const d={...data,id};if(i>=0)a[i]=d;else a.push(d)}
+  if(col==="templates")tpls.sort((x,y)=>(x.order||0)-(y.order||0));
+  if(col==="portal"){portal=portalDocs.find(x=>x.id==="snapshot")||null;sender=portalDocs.find(x=>x.id==="sender")||sender||{}}}
+function sendW(body){pendingW++;wSeq++;wChain=wChain.then(()=>post(body)).catch(e=>{toast("서버 저장 실패 — 다시 불러옵니다");console.error(e);setTimeout(loadAll,300)}).finally(()=>{pendingW--;if(!pendingW)refresh()});return Promise.resolve()}
+const apiDb={doc:p=>{const [col,id]=p.split("/");return{
+    set:async d=>{localApply(col,id,"set",d);softRender();return sendW({action:"set",col,id,data:d})},
+    update:async d=>{localApply(col,id,"update",d);softRender();return sendW({action:"update",col,id,data:d})},
+    delete:async()=>{localApply(col,id,"delete");softRender();return sendW({action:"delete",col,id})}}},
+  collection:c=>({doc:id=>apiDb.doc(c+"/"+(id||"x"+Date.now()))}),
+  batch:async writes=>{writes.forEach(w=>localApply(w.col,w.id,w.op||"set",w.data));softRender();for(let i=0;i<writes.length;i+=50)sendW({action:"batch",writes:writes.slice(i,i+50)})}};
 const apiSample={json:async(input,opts)=>{const msgs=Array.isArray(input)?input:[{role:"user",content:String(input)}];const sys=msgs.length>1?msgs[0].content:"";const prompt=msgs[msgs.length-1].content;if(opts&&opts.onText)opts.onText({text:"정리 중…"});const r=await post({action:"summarize",system:sys,prompt});if(!r.data){const e=new Error("JSON 아님");e.text=r.text;throw e}return r.data}};
-let refreshT=null;function refresh(){clearTimeout(refreshT);refreshT=setTimeout(loadAll,400)}
-async function loadAll(){if(!API||!KEY)return;try{const j=await call("all");const d=j.data||{};cases=d.cases||[];reqs=d.requests||[];tpls=(d.templates||[]).sort((a,b)=>(a.order||0)-(b.order||0));notes=d.notes||[];calls=d.calls||[];todos=d.todos||[];profiles={};(d.profiles||[]).forEach(p=>profiles[p.id]=p);portal=(d.portal||[]).find(x=>x.id==="snapshot")||null;sender=(d.portal||[]).find(x=>x.id==="sender")||sender||{};portalDocs=d.portal||[];monthOpts();if(!custLoaded)loadCustomers();$("#db-note").textContent="연결됨 · "+new Date().toLocaleTimeString("ko-KR",{hour:"2-digit",minute:"2-digit"});render()}catch(e){$("#db-note").textContent="데이터를 불러오지 못했습니다: "+(e.message||"");if(/unauthorized/.test(e.message||""))showLogin("비밀번호가 맞지 않습니다")}}
+let refreshT=null;function refresh(){clearTimeout(refreshT);refreshT=setTimeout(loadAll,1500)}
+function applyAll(d){cases=d.cases||[];reqs=d.requests||[];tpls=(d.templates||[]).sort((a,b)=>(a.order||0)-(b.order||0));notes=d.notes||[];calls=d.calls||[];todos=d.todos||[];profiles={};(d.profiles||[]).forEach(p=>profiles[p.id]=p);portal=(d.portal||[]).find(x=>x.id==="snapshot")||null;sender=(d.portal||[]).find(x=>x.id==="sender")||sender||{};portalDocs=d.portal||[];monthOpts();}
+async function loadAll(){if(!API||!KEY)return;if(pendingW){refresh();return}const seq=wSeq;try{const j=await call("all");if(pendingW||seq!==wSeq){refresh();return}const d=j.data||{};applyAll(d);try{localStorage.setItem("allcache",JSON.stringify(d))}catch(e){}if(!custLoaded)loadCustomers();$("#db-note").textContent="연결됨 · "+new Date().toLocaleTimeString("ko-KR",{hour:"2-digit",minute:"2-digit"});render()}catch(e){$("#db-note").textContent="데이터를 불러오지 못했습니다: "+(e.message||"");if(/unauthorized/.test(e.message||""))showLogin("비밀번호가 맞지 않습니다")}}
 async function loadCustomers(){if(custLoaded||!API||!KEY)return;custLoaded=true;try{const j=await call("list",{col:"customers"});custRows=Array.isArray(j.data)?j.data:[];const m=await call("get",{col:"customers_meta",id:"meta"});$("#cust-meta").textContent=`보유고객 ${custRows.length.toLocaleString("ko-KR")}명 · ${(m.data&&m.data.updatedAt)||""}`;render()}catch(e){custLoaded=false;$("#cust-meta").textContent="명부를 불러오지 못했습니다"}}
 function showLogin(msg){$("#login").hidden=false;$("#login-url").value=API||DEFAULT_API;$("#login-note").textContent=msg||""}
 $("#login-form").onsubmit=async e=>{e.preventDefault();const url=$("#login-url").value.trim(),key=$("#login-key").value;if(!url||!key){$("#login-note").textContent="주소와 비밀번호를 넣어 주세요";return}
-  API=url;KEY=key;$("#login-note").textContent="확인 중…";try{await call("all");try{localStorage.setItem("api",API);localStorage.setItem("key",KEY)}catch(e2){}$("#login").hidden=true;db=apiDb;sampleFn=apiSample;await loadAll();if(view==="customers")loadCustomers();clearInterval(pollT);pollT=setInterval(loadAll,30000)}catch(err){$("#login-note").textContent="연결 실패: "+(err.message||"")}};
-$("#logout").onclick=()=>{try{localStorage.removeItem("key");localStorage.removeItem("api")}catch(e){}KEY="";clearInterval(pollT);cases=[];reqs=[];tpls=[];notes=[];calls=[];todos=[];profiles={};render();showLogin("로그아웃했습니다")};
+  API=url;KEY=key;$("#login-note").textContent="확인 중…";try{const j0=await call("all");try{localStorage.setItem("api",API);localStorage.setItem("key",KEY)}catch(e2){}$("#login").hidden=true;db=apiDb;sampleFn=apiSample;applyAll(j0.data||{});try{localStorage.setItem("allcache",JSON.stringify(j0.data||{}))}catch(e){}render();if(!custLoaded)loadCustomers();if(view==="customers")loadCustomers();clearInterval(pollT);pollT=setInterval(loadAll,30000)}catch(err){$("#login-note").textContent="연결 실패: "+(err.message||"")}};
+$("#logout").onclick=()=>{try{localStorage.removeItem("key");localStorage.removeItem("api");localStorage.removeItem("allcache")}catch(e){}KEY="";clearInterval(pollT);cases=[];reqs=[];tpls=[];notes=[];calls=[];todos=[];profiles={};render();showLogin("로그아웃했습니다")};
 go();
-(async()=>{if(!API||!KEY){showLogin("");return}db=apiDb;sampleFn=apiSample;await loadAll();if(view==="customers")loadCustomers();pollT=setInterval(loadAll,30000);document.addEventListener("visibilitychange",()=>{if(!document.hidden)loadAll()})})();
+(async()=>{if(!API||!KEY){showLogin("");return}db=apiDb;sampleFn=apiSample;try{const c=JSON.parse(localStorage.getItem("allcache")||"null");if(c){applyAll(c);$("#db-note").textContent="불러오는 중…";render()}}catch(e){}await loadAll();if(view==="customers")loadCustomers();pollT=setInterval(loadAll,30000);document.addEventListener("visibilitychange",()=>{if(!document.hidden)loadAll()})})();
 </script>
 <script>
 /* 배상면적: 임대면적 + (대지면적 − 건축면적) × (임대면적 ÷ 연면적) */
