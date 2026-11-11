@@ -211,6 +211,10 @@ tr.over td:first-child{box-shadow:inset 4px 0 var(--bad)}
 .tpls .fav{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:32px;height:32px;border:0;background:none;border-radius:8px;font-size:18px;line-height:1;color:var(--dim);cursor:pointer}
 .tpls .fav:hover{background:var(--accent-soft);color:var(--accent)}
 .tpls .fav.on{color:var(--accent)}
+#v-templates .tpl-grid{grid-template-columns:1fr;max-width:980px}
+#tpl-list li[data-tid]{scroll-margin-top:110px}
+#tpl-list li.tpl-inline{list-style:none;padding:0 0 6px;border:0;background:none;cursor:default;box-shadow:none}
+#tpl-list li.tpl-inline>#tpl-panel{border-color:var(--accent);margin-top:-2px}
 .vars{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px}
 .vars label{font-size:12px;color:var(--mute);display:flex;flex-direction:column;gap:3px}
 .preview{white-space:pre-wrap;background:rgba(0,0,0,.3);border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:14px;line-height:1.7;min-height:120px}
@@ -1074,8 +1078,10 @@ function isFav(t){return (t.favBy||"").split(",").includes(who)}
 function renderTpls(){$("#tpl-count").textContent=tpls.length+"개";const favs=tpls.filter(isFav),rest=tpls.filter(t=>!isFav(t));const groups=[...new Set(rest.map(t=>t.group||"기타"))];
   const head=(g,c)=>`<li style="background:none;border:0;padding:4px 2px 0;cursor:default;font-size:11px;color:${c||"var(--dim)"};letter-spacing:.06em">${g}</li>`;
   const item=t=>{const on=isFav(t);return `<li data-tid="${t.id}" aria-selected="${curTpl===t.id}"><div class="t">${esc(t.title)}</div><div class="g">${esc(on?(t.group||"기타")+" · ":"")}${esc((t.body||"").split(String.fromCharCode(10))[0]).slice(0,40)}</div><button type="button" class="fav ${on?"on":""}" data-fav="${t.id}" title="${on?"즐겨찾기 해제":"즐겨찾기 — 맨 위에 고정"}" aria-label="${on?"즐겨찾기 해제":"즐겨찾기"}" aria-pressed="${on}">${on?"★":"☆"}</button></li>`};
+  {const P=$("#tpl-panel");if(P.closest("#tpl-list"))$("#v-templates .tpl-grid").appendChild(P)}
   $("#tpl-list").innerHTML=tpls.length?(favs.length?head("★ 즐겨찾기","var(--accent)")+favs.map(item).join(""):"")+groups.map(g=>head(esc(g))+rest.filter(t=>(t.group||"기타")===g).map(item).join("")).join(""):'<li class="empty" style="display:block;cursor:default">아직 멘트가 없습니다</li>';
-  const sel=$("#tpl-case");const cur=sel.value;sel.innerHTML='<option value="">선택</option>'+cases.filter(inMonth).sort((a,b)=>(a.due||"").localeCompare(b.due||"")).map(c=>`<option value="${c.id}">${esc(c.name)} · ${esc(isCar(c)?c.car:(c.product||lineOf(c)))} · ${fmtD(c.due)}</option>`).join("");sel.value=cur;renderTplPanel()}
+  const sel=$("#tpl-case");const cur=sel.value;placeTplPanel();sel.innerHTML='<option value="">선택</option>'+cases.filter(inMonth).sort((a,b)=>(a.due||"").localeCompare(b.due||"")).map(c=>`<option value="${c.id}">${esc(c.name)} · ${esc(isCar(c)?c.car:(c.product||lineOf(c)))} · ${fmtD(c.due)}</option>`).join("");sel.value=cur;renderTplPanel()}
+function placeTplPanel(){const P=$("#tpl-panel"),G=$("#v-templates .tpl-grid");const sl=curTpl&&$(`#tpl-list li[data-tid="${curTpl}"]`);if(sl){const box=document.createElement("li");box.className="tpl-inline";box.appendChild(P);sl.after(box)}else if(P.parentElement!==G)G.appendChild(P);P.hidden=!sl&&$("#tpl-editor").hidden}
 function tplVars(body){return [...new Set([...(body||"").matchAll(/\{([^{}]+)\}/g)].map(m=>m[1]))]}
 let varVals={};
 function renderTplPanel(){const t=tpls.find(x=>x.id===curTpl);$("#tpl-copy").disabled=$("#tpl-edit").disabled=$("#tpl-del").disabled=!t;if(!t){$("#tpl-title").innerHTML='멘트를 고르세요 <em>{고객명} 같은 칸은 자동으로 채웁니다</em>';$("#tpl-vars").innerHTML="";$("#tpl-prev").textContent="";return}
@@ -1188,13 +1194,13 @@ async function impSave(k){if(!db)return toast("데이터 연결이 안 됐습니
 $("#pay-add").onclick=async()=>{const id=$("#pay-case").value;if(!id||!db)return toast("고객을 고르세요");try{await db.doc("cases/"+id).update({payMethod:"카드",payDay:$("#pay-day").value,updatedAt:new Date().toISOString()});toast("결제 명단에 올렸습니다")}catch(e){toast("실패")}};
 
 /* ---- templates ---- */
-$("#tpl-list").addEventListener("click",async e=>{const fb=e.target.closest("[data-fav]");if(fb){e.stopPropagation();const t=tpls.find(x=>x.id===fb.dataset.fav);if(!t)return;const set=new Set((t.favBy||"").split(",").filter(Boolean));const on=!set.has(who);on?set.add(who):set.delete(who);const prev=t.favBy;t.favBy=[...set].join(",");renderTpls();toast(on?"즐겨찾기에 넣었습니다 — 맨 위에 보입니다":"즐겨찾기에서 뺐습니다");try{await db.doc("templates/"+t.id).update({favBy:t.favBy})}catch(err){t.favBy=prev;renderTpls();toast("즐겨찾기 저장 실패")}return}const li=e.target.closest("li[data-tid]");if(!li)return;curTpl=li.dataset.tid;$("#tpl-editor").hidden=true;renderTpls()});
+$("#tpl-list").addEventListener("click",async e=>{const fb=e.target.closest("[data-fav]");if(fb){e.stopPropagation();const t=tpls.find(x=>x.id===fb.dataset.fav);if(!t)return;const set=new Set((t.favBy||"").split(",").filter(Boolean));const on=!set.has(who);on?set.add(who):set.delete(who);const prev=t.favBy;t.favBy=[...set].join(",");renderTpls();toast(on?"즐겨찾기에 넣었습니다 — 맨 위에 보입니다":"즐겨찾기에서 뺐습니다");try{await db.doc("templates/"+t.id).update({favBy:t.favBy})}catch(err){t.favBy=prev;renderTpls();toast("즐겨찾기 저장 실패")}return}const li=e.target.closest("li[data-tid]");if(!li)return;curTpl=curTpl===li.dataset.tid?null:li.dataset.tid;setTimeout(()=>{const x=curTpl&&$(`#tpl-list li[data-tid="${curTpl}"]`);if(x)x.scrollIntoView({behavior:"smooth",block:"start"})},0);$("#tpl-editor").hidden=true;renderTpls()});
 $("#tpl-vars").addEventListener("input",e=>{const i=e.target.closest("[data-var]");if(!i)return;varVals[i.dataset.var]=i.value;const t=tpls.find(x=>x.id===curTpl);if(!t)return;let out=t.body;tplVars(t.body).forEach(v=>{out=out.split("{"+v+"}").join(varVals[v]||"{"+v+"}")});out=out.split("\n").filter(l=>!/\{[^{}]+\}/.test(l)||l.trim()==="").join("\n");$("#tpl-prev").textContent=out});
 $("#tpl-case").onchange=e=>fillFromCase(e.target.value);
 $("#tpl-copy").onclick=()=>copy($("#tpl-prev").textContent);
-$("#tpl-new").onclick=()=>{curTpl=null;renderTpls();$("#te-title").value="";$("#te-group").value="";$("#te-body").value="";$("#tpl-editor").hidden=false;$("#te-title").focus()};
+$("#tpl-new").onclick=()=>{curTpl=null;renderTpls();$("#tpl-panel").hidden=false;$("#te-title").value="";$("#te-group").value="";$("#te-body").value="";$("#tpl-editor").hidden=false;$("#te-title").focus()};
 $("#tpl-edit").onclick=()=>{const t=tpls.find(x=>x.id===curTpl);if(!t)return;$("#te-title").value=t.title;$("#te-group").value=t.group||"";$("#te-body").value=t.body;$("#tpl-editor").hidden=false};
-$("#te-cancel").onclick=()=>{$("#tpl-editor").hidden=true};
+$("#te-cancel").onclick=()=>{$("#tpl-editor").hidden=true;if(!curTpl)$("#tpl-panel").hidden=true};
 $("#te-save").onclick=async()=>{if(!db)return toast("데이터 연결이 안 됐습니다");const d={title:$("#te-title").value.trim(),group:$("#te-group").value.trim(),body:$("#te-body").value,updatedAt:new Date().toISOString()};if(!d.title||!d.body)return toast("제목과 본문을 적어 주세요");
   try{if(curTpl){await db.doc("templates/"+curTpl).update(d)}else{const id="t"+Date.now();d.order=Date.now();await db.doc("templates/"+id).set(d);curTpl=id}$("#tpl-editor").hidden=true;toast("저장했습니다")}catch(e){toast("저장 실패")}};
 $("#tpl-del").onclick=async()=>{const b=$("#tpl-del");if(b.dataset.sure!=="1"){b.dataset.sure="1";b.textContent="정말 삭제";return}try{await db.doc("templates/"+curTpl).delete();curTpl=null;b.dataset.sure="";b.textContent="삭제"}catch(e){toast("실패")}};
