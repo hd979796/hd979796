@@ -439,7 +439,7 @@ tr.over td:first-child{box-shadow:inset 4px 0 var(--bad)}
 <section class="view" id="v-check" hidden>
   <div class="card">
     <h2>보험금 검산방 <em>진료 내역을 넣어 예상 보험금 검산 · 저장은 드라이브 시트</em></h2>
-    <p class="note" style="margin:0 0 10px">화면이 안 뜨거나 "로그인" 안내가 보이면 <a href="https://script.google.com/macros/s/AKfycbw5MCDnuliS4umdO09XS0csOrUBhBqCP6UVk_OT4Cl1ak-ALJDW2-VFWLrXKLcqw-9r8A/exec" target="_blank" rel="noopener">새 창으로 열기</a>를 누르세요(대표님 구글 계정으로 로그인돼 있어야 열립니다). 영수증 사진 자동읽기는 보상·청구의 「Claude판」을 쓰세요.</p>
+    <p class="note" style="margin:0 0 10px">화면이 비어 있으면 <a href="https://script.google.com/macros/s/AKfycbw5MCDnuliS4umdO09XS0csOrUBhBqCP6UVk_OT4Cl1ak-ALJDW2-VFWLrXKLcqw-9r8A/exec" target="_blank" rel="noopener">새 창으로 열기</a> · 영수증 사진 자동읽기는 보상·청구의 「Claude판」</p>
     <iframe id="ck-frame" title="보험금 검산방" data-src="https://script.google.com/macros/s/AKfycbw5MCDnuliS4umdO09XS0csOrUBhBqCP6UVk_OT4Cl1ak-ALJDW2-VFWLrXKLcqw-9r8A/exec" style="width:100%;height:calc(100vh - 220px);min-height:640px;border:1px solid var(--line,#e3e7ee);border-radius:10px;background:#fff"></iframe>
   </div>
 </section>
@@ -642,7 +642,7 @@ const CLAIM_KINDS=["상해질병청구","배상책임청구","보험금검산","
 const CLAIM_FORM_LINK="https://script.google.com/macros/s/AKfycbwYo0OB6Z9ZlXPbNTyTeTdlbWuEoV4mRVbvV3fExseqeVQyhJuD7js_aM2mKDs-0xn4/exec";
 const TOOLS=[
   {t:"사고접수",d:"배상책임 사고접수 · 상해·질병 보험금 청구를 한 화면에서 접수(메일 발송·청구 PDF)",u:CLAIM_FORM_LINK,i:"🚨",big:true},
-  {t:"보험금 검산방",d:"실손 1~5세대 약관 기준 예상 보험금 검산 · 보고서 · 검산 저장(구글 시트)",u:"https://script.google.com/macros/s/AKfycbw5MCDnuliS4umdO09XS0csOrUBhBqCP6UVk_OT4Cl1ak-ALJDW2-VFWLrXKLcqw-9r8A/exec",i:"🧮"},
+  {t:"보험금 검산방",d:"실손 1~5세대 약관 기준 예상 보험금 검산 · 보고서 · 검산 저장(구글 시트)",u:"#check",i:"🧮"},
   {t:"검산방 · 서류 자동읽기 (Claude판)",d:"영수증·세부내역서 사진을 AI가 읽어 진료내역을 채움",u:"https://claude.ai/artifact/JFhBJgSRaiHtDum3oF4ZGB",i:"📷"},
   {t:"동의서 서명",d:"개인정보 동의서 휴대폰 서명 페이지",u:"https://claude.ai/artifact/RNyXhZptTUuRaCK9j73L8t",i:"✍️"},
   {t:"하이 영업포탈",d:"현대해상 설계·청약·보상 포탈",u:"https://sp.hi.co.kr",i:"🏢"}];
@@ -862,7 +862,7 @@ function renderHome(){$("#home-today").textContent=today()+" · "+(who==="대표
   if(portal){const r=portal.renewal||{},k=portal.contracts||{};$("#k1").textContent=(r.targetCount??"—")+"건";$("#k2").textContent=(r.renewedCount??"—")+"건";$("#k3").textContent=(r.renewRate??"—")+"%";$("#k4").textContent=`${k.car?.count??0}·${k.gen?.count??0}·${k.long?.count??0}건`;$("#kpi-when").textContent=(portal.month||"")+" · "+(portal.updatedAt||"")}}
 
 /* ---- 보상·청구 ---- */
-const toolHtml=list=>list.map(t=>`<a class="tool ${t.big?"big":""}" href="${t.u}" target="_blank" rel="noopener"><span class="ti">${t.i}</span><span><b>${esc(t.t)}</b><small>${esc(t.d)}</small></span></a>`).join("");
+const toolHtml=list=>list.map(t=>`<a class="tool ${t.big?"big":""}" href="${t.u}"${t.u.startsWith("#")?"":" target=\"_blank\" rel=\"noopener\""}><span class="ti">${t.i}</span><span><b>${esc(t.t)}</b><small>${esc(t.d)}</small></span></a>`).join("");
 function renderClaims(){$("#claims-tools").innerHTML=toolHtml(TOOLS);
   const q=norm($("#cl-q").value||"");let rows=reqs.filter(r=>CLAIM_LOG_KINDS.includes(r.kind)||CLAIM_KINDS.includes(r.kind)).sort((a,b)=>(b.at||b.createdAt||"").localeCompare(a.at||a.createdAt||""));
   const all=rows.length;if(clFilter)rows=rows.filter(r=>r.kind===clFilter);if(q)rows=rows.filter(r=>norm(r.name).includes(q));
