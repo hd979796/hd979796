@@ -313,6 +313,19 @@ tr.over td:first-child{box-shadow:inset 4px 0 var(--bad)}
   .sm-mini{display:none}
 }
 @media (prefers-reduced-motion:reduce){.sm-card,.wrap.stage-on>.view>.card:first-child{transition:none;animation:none}}
+.ar-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.ar-grid label{font-size:12.5px;font-weight:600;color:var(--mute);display:flex;flex-direction:column;gap:4px}
+.ar-grid label span{font-weight:400;font-size:11px;color:var(--dim)}
+.ar-grid .in{font-size:16px;font-variant-numeric:tabular-nums;width:100%}
+@media (max-width:860px){.ar-grid{grid-template-columns:1fr 1fr}}
+.ar-steps{list-style:none;margin:0;padding:0}
+.ar-steps li{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px dashed var(--line2);font-size:13.5px}
+.ar-steps li small{display:block;color:var(--dim);font-size:12px}
+.ar-steps li b{font-variant-numeric:tabular-nums;white-space:nowrap}
+.ar-total{margin-top:12px;background:var(--accent-soft);border-radius:10px;padding:12px 14px;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 14px}
+.ar-total span{font-size:12.5px;color:var(--mute);flex-basis:100%}
+.ar-total b{font-size:28px;color:var(--accent);font-variant-numeric:tabular-nums}
+.ar-total small{font-size:13px;color:var(--mute)}
 </style>
 </head>
 <body>
@@ -395,6 +408,31 @@ tr.over td:first-child{box-shadow:inset 4px 0 var(--bad)}
     </form>
     <div class="tw"><table><thead><tr><th>접수일</th><th>구분</th><th>고객명</th><th>내용</th><th>처리</th><th></th></tr></thead><tbody id="cl-body"></tbody></table></div>
     <p class="note" style="margin-top:8px">사고접수 화면에서 배상책임 접수 메일을 보내거나 상해·질병 청구 PDF를 만들면 여기에 자동으로 남습니다(접수 완료 고객 확인용). 자동 기록 연결은 사고접수 스크립트에 한 번 설치해야 하며, 설치 전에는 「기록 직접 추가」로 남깁니다.</p>
+  </div>
+</section>
+
+<section class="view" id="v-area" hidden>
+  <div class="card">
+    <h2>차량배상책임 면적 계산 <em>건축물대장 면적으로 배상책임 담보 면적 구하기</em></h2>
+    <div class="ar-grid">
+      <label>임대면적(건물면적) <span>해당 호실·용도 면적</span><input class="in" id="ar-rent" type="number" inputmode="decimal" step="any" placeholder="㎡"></label>
+      <label>연면적<input class="in" id="ar-gross" type="number" inputmode="decimal" step="any" placeholder="㎡"></label>
+      <label>대지면적<input class="in" id="ar-land" type="number" inputmode="decimal" step="any" placeholder="㎡"></label>
+      <label>건축면적<input class="in" id="ar-bldg" type="number" inputmode="decimal" step="any" placeholder="㎡"></label>
+    </div>
+    <div class="row" style="margin-top:10px"><button class="btn" type="button" id="ar-ex">예시 (공임나라 서울가산점)</button><button class="btn" type="button" id="ar-reset">초기화</button><a class="btn" href="https://script.google.com/macros/s/AKfycby5GETYeE3JZyav89qkixFTF80rPL8djIM275UcYB2svidApRF1Q1GaeUmQ7iypWJ8w/exec" target="_blank" rel="noopener" style="text-decoration:none;margin-left:auto">휴대폰용 계산기 열기</a></div>
+  </div>
+  <div class="card">
+    <h2>계산 과정</h2>
+    <ol class="ar-steps">
+      <li><span>① 임대비율<small id="ar-f1">임대면적 ÷ 연면적</small></span><b id="ar-v1">-</b></li>
+      <li><span>② 공용면적<small id="ar-f2">대지면적 − 건축면적</small></span><b id="ar-v2">-</b></li>
+      <li><span>③ 공용 책임면적<small id="ar-f3">공용면적 × 임대비율</small></span><b id="ar-v3">-</b></li>
+      <li><span>④ 배상책임면적<small id="ar-f4">공용 책임면적 + 임대면적</small></span><b id="ar-v4">-</b></li>
+    </ol>
+    <div class="ar-total"><span>차량배상책임 담보 면적</span><b id="ar-total">- ㎡</b><small id="ar-py"></small></div>
+    <p class="note" id="ar-warn" hidden style="color:var(--bad);margin-top:8px"></p>
+    <div class="row" style="margin-top:10px"><button class="btn pri" type="button" id="ar-copy">계산 내역 복사</button></div>
   </div>
 </section>
 
@@ -606,7 +644,7 @@ const STUDY_TOOLS=[
 const CLAIM_LOG_KINDS=["배상책임접수","상해질병접수"];
 const NAV_ALL=[["home","현황"],["long","장기"],["cases","자동차"],["gen","일반"],["claims","보상·청구"],["ship","발송"],["customers","고객"],["requests","요청함"],["pay","카드결제"],["calls","통화·할 일"],["templates","멘트"],["study","보험상담"]];
 /* 역할별 상단 메뉴. 대표: 상담·관리 5개만. 실장: 현황 · 보험(자동차·일반·장기 폴더) · 발송 · 고객 · 요청함 · 카드결제 */
-const ROLES={"대표":{nav:[["calls","통화·할 일"],["customers","고객"],["claims","보상·청구"],["study","보험상담"],["templates","멘트"]],home:"calls",lines:[]},
+const ROLES={"대표":{nav:[["calls","통화·할 일"],["customers","고객"],["claims","보상·청구"],["area","배상면적"],["study","보험상담"],["templates","멘트"]],home:"calls",lines:[]},
   "실장":{nav:[["home","현황"],["ins","보험"],["ship","발송"],["customers","고객"],["requests","요청함"],["pay","카드결제"]],home:"home",lines:["자동차","일반","장기"]}};
 const INS_VIEWS=["cases","gen","long"];let lastIns="cases";
 const NAV_N={long:"n-long",cases:"n-cases",gen:"n-gen",claims:"n-claims",ship:"n-ship",requests:"n-req",pay:"n-pay",calls:"n-todo"};
@@ -672,7 +710,7 @@ function lineCols(line){const L=LINES[line];const base=[{h:L.dateLabel},{h:L.nam
 Object.keys(LINES).forEach(l=>{$("#v-"+LINES[l].key).innerHTML=lineSection(l)});
 
 /* ---- routing ---- */
-const VIEWS=["home","long","cases","gen","claims","ship","pay","requests","customers","calls","templates","study"];
+const VIEWS=["home","long","cases","gen","claims","area","ship","pay","requests","customers","calls","templates","study"];
 function go(){let h=location.hash.replace("#","");let arg="";if(h.includes(":")){[h,arg]=h.split(":")}if(!VIEWS.includes(h))h=ROLES[who].home;if(who==="대표"&&h==="home")h="calls";view=h;
   const stage=INS_VIEWS.includes(h);$(".wrap").classList.toggle("stage-on",stage);if(stage){lastIns=h;renderRail()}
   VIEWS.forEach(v=>{$("#v-"+v).hidden=v!==h});$$("#nav a").forEach(a=>{if(a.dataset.v===h)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current")});
@@ -1240,6 +1278,26 @@ $("#login-form").onsubmit=async e=>{e.preventDefault();const url=$("#login-url")
 $("#logout").onclick=()=>{try{localStorage.removeItem("key");localStorage.removeItem("api")}catch(e){}KEY="";clearInterval(pollT);cases=[];reqs=[];tpls=[];notes=[];calls=[];todos=[];profiles={};render();showLogin("로그아웃했습니다")};
 go();
 (async()=>{if(!API||!KEY){showLogin("");return}db=apiDb;sampleFn=apiSample;await loadAll();if(view==="customers")loadCustomers();pollT=setInterval(loadAll,30000);document.addEventListener("visibilitychange",()=>{if(!document.hidden)loadAll()})})();
+</script>
+<script>
+/* 배상면적: 임대면적 + (대지면적 − 건축면적) × (임대면적 ÷ 연면적) */
+(function(){const g=id=>document.getElementById(id);if(!g("v-area"))return;const ids=["ar-rent","ar-gross","ar-land","ar-bldg"];let txt="";
+  const f=(n,d)=>n.toLocaleString("ko-KR",{minimumFractionDigits:d,maximumFractionDigits:d});
+  function calc(){const[r,gr,l,b]=ids.map(i=>parseFloat(g(i).value));const w=g("ar-warn");
+    if([r,gr,l,b].some(isNaN)||!(gr>0)){["ar-v1","ar-v2","ar-v3","ar-v4"].forEach(i=>g(i).textContent="-");g("ar-f1").textContent="임대면적 ÷ 연면적";g("ar-f2").textContent="대지면적 − 건축면적";g("ar-f3").textContent="공용면적 × 임대비율";g("ar-f4").textContent="공용 책임면적 + 임대면적";g("ar-total").textContent="- ㎡";g("ar-py").textContent="";w.hidden=true;txt="";return}
+    const ratio=r/gr;let common=l-b;const warn=[];if(common<0){warn.push("건축면적이 대지면적보다 커서 공용면적을 0으로 계산했습니다.");common=0}if(r>gr)warn.push("임대면적이 연면적보다 큽니다. 입력값을 확인하세요.");
+    const share=common*ratio,total=share+r,pct=f(ratio*100,3)+"%";
+    g("ar-f1").textContent=f(r,2)+" ÷ "+f(gr,2);g("ar-v1").textContent=pct;
+    g("ar-f2").textContent=f(l,2)+" − "+f(b,2);g("ar-v2").textContent=f(common,2)+"㎡";
+    g("ar-f3").textContent=f(common,2)+" × "+pct;g("ar-v3").textContent=f(share,3)+"㎡";
+    g("ar-f4").textContent=f(share,3)+" + "+f(r,2);g("ar-v4").textContent=f(total,3)+"㎡";
+    g("ar-total").textContent=f(total,3)+" ㎡";g("ar-py").textContent="약 "+f(total*0.3025,2)+"평";
+    w.textContent=warn.join(" ");w.hidden=!warn.length;
+    txt=["[차량배상책임 면적 계산]","임대면적 "+f(r,2)+"㎡ / 연면적 "+f(gr,2)+"㎡ = "+pct,"대지면적 "+f(l,2)+"㎡ − 건축면적 "+f(b,2)+"㎡ = 공용면적 "+f(common,2)+"㎡","공용면적 "+f(common,2)+"㎡ × "+pct+" = 공용 책임면적 "+f(share,3)+"㎡","공용 책임면적 "+f(share,3)+"㎡ + 임대면적 "+f(r,2)+"㎡ = 배상책임면적 "+f(total,3)+"㎡ (약 "+f(total*0.3025,2)+"평)"].join(String.fromCharCode(10))}
+  ids.forEach(i=>g(i).addEventListener("input",calc));
+  g("ar-ex").onclick=()=>{[81.42,267.14,322,174.28].forEach((v,k)=>g(ids[k]).value=v);calc()};
+  g("ar-reset").onclick=()=>{ids.forEach(i=>g(i).value="");calc();g(ids[0]).focus()};
+  g("ar-copy").onclick=()=>{if(!txt){toast("먼저 4개 값을 넣으세요");return}copy(txt)};calc()})();
 </script>
 </body>
 </html>
