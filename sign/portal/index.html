@@ -436,6 +436,15 @@ tr.over td:first-child{box-shadow:inset 4px 0 var(--bad)}
   </div>
 </section>
 
+<section class="view" id="v-check" hidden>
+  <div class="card">
+    <h2>보험금 검산방 <em>진료 내역을 넣어 예상 보험금 검산 · 저장은 드라이브 시트</em></h2>
+    <p class="note" style="margin:0 0 10px">화면이 안 뜨거나 "로그인" 안내가 보이면 <a href="https://script.google.com/macros/s/AKfycbw5MCDnuliS4umdO09XS0csOrUBhBqCP6UVk_OT4Cl1ak-ALJDW2-VFWLrXKLcqw-9r8A/exec" target="_blank" rel="noopener">새 창으로 열기</a>를 누르세요(대표님 구글 계정으로 로그인돼 있어야 열립니다). 영수증 사진 자동읽기는 보상·청구의 「Claude판」을 쓰세요.</p>
+    <iframe id="ck-frame" title="보험금 검산방" data-src="https://script.google.com/macros/s/AKfycbw5MCDnuliS4umdO09XS0csOrUBhBqCP6UVk_OT4Cl1ak-ALJDW2-VFWLrXKLcqw-9r8A/exec" style="width:100%;height:calc(100vh - 220px);min-height:640px;border:1px solid var(--line,#e3e7ee);border-radius:10px;background:#fff"></iframe>
+  </div>
+</section>
+
+
 <section class="view" id="v-ship" hidden>
   <div class="card">
     <h2>선물·우편 발송 <em id="ship-count"></em></h2>
@@ -645,7 +654,7 @@ const STUDY_TOOLS=[
 const CLAIM_LOG_KINDS=["배상책임접수","상해질병접수"];
 const NAV_ALL=[["home","현황"],["long","장기"],["cases","자동차"],["gen","일반"],["claims","보상·청구"],["ship","발송"],["customers","고객"],["requests","요청함"],["pay","카드결제"],["calls","통화·할 일"],["templates","멘트"],["study","보험상담"]];
 /* 역할별 상단 메뉴. 대표: 상담·관리 5개만. 실장: 현황 · 보험(자동차·일반·장기 폴더) · 발송 · 고객 · 요청함 · 카드결제 */
-const ROLES={"대표":{nav:[["calls","통화·할 일"],["customers","고객"],["claims","보상·청구"],["area","배상면적"],["study","보험상담"],["templates","멘트"]],home:"calls",lines:[]},
+const ROLES={"대표":{nav:[["calls","통화·할 일"],["customers","고객"],["claims","보상·청구"],["area","배상면적"],["check","검산방"],["study","보험상담"],["templates","멘트"]],home:"calls",lines:[]},
   "실장":{nav:[["home","현황"],["ins","보험"],["ship","발송"],["customers","고객"],["requests","요청함"],["pay","카드결제"]],home:"home",lines:["자동차","일반","장기"]}};
 const INS_VIEWS=["cases","gen","long"];let lastIns="cases";
 const NAV_N={long:"n-long",cases:"n-cases",gen:"n-gen",claims:"n-claims",ship:"n-ship",requests:"n-req",pay:"n-pay",calls:"n-todo"};
@@ -711,7 +720,7 @@ function lineCols(line){const L=LINES[line];const base=[{h:L.dateLabel},{h:L.nam
 Object.keys(LINES).forEach(l=>{$("#v-"+LINES[l].key).innerHTML=lineSection(l)});
 
 /* ---- routing ---- */
-const VIEWS=["home","long","cases","gen","claims","area","ship","pay","requests","customers","calls","templates","study"];
+const VIEWS=["home","long","cases","gen","claims","area","check","ship","pay","requests","customers","calls","templates","study"];
 function go(){let h=location.hash.replace("#","");let arg="";if(h.includes(":")){[h,arg]=h.split(":")}if(!VIEWS.includes(h))h=ROLES[who].home;if(who==="대표"&&h==="home")h="calls";view=h;
   const stage=INS_VIEWS.includes(h);$(".wrap").classList.toggle("stage-on",stage);if(stage){lastIns=h;renderRail()}
   VIEWS.forEach(v=>{$("#v-"+v).hidden=v!==h});$$("#nav a").forEach(a=>{if(a.dataset.v===h)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current")});
@@ -1300,5 +1309,6 @@ go();
   g("ar-reset").onclick=()=>{ids.forEach(i=>g(i).value="");calc();g(ids[0]).focus()};
   g("ar-copy").onclick=()=>{if(!txt){toast("먼저 4개 값을 넣으세요");return}copy(txt)};calc()})();
 </script>
+<script>(function(){function f(){var e=document.getElementById("ck-frame");if(e&&!e.src&&location.hash.replace("#","").split(":")[0]==="check")e.src=e.dataset.src}window.addEventListener("hashchange",f);window.addEventListener("load",f);document.addEventListener("click",function(){setTimeout(f,0)})})();</script>
 </body>
 </html>
