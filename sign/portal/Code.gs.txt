@@ -204,15 +204,15 @@ function listRecs(days) {
     var f = c.files; if (typeof f === "string") { try { f = JSON.parse(f); } catch (e) { f = [f]; } }
     (f || []).forEach(function (x) { done[x] = 1; });
   });
-  var since = new Date(Date.now() - days * 864e5).toISOString();
+  var sinceD = new Date(Date.now() - days * 864e5);
+  var since = Utilities.formatDate(sinceD, "UTC", "yyyy-MM-dd'T'HH:mm:ss");
   var res = [];
   Object.keys(REC_FOLDERS).forEach(function (fid) {
-    var it = DriveApp.searchFiles("'" + fid + "' in parents and trashed = false and createdDate > '" + since + "'");
-    while (it.hasNext()) {
-      var f = it.next();
-      if (done[f.getId()] || !/\.(m4a|mp3|amr|3gp|wav|aac|ogg)$/i.test(f.getName())) continue;
-      res.push({ id: f.getId(), name: f.getName(), room: REC_FOLDERS[fid], size: f.getSize(), created: f.getDateCreated().toISOString() });
-    }
+    recSearch_(fid, since).forEach(function (f) {
+      if (done[f.getId()] || !/\.(m4a|mp3|amr|3gp|wav|aac|ogg)$/i.test(f.getName())) return;
+      var cr = f.getDateCreated(); if (cr < sinceD) return;
+      res.push({ id: f.getId(), name: f.getName(), room: REC_FOLDERS[fid], size: f.getSize(), created: cr.toISOString() });
+    });
   });
   res.sort(function (a, b) { return a.created < b.created ? -1 : 1; });
   return res;
@@ -226,3 +226,12 @@ function recFile(id) {
 }
 /** 편집기에서 한 번 실행해 드라이브 권한을 승인한다 */
 function test_recs() { Logger.log(JSON.stringify(listRecs(7).slice(0, 5))); }
+/** 드라이브 검색 문법이 v2/v3 어느 쪽이든 동작하도록 차례로 시도 */
+function recSearch_(fid, since) {
+  var base = "'" + fid + "' in parents and trashed = false";
+  var qs = [base + " and createdTime > '" + since + "'", base + " and createdDate > '" + since + "'", base];
+  for (var i = 0; i < qs.length; i++) {
+    try { var it = DriveApp.searchFiles(qs[i]); var arr = []; while (it.hasNext()) arr.push(it.next()); return arr; } catch (e) {}
+  }
+  return [];
+}
