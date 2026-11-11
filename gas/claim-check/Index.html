@@ -1,0 +1,1061 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>보험금 검산방</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@700&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* 검산 장부: 위에서 아래로 ①가입내용 ②서류 ③진료내역 ④검산 결과·보고서. 금액은 고정폭 숫자로 줄 맞춤 */
+:root{
+  --bg:#f3f5f2; --paper:#ffffff; --ink:#18241f; --dim:#56645d; --line:#d9dfdb; --soft:#eaf1ed;
+  --accent:#1f5f4a; --onaccent:#ffffff; --warn:#9a5b14; --warnbg:#fbf1e2; --bad:#a23b2c; --good:#2e7d4f;
+  --display:"Gowun Batang","Nanum Myeongjo",serif;
+  --body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --num:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#111613; --paper:#18201c; --ink:#e4ece7; --dim:#a1b0a8; --line:#2b3631; --soft:#1f2b25;
+  --accent:#7fc9a9; --onaccent:#0f1a15; --warn:#e3ad66; --warnbg:#2c2416; --bad:#f08a78; --good:#7cc79a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111613; --paper:#18201c; --ink:#e4ece7; --dim:#a1b0a8; --line:#2b3631; --soft:#1f2b25;
+  --accent:#7fc9a9; --onaccent:#0f1a15; --warn:#e3ad66; --warnbg:#2c2416; --bad:#f08a78; --good:#7cc79a; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font:15px/1.6 var(--body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 56px}
+.wrap{max-width:1080px;margin:0 auto;display:grid;gap:20px}
+header{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:end;border-bottom:2px solid var(--ink);padding-bottom:10px}
+h1{font:700 27px/1.2 var(--display);margin:0}
+header p{margin:0;color:var(--dim);font-size:13px}
+.cases{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.cases select{max-width:260px}
+section.step{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:18px clamp(14px,3vw,24px);display:grid;gap:14px;min-width:0}
+.step>h2{margin:0;font:600 17px var(--body);display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline;word-break:keep-all}
+.step>h2 .n{font:500 13px var(--num);color:var(--accent);border:1px solid var(--accent);border-radius:999px;padding:0 8px}
+.step>h2 small{font:400 13px var(--body);color:var(--dim)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px 14px}
+label.f{display:grid;gap:4px;font-size:13px;color:var(--dim);min-width:0}
+input,select,textarea{font:14px var(--body);color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:7px 9px;min-width:0;box-sizing:border-box;width:100%}
+input[type=checkbox]{width:auto}
+input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:0}
+.num{font-family:var(--num);font-variant-numeric:tabular-nums;text-align:right}
+.checks{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:14px}
+.checks label{display:flex;gap:6px;align-items:center}
+.btn{font:500 14px var(--body);border:1px solid var(--accent);background:transparent;color:var(--accent);border-radius:6px;padding:8px 14px;cursor:pointer}
+.btn.primary{background:var(--accent);color:var(--onaccent)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.btn.sm{padding:4px 10px;font-size:13px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.note{font-size:13px;color:var(--dim);margin:0}
+.callout{background:var(--warnbg);color:var(--ink);border-left:3px solid var(--warn);padding:10px 12px;border-radius:6px;font-size:14px}
+.callout b{color:var(--warn)}
+.drop{border:1.5px dashed var(--line);border-radius:10px;padding:18px;text-align:center;color:var(--dim);font-size:14px}
+.drop.on{border-color:var(--accent);background:var(--soft)}
+.files{display:grid;gap:8px}
+.file{display:grid;grid-template-columns:minmax(0,1fr) 150px auto;gap:8px;align-items:center;border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+@media (max-width:620px){.file{grid-template-columns:minmax(0,1fr)}}
+.file .nm{font-size:14px;overflow-wrap:anywhere}
+.file .st{font-size:12px;color:var(--dim)}
+.st.ok{color:var(--good)} .st.err{color:var(--bad)}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:8px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{border-bottom:1px solid var(--line);padding:6px 6px;text-align:left;vertical-align:top}
+th{background:var(--soft);font-weight:600;font-size:12px;white-space:nowrap;position:sticky;top:0}
+tbody tr:last-child td{border-bottom:0}
+td input,td select{padding:4px 6px;font-size:13px;width:auto}
+td select{min-width:72px}
+td select[data-k="facility"]{min-width:118px}
+td input.num{width:96px}
+td input.d{width:120px}
+td input.k{width:76px}
+td.ck{text-align:center}
+.res{display:grid;gap:14px}
+.total{display:flex;flex-wrap:wrap;gap:6px 24px;align-items:baseline}
+.total .big{font:500 30px var(--num);font-variant-numeric:tabular-nums}
+.total .lab{font-size:13px;color:var(--dim)}
+.parts td.num{white-space:nowrap}
+details.calc{border-top:1px dashed var(--line);padding-top:6px}
+details.calc summary{cursor:pointer;font-size:13px;color:var(--accent)}
+details.calc ol{margin:6px 0 0;padding-left:20px;font-size:13px;display:grid;gap:3px}
+.warns{margin:0;padding-left:18px;display:grid;gap:4px;font-size:14px}
+.warns li::marker{color:var(--warn)}
+.badge{font-size:11px;border-radius:999px;padding:1px 8px;border:1px solid var(--line);color:var(--dim);white-space:nowrap}
+.badge.ok{border-color:var(--good);color:var(--good)}
+.badge.need{border-color:var(--warn);color:var(--warn)}
+.hide{display:none}
+</style>
+
+<div class="wrap">
+  <header>
+    <div><h1>보험금 청구 검산방</h1><p>실손의료비 1~5세대 약관(현대해상 공시실) 기준으로 예상 보험금을 항목별로 검산합니다.</p></div>
+    <div class="cases">
+      <select id="caseSel" aria-label="저장된 검산"><option value="">새 검산</option></select>
+      <button class="btn sm" id="newCase" type="button">새로 시작</button>
+    </div>
+  </header>
+  <p class="note" id="dbNote"></p>
+
+  <section class="step" aria-labelledby="h1s">
+    <h2 id="h1s"><span class="n">1</span>고객 가입내용 <small>세대·특약·가입금액</small></h2>
+    <div class="grid">
+      <label class="f">고객 이름<input id="cust" autocomplete="off" placeholder="예) 홍길동"></label>
+      <label class="f">실손 가입일<input id="joinDate" type="date"></label>
+      <label class="f">세대 (가입일로 자동 선택)<select id="gen"></select></label>
+      <label class="f">유형<select id="variant"></select></label>
+    </div>
+    <div class="checks" id="riderBox"></div>
+    <div class="grid" id="sumBox"></div>
+    <details>
+      <summary class="note" style="cursor:pointer">올해 이미 받은 보험금·횟수 (있으면 입력 · 횟수는 이번 청구와 같은 원인(상해/질병) 기준)</summary>
+      <div class="grid" id="ytdBox" style="margin-top:10px"></div>
+    </details>
+    <details>
+      <summary class="note" style="cursor:pointer">포탈 담보 내용 붙여넣어 자동 채우기 (Claude판에서만)</summary>
+      <div style="display:grid;gap:8px;margin-top:10px">
+        <textarea id="policyText" rows="4" placeholder="하이 영업포탈 담보총괄 화면의 실손 담보 줄(담보명·가입금액·가입일)을 복사해 붙여넣으세요. 주민번호는 넣지 마세요."></textarea>
+        <div class="row"><button class="btn sm" id="policyFill" type="button">가입내용 채우기</button><span class="note" id="policyNote"></span></div>
+      </div>
+    </details>
+  </section>
+
+  <section class="step" aria-labelledby="h2s">
+    <h2 id="h2s"><span class="n">2</span>청구 서류 <small>진료비 영수증 · 진료비 세부내역서 · 진단서 · 초진기록지</small></h2>
+    <div class="callout"><b>서류 사진 자동 읽기</b>는 Claude판 검산방에서만 됩니다. 이 화면에서는 아래 3번 표에 진료 내역을 직접 넣으세요. <a href="https://claude.ai/artifact/JFhBJgSRaiHtDum3oF4ZGB" target="_blank" rel="noopener" style="color:var(--accent);font-weight:600">Claude판 검산방 열기 ↗</a></div>
+    <div class="drop" id="drop" hidden>사진(JPG·PNG)이나 PDF를 여기에 끌어다 놓거나 <label style="color:var(--accent);cursor:pointer;text-decoration:underline">파일 고르기<input id="fileIn" type="file" multiple accept="image/*,application/pdf" hidden></label></div>
+    <div class="files" id="files"></div>
+    <div class="row" hidden><button class="btn primary" id="readBtn" type="button" disabled>서류 읽어서 진료내역 채우기</button><button class="btn sm" id="stopBtn" type="button" hidden>멈춤</button><span class="note" id="readNote">서류는 이 화면에서만 읽고 저장하지 않습니다. 주민번호는 읽지 않습니다.</span></div>
+  </section>
+
+  <section class="step" aria-labelledby="h3s">
+    <h2 id="h3s"><span class="n">3</span>진료 내역 확인 <small>서류에서 읽은 값을 원본과 대조하고 '확인'에 체크하세요</small></h2>
+    <div class="tbl"><table id="rowsT"><thead></thead><tbody></tbody></table></div>
+    <div class="row"><button class="btn sm" id="addRow" type="button">줄 추가</button><span class="note" id="rowsNote"></span></div>
+  </section>
+
+  <section class="step" aria-labelledby="h4s">
+    <h2 id="h4s"><span class="n">4</span>검산 결과 <small>약관 계산식과 근거를 함께 보여 줍니다</small></h2>
+    <div class="res" id="result"><p class="note">진료 내역을 넣으면 바로 계산됩니다.</p></div>
+    <div class="row">
+      <button class="btn primary" id="saveCase" type="button">검산 저장</button>
+      <button class="btn" id="pdfBtn" type="button">검산보고서 PDF</button>
+      <button class="btn" id="htmlBtn" type="button">보고서 문서(.html)</button>
+      <span class="note" id="saveNote"></span>
+    </div>
+  </section>
+</div>
+
+<script>
+/* Apps Script 판: Claude 전용 기능 대신 구글 시트 저장 + 브라우저 내려받기 */
+(function(){
+  const run=(fn,...a)=>new Promise((res,rej)=>google.script.run.withSuccessHandler(res).withFailureHandler(rej)[fn](...a));
+  const subs=[];
+  async function refresh(){try{const list=await run('listCases');const snap={docs:list.map(c=>({id:c.id,data:()=>c}))};subs.forEach(s=>s.cb(snap));}catch(e){subs.forEach(s=>s.err&&s.err(e));}}
+  const coll=path=>({
+    doc:id=>({set:async obj=>{if(path!=='cases')return;await run('saveCase',id,JSON.stringify(obj));refresh();},get:async()=>({data:()=>null}),delete:async()=>{}}),
+    orderBy:()=>({limit:()=>({onSnapshot:(cb,err)=>{subs.push({cb,err});refresh();}})})
+  });
+  const DL={save:async({filename,data})=>{const blob=data instanceof Blob?data:new Blob([data],{type:'text/html;charset=utf-8'});const u=URL.createObjectURL(blob);const a=document.createElement('a');a.href=u;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),60000);}};
+  window.claude={use:async c=>c==='db'?{collection:coll}:c==='downloads'?DL:null};
+})();
+</script>
+<script>
+/* 실손의료비 검산 엔진 — 약관(현대해상 공시실) 근거. 순수 함수만 둔다(페이지·테스트 공용). */
+(function(root){
+'use strict';
+const W=n=>Math.max(0,Math.round(Number(n)||0));
+const won=n=>(Math.round(n)||0).toLocaleString('ko-KR')+'원';
+const pct=r=>Math.round(r*1000)/10+'%';
+
+/* 기관 구분 → 외래 정액 공제 등급 */
+const FAC={
+  '의원':'clinic','치과의원':'clinic','한의원':'clinic','보건소':'clinic','보건의료원':'clinic','보건지소':'clinic','보건진료소':'clinic','조산원':'clinic',
+  '병원':'hospital','치과병원':'hospital','한방병원':'hospital','요양병원':'hospital','종합병원':'hospital',
+  '상급종합병원':'tertiary','종합전문요양기관':'tertiary','전문요양기관':'tertiary',
+  '약국':'pharmacy'
+};
+const facClass=f=>FAC[f]||'hospital';
+
+/* 세대별 규칙. src = 근거 약관(쪽은 각 rules_*.json 참조) */
+const GENS={
+ G1:{
+  label:'1세대 손보 실손 (~2009.9, 행복을다모은 Hi0810 기준)',src:'행복을다모은보험(Hi0810) 상해·질병 입원의료비(갱신형), 상해·질병 통원의료비A/B',
+  variants:['통원A(1일 5천원 공제)','통원B(1일 1만원 공제)'],
+  mergeRx:true,
+  split:g1Calc
+ },
+ G2a:{
+  label:'2세대 표준화 초기 (2009.10~)',src:'현대닥터코리아의료보험(Hi0910) 실손의료비 제18조',
+  variants:['기본'],
+  inpatient:{ rate:{'기본':{cov:0.10,non:0.10}}, annualCap:2000000, roomDiff:{keep:0.5,dailyAvg:100000}, nonNHI:0.4 },
+  outpatient:{ fixed:{clinic:10000,hospital:15000,tertiary:20000}, pctMode:'none' },
+  rx:{ fixed:8000, pctMode:'none' },
+  counts:{out:180,rx:180},
+  riders:null
+ },
+ G2b:{
+  label:'2세대 표준화 후기 (2015.9~2017.3)',src:'실손의료비보장보험(갱신형)(Hi1601) 제2조',
+  variants:['표준형','선택형Ⅱ'],
+  inpatient:{ rate:{'표준형':{cov:0.20,non:0.20},'선택형Ⅱ':{cov:0.10,non:0.20}}, annualCap:2000000, roomDiff:{keep:0.5,dailyAvg:100000}, nonNHI:0.4 },
+  outpatient:{ fixed:{clinic:10000,hospital:15000,tertiary:20000}, pctMode:'variant' },
+  rx:{ fixed:8000, pctMode:'variant' },
+  counts:{out:180,rx:180},
+  riders:null
+ },
+ G3:{
+  label:'3세대 착한실손 (2017.4~2021.6)',src:'실손의료비보장보험(갱신형)(Hi1704) 기본형·특약',
+  variants:['표준형','선택형Ⅱ'],
+  inpatient:{ rate:{'표준형':{cov:0.20,non:0.20},'선택형Ⅱ':{cov:0.10,non:0.20}}, annualCap:2000000, roomDiff:{keep:0.5,dailyAvg:100000}, nonNHI:0.4 },
+  outpatient:{ fixed:{clinic:10000,hospital:15000,tertiary:20000}, pctMode:'variant' },
+  rx:{ fixed:8000, pctMode:'variant' },
+  counts:{out:180,rx:180},
+  /* 3대 비급여는 기본형에서 빠지고 특약으로만 보상 */
+  riders:{
+   manual:{name:'도수·체외충격파·증식치료 특약',perFixed:20000,rate:0.30,annual:3500000,count:50,unit:'회'},
+   inject:{name:'비급여주사료 특약',perFixed:20000,rate:0.30,annual:2500000,count:50,unit:'회(입원·통원 1회)'},
+   mri:{name:'비급여 MRI/MRA 특약',perFixed:20000,rate:0.30,annual:3000000,count:null,unit:'회'}
+  }
+ },
+ G4:{
+  label:'4세대 (2021.7~2026.5)',src:'실손의료비보장보험(갱신형)(Hi2107) 급여 기본계약·비급여 특약·3대비급여 특약',
+  variants:['기본'],
+  mergeRx:true,
+  split:g4Calc
+ },
+ G5:{
+  label:'5세대 (2026.5~)',src:'현대해상실손의료비보장보험(갱신형)(Hi2605) 급여·중증비급여·비중증비급여',
+  variants:['기본'],
+  mergeRx:true,
+  split:g5Calc
+ }
+};
+const bigHosp=f=>/종합병원|상급종합|종합전문|전문요양/.test(f||'');
+const tierG4=f=>bigHosp(f)?20000:10000;
+
+function g5Calc(claim,v,row,ytd,c){
+  const {steps,warn,m,inj,mri}=c;const parts=[];
+  const R=claim.riders||{};const refund=W(row.ceilingRefund);
+  const covPart=W(row.covPart!=null?row.covPart:row.cov),covFull=W(row.covFull),nhis=W(row.nhis);
+  const nonBase=c.nonBase,room=W(row.room);const N=!!row.nonNHI;
+  if(N)warn.push('건강보험 미적용 진료: 본인이 실제 부담한 금액(통원은 공제 후)의 40% 보상. 담당자 확인 필요.');
+  const severe=!!row.severe;
+  steps.push(`이 진료는 ${severe?'중증(산정특례 대상 질환 치료)':'비중증'}으로 계산합니다.${severe?'':' 산정특례 대상(암·뇌혈관·심장·희귀·중증난치·중증화상·중증외상 등)이면 중증으로 바꾸세요.'}`);
+  // ---- 급여
+  if(row.kind==='입원'){
+    const cov=Math.max(0,covPart+covFull-refund-W(row.excludedCov));let pc;
+    if(N){pc=cov*0.4;steps.push(`[급여] 건강보험 미적용 입원: 실제 부담 ${won(cov)} × 40% = ${won(pc)}`);}
+    else{
+      let self=cov*0.2;const before=W(ytd.inSelf),left=Math.max(0,2000000-before);
+      steps.push(`[급여] 입원 본인부담(일부+전액본인부담) ${won(cov)} × 20% = 자기부담 ${won(self)}`);
+      if(self>left){steps.push(`올해 급여 입원 자기부담이 연 200만원을 넘어 넘는 ${won(self-left)}도 지급`);self=left;}
+      ytd.inSelf=before+self;pc=cov-self;steps.push(`[급여] 입원 지급 ${won(cov)} − ${won(self)} = ${won(pc)}`);
+    }
+    pc=annualCap(claim,ytd,'covAnnual',row.cause,pc,steps,'[급여]');
+    parts.push({label:`${row.cause}급여 입원`,pay:pc});
+  }else{
+    const cov=Math.max(0,covPart-refund-W(row.excludedCov));
+    if(covFull)steps.push(`[급여] 통원에서는 전액본인부담(100/100) ${won(covFull)}을 보상하지 않습니다.`);
+    const fixed=bigHosp(row.facility)?20000:10000;
+    let rate=null;if(covPart+nhis>0&&nhis)rate=covPart/(covPart+nhis);
+    if(rate==null&&cov)warn.push('5세대 통원은 영수증의 공단부담금이 있어야 건강보험 본인부담률 공제를 계산할 수 있습니다. 공단부담금을 넣어 주세요.');
+    const d2=cov*0.2,d3=rate!=null?cov*rate:0;const ded=Math.max(fixed,d2,d3);
+    let pc=Math.max(0,cov-ded)*(N?0.4:1);
+    steps.push(`[급여] 통원 1회(외래+처방${row.mergedCount>1?`, 같은 날 ${row.mergedCount}건`:''}) 본인부담 ${won(cov)} − 공제 max(${won(fixed)}, 20% ${won(d2)}${rate!=null?`, 본인부담률 ${pct(rate)} ${won(d3)}`:''}) = ${won(Math.max(0,cov-ded))}${N?' × 40%':''}`);
+    const cap=W(claim.sums&&claim.sums.out);if(cap&&pc>cap){steps.push(`[급여] 통원 1회당 한도 ${won(cap)} 적용`);pc=cap;}
+    pc=annualCap(claim,ytd,'covAnnual',row.cause,pc,steps,'[급여]');
+    parts.push({label:`${row.cause}급여 통원`,pay:pc});
+  }
+  // ---- 비급여
+  const has=severe?R.sev:R.nonsev;
+  const nm=severe?'중증비급여':'비중증비급여';const capKey=severe?'nonAnnual':'nonsevAnnual';
+  if(!has){ if(nonBase||room||W(m.amt)||W(inj.amt)||W(mri.amt))steps.push(`${nm} 특약 미가입 → 비급여는 보상하지 않습니다.`); return finish(parts,steps,warn);}
+  if(row.kind==='입원'){
+    let pn,rp=0;
+    if(N){
+      let b=nonBase+room;
+      if(!severe&&!bigHosp(row.facility)&&nonBase>3000000){steps.push(`[비중증비급여] 병원·의원급 입원 비급여 의료비 1회 300만원 한도`);b=3000000+room;}
+      pn=b*0.4;steps.push(`[${nm}] 건강보험 미적용 입원: 실제 부담 비급여(병실 차액 포함) ${won(b)} × 40% = ${won(pn)}`);
+    }else if(severe){
+      let ded=nonBase*0.3;
+      if(bigHosp(row.facility)){const used=W(ytd.sevDed),left=Math.max(0,5000000-used);if(ded>left){steps.push(`[중증비급여] 종합·상급종합병원 입원 공제가 연 500만원을 넘어 ${won(left)}까지만 공제`);ded=left;}ytd.sevDed=used+ded;}
+      pn=nonBase-ded;steps.push(`[중증비급여] 입원 비급여 ${won(nonBase)} − 공제 ${won(ded)} = ${won(pn)}`);
+    }else{
+      let b=nonBase;
+      if(!bigHosp(row.facility)&&b>3000000){
+        steps.push(`[비중증비급여] 병원·의원급 입원: 비급여 의료비 ${won(b)} 중 1회 300만원 한도`);
+        warn.push(`비중증 병원·의원급 입원 300만원 한도는 약관 문구("비급여 의료비는 1회당 300만원을 한도")대로 의료비에 적용해 최대 150만원으로 계산했습니다. 보험금 한도로 해석하면 ${won(Math.min(nonBase*0.5,3000000))}까지 나올 수 있습니다. 보상과에 확인하세요.`);
+        b=3000000;
+      }
+      pn=b*0.5;steps.push(`[비중증비급여] 입원 비급여 ${won(b)} × 50% = ${won(pn)}`);
+    }
+    if(room&&!N){const days=Math.max(1,W(row.days));rp=Math.min(room*0.5,100000*days);steps.push(`상급병실료 차액 ${won(room)} × 50%, 1일 평균 10만원×${days}일 한도 → ${won(rp)}`);}
+    const tot=annualCap(claim,ytd,capKey,row.cause,pn+rp,steps,`[${nm}]`);
+    if(tot<pn+rp){const k=(pn+rp)?tot/(pn+rp):0;pn*=k;rp*=k;}
+    parts.push({label:`${row.cause}${nm} 입원`,pay:pn});if(room&&!N)parts.push({label:'상급병실료 차액',pay:rp});
+  }else if(nonBase){
+    let pn;
+    if(severe){
+      const ded=Math.max(30000,nonBase*0.3);pn=Math.max(0,nonBase-ded)*(N?0.4:1);
+      steps.push(`[중증비급여] 통원 비급여 ${won(nonBase)} − 공제 max(3만원, 30%) ${won(ded)} = ${won(Math.max(0,nonBase-ded))}${N?' × 40%':''}`);
+      const cap=W(claim.sums&&(claim.sums.sevOut||claim.sums.nonOut));if(cap&&pn>cap){pn=cap;steps.push(`회당 한도 ${won(cap)} 적용`);}
+      const sc=cGet(ytd,'sevOutCount',row.cause)+1;cSet(ytd,'sevOutCount',row.cause,sc);if(sc>100){pn=0;warn.push('중증비급여 통원 연 100회 초과');steps.push('연 100회 초과 → 0원');}
+    }else{
+      const ded=Math.max(50000,nonBase*0.5);pn=Math.max(0,nonBase-ded)*(N?0.4:1);
+      steps.push(`[비중증비급여] 통원 1일 비급여 ${won(nonBase)} − 공제 max(5만원, 50%) ${won(ded)} = ${won(Math.max(0,nonBase-ded))}${N?' × 40%':''}`);
+      const cap=W(claim.sums&&claim.sums.nonOut);if(cap&&pn>cap){pn=cap;steps.push(`1일 한도 ${won(cap)} 적용`);}
+      const nd=cGet(ytd,'nonsevDays',row.cause)+1;cSet(ytd,'nonsevDays',row.cause,nd);if(nd>100){pn=0;warn.push('비중증비급여 통원 연 100일 초과');steps.push('연 100일 초과 → 0원');}
+    }
+    pn=annualCap(claim,ytd,capKey,row.cause,pn,steps,`[${nm}]`);
+    parts.push({label:`${row.cause}${nm} 통원`,pay:pn});
+  }
+  // ---- 3대 비급여
+  const T=severe?{manual:{n:'중증 도수·체외충격파(근골격계 이학요법)',f:30000,r:0.3,a:3500000,c:50},inject:{n:'중증 비급여 주사료',f:30000,r:0.3,a:2500000,c:50},mri:{n:'중증 비급여 MRI',f:30000,r:0.3,a:3000000,c:null}}
+                :{manual:null,inject:null,mri:{n:'비중증 비급여 MRI',f:50000,r:0.5,a:2000000,c:null}};
+  for(const [k,it] of [['manual',m],['inject',inj],['mri',mri]]){
+    const amt=W(it.amt);if(!amt)continue;const t=T[k];
+    if(!t){steps.push(`${k==='manual'?'도수·체외충격파·증식치료':'일반 비급여 주사료'} ${won(amt)}: 비중증은 보상하지 않습니다(5세대 면책).`);parts.push({label:k==='manual'?'비중증 도수 등(면책)':'비중증 주사(면책)',pay:0});
+      if(k==='inject')warn.push('항암제·항생제·희귀의약품 등 특정 주사는 비중증이어도 일반 비급여로 보상될 수 있습니다. 주사 성분을 확인하세요.');continue;}
+    if(!severe&&k==='mri'&&R.nonsevMri===false){steps.push(`비중증 MRI 특약 미가입 → ${won(amt)} 보상 안 함`);parts.push({label:t.n,pay:0});continue;}
+    const cnt=(k==='inject'&&row.kind==='입원')?1:Math.max(1,W(it.cnt)||1);let pay;
+    if(k==='inject'&&row.kind==='입원'&&W(it.cnt)>1)steps.push(`주사: 1회 입원 중 ${W(it.cnt)}번 맞아도 약관상 1회로 계산합니다.`);
+    if(N&&row.kind==='입원'){pay=amt*0.4;steps.push(`${t.n}: 건강보험 미적용 입원 ${won(amt)} × 40% = ${won(pay)}`);}
+    else{
+      const per=amt/cnt;let dTot=Math.max(t.f,per*t.r)*cnt;
+      if(severe&&k==='mri'&&row.kind==='입원'&&bigHosp(row.facility)){const used=W(ytd.sevDed),left=Math.max(0,5000000-used);if(dTot>left){steps.push(`${t.n}: 종합·상급종합병원 입원 공제가 연 500만원 상한(중증비급여와 합산)을 넘어 ${won(left)}까지만 공제`);dTot=left;}ytd.sevDed=used+dTot;}
+      pay=Math.max(0,amt-dTot)*(N?0.4:1);
+      steps.push(`${t.n}: ${cnt}회 ${won(amt)} − 공제(1회당 max(${won(t.f)}, ${pct(t.r)})) ${won(dTot)} → ${won(pay)}`);
+    }
+    const key='g5'+k+(severe?'S':'N');const uA=W(ytd[key+'Amt']),uC=W(ytd[key+'Cnt']);
+    if(t.c&&uC+cnt>t.c){const ok=Math.max(0,t.c-uC);pay=ok?pay*ok/cnt:0;warn.push(`${t.n} 연 ${t.c}회 확인 필요`);steps.push(`연 ${t.c}회 중 남은 ${ok}회까지만`);}
+    if(uA+pay>t.a){pay=Math.max(0,t.a-uA);steps.push(`연 ${won(t.a)} 한도 중 남은 금액까지만`);}
+    if(k==='manual'&&uC+cnt>10)warn.push('도수·체외충격파는 10회마다 증상 개선 확인이 있어야 다음 10회를 보상합니다.');
+    if(k==='inject')warn.push('주사료 횟수는 통원(입원) 1번에 여러 번 맞아도 1회로 셉니다.');
+    ytd[key+'Amt']=uA+pay;ytd[key+'Cnt']=uC+cnt;parts.push({label:t.n,pay});
+  }
+  return finish(parts,steps,warn);
+}
+
+function g1Calc(claim,v,row,ytd,c){
+  const {steps,warn}=c;const parts=[];
+  const cov=c.cov,nonBase=c.nonBase,room=W(row.room);
+  /* 1세대는 3대 비급여(도수·주사·MRI)도 일반 비급여에 포함돼 보상: nonBase에 이미 들어 있다 */
+  const base=cov+nonBase;
+  if(row.kind==='입원'){
+    let pay;
+    if(row.nonNHI){pay=(base+room)*0.4;steps.push(`건강보험 미적용 입원: 실제 부담액 ${won(base+room)} × 40% = ${won(pay)}`);}
+    else{
+      pay=base;steps.push(`1세대 입원: 급여 본인부담 ${won(cov)} + 비급여 ${won(nonBase)} 전액 보상 = ${won(base)}`);
+      if(room){const rp=room*0.5;steps.push(`병실료 차액 ${won(room)} × 50% = ${won(rp)} (1일 한도 규정 없음)`);pay+=rp;}
+    }
+    const lim=W(claim.sums&&claim.sums.inpatient);
+    if(lim&&pay>lim){steps.push(`1사고(질병)당 보상한도액 ${won(lim)} 적용`);pay=lim;}
+    parts.push({label:`${row.cause}입원의료비`,pay});
+    warn.push('1세대는 사고일·발병일부터 365일 한도입니다. 첫 치료일을 확인하세요.');
+    if(row.cause==='질병')warn.push('청약일 전 5년 안에 같은 질병으로 진단·치료받았으면 보상하지 않습니다.');
+    return finish(parts,steps,warn);
+  }
+  const fixed=/1만원/.test(v)?10000:5000;
+  const fac=row.facility||'';
+  if(/한의원|한방/.test(fac)){steps.push(`${fac}: 1세대 통원은 한방병원·한의원을 보상하지 않습니다 → 0원`);parts.push({label:`${row.cause}통원의료비(보상 제외 기관)`,pay:0});return finish(parts,steps,warn);}
+  if(row.cause==='질병'&&/치과/.test(fac)){steps.push(`${fac}: 1세대 질병통원은 치과병원·치과의원을 보상하지 않습니다 → 0원`);parts.push({label:'질병통원의료비(보상 제외 기관)',pay:0});return finish(parts,steps,warn);}
+  const used=cGet(ytd,'outDays',row.cause);
+  if(used>=30){steps.push(`같은 사고·질병으로 이미 통원 ${used}일 → 통산 30일 한도를 넘어 0원`);parts.push({label:`${row.cause}통원의료비(30일 초과)`,pay:0});return finish(parts,steps,warn);}
+  cSet(ytd,'outDays',row.cause,used+1);
+  let pay;
+  const visits=row.mergedCount>1?` (같은 날 ${row.mergedCount}곳 합산, 통원 1일)`:'';
+  if(row.nonNHI){pay=Math.max(0,base-fixed)*0.4;steps.push(`건강보험 미적용 통원${visits}: (${won(base)} − ${won(fixed)}) × 40% = ${won(pay)}`);}
+  else{pay=Math.max(0,base-fixed);steps.push(`통원 1일 의료비(약국 약제비 포함)${visits} ${won(base)} − 1일 공제 ${won(fixed)} = ${won(pay)}`);}
+  const cap=W(claim.sums&&claim.sums.out);
+  if(cap&&pay>cap){steps.push(`통원 1일당 보상한도액 ${won(cap)} 적용`);pay=cap;}
+  parts.push({label:`${row.cause}통원의료비`,pay});
+  return finish(parts,steps,warn);
+}
+
+function g4Calc(claim,v,row,ytd,c){
+  const {steps,warn,m,inj,mri}=c;const parts=[];
+  const cov=c.cov,nonBase=c.nonBase,room=W(row.room);
+  const hasNon=!!(claim.riders&&claim.riders.nonCov);
+  const N=!!row.nonNHI;
+  if(N)warn.push('건강보험을 적용받지 못한 진료는 본인이 실제 부담한 금액(통원은 공제 후)의 40%만 보상합니다. 담당자 확인이 필요합니다.');
+  if(row.kind==='입원'){
+    let pc;
+    if(N){pc=cov*0.4;steps.push(`[급여] 건강보험 미적용 입원: 실제 부담 ${won(cov)} × 40% = ${won(pc)}`);}
+    else{
+      let self=cov*0.2;steps.push(`[급여] 본인부담 ${won(cov)} × 20% = 자기부담 ${won(self)}`);
+      const before=W(ytd.inSelf),left=Math.max(0,2000000-before);
+      if(self>left){steps.push(`올해 급여 입원 자기부담 누적 ${won(before)} + 이번 ${won(self)}이 연 200만원을 넘어 넘는 ${won(self-left)}도 지급`);self=left;}
+      ytd.inSelf=before+self;pc=cov-self;steps.push(`[급여] 입원 지급 ${won(cov)} − ${won(self)} = ${won(pc)}`);
+    }
+    pc=annualCap(claim,ytd,'covAnnual',row.cause,pc,steps,'[급여]');
+    parts.push({label:`${row.cause}급여 입원`,pay:pc});
+    if(hasNon){
+      if(N){
+        let pn=(nonBase+room)*0.4;steps.push(`[비급여] 건강보험 미적용 입원: 실제 부담 비급여(병실 차액 포함) ${won(nonBase+room)} × 40% = ${won(pn)}`);
+        pn=annualCap(claim,ytd,'nonAnnual',row.cause,pn,steps,'[비급여]');parts.push({label:`${row.cause}비급여 입원`,pay:pn});
+      }else{
+        let pn=nonBase*0.7;steps.push(`[비급여] 입원 비급여 ${won(nonBase)} × 70% = ${won(pn)}`);
+        let rp=0;if(room){const days=Math.max(1,W(row.days));rp=Math.min(room*0.5,100000*days);steps.push(`[비급여] 상급병실료 차액 ${won(room)} × 50% = ${won(room*0.5)}, 1일 평균 10만원×${days}일 한도 → ${won(rp)}`);}
+        const tot=annualCap(claim,ytd,'nonAnnual',row.cause,pn+rp,steps,'[비급여]');
+        if(tot<pn+rp){const k=(pn+rp)?tot/(pn+rp):0;pn*=k;rp*=k;}
+        parts.push({label:`${row.cause}비급여 입원`,pay:pn});if(room)parts.push({label:'상급병실료 차액',pay:rp});
+      }
+    }else if(nonBase||room){steps.push(`비급여 특약 미가입 → 비급여 ${won(nonBase+room)}은 보상하지 않습니다.`);}
+  }else{
+    const fixed=tierG4(row.facility);const ded=Math.max(fixed,cov*0.2);
+    let pc=Math.max(0,cov-ded)*(N?0.4:1);
+    steps.push(`[급여] 통원 1회(외래+처방 합산${row.mergedCount>1?`, 같은 날 ${row.mergedCount}건`:''}) 본인부담 ${won(cov)} − 공제 max(${won(fixed)}, 20% ${won(cov*0.2)}) = ${won(Math.max(0,cov-ded))}${N?' × 40%':''}`);
+    const cap=W(claim.sums&&claim.sums.out);if(cap&&pc>cap){steps.push(`[급여] 통원 1회당 한도 ${won(cap)} 적용`);pc=cap;}
+    pc=annualCap(claim,ytd,'covAnnual',row.cause,pc,steps,'[급여]');
+    parts.push({label:`${row.cause}급여 통원`,pay:pc});
+    if(hasNon){
+      if(nonBase){
+        const dn=Math.max(30000,nonBase*0.3);let pn=Math.max(0,nonBase-dn)*(N?0.4:1);
+        steps.push(`[비급여] 통원 비급여 ${won(nonBase)} − 공제 max(3만원, 30% ${won(nonBase*0.3)}) = ${won(Math.max(0,nonBase-dn))}${N?' × 40%':''}`);
+        const capN=W(claim.sums&&claim.sums.nonOut);if(capN&&pn>capN){steps.push(`[비급여] 통원 1회당 한도 ${won(capN)} 적용`);pn=capN;}
+        const oc=cGet(ytd,'nonOutCount',row.cause)+1;cSet(ytd,'nonOutCount',row.cause,oc);if(oc>100){warn.push('비급여 통원 연 100회를 넘었습니다.');pn=0;steps.push('[비급여] 연 100회 초과 → 0원');}
+        pn=annualCap(claim,ytd,'nonAnnual',row.cause,pn,steps,'[비급여]');
+        parts.push({label:`${row.cause}비급여 통원`,pay:pn});
+      }
+    }else if(nonBase)steps.push(`비급여 특약 미가입 → 비급여 ${won(nonBase)}은 보상하지 않습니다.`);
+  }
+  // 3대 비급여: 1회당 max(3만,30%) 공제. 건보 미적용 입원은 실제 부담액의 40%(공제 없음)
+  const R={manual:{name:'3대비급여 도수·체외충격파·증식',annual:3500000,count:50},inject:{name:'3대비급여 비급여주사',annual:2500000,count:50},mri:{name:'3대비급여 MRI/MRA',annual:3000000,count:null}};
+  for(const [k,it] of [['manual',m],['inject',inj],['mri',mri]]){
+    const amt=W(it.amt);if(!amt)continue;const r=R[k];
+    if(!hasNon||(claim.riders&&claim.riders[k]===false)){steps.push(`${r.name} 특약 미가입 → ${won(amt)} 보상 안 함`);parts.push({label:r.name,pay:0});continue;}
+    const cnt=(k==='inject'&&row.kind==='입원')?1:Math.max(1,W(it.cnt)||1);let pay; /* 주사: 1회 입원 중 여러 번 맞아도 1회(3대비급여 특약 ③2) */
+    if(k==='inject'&&row.kind==='입원'&&W(it.cnt)>1)steps.push(`비급여 주사: 1회 입원 중 ${W(it.cnt)}번 맞아도 약관상 1회로 계산합니다.`);
+    if(N&&row.kind==='입원'){pay=amt*0.4;steps.push(`${r.name}: 건강보험 미적용 입원 ${won(amt)} × 40% = ${won(pay)}`);}
+    else{const per=amt/cnt,dp=Math.max(30000,per*0.3);pay=Math.max(0,per-dp)*cnt*(N?0.4:1);
+      steps.push(`${r.name}: ${cnt}회 ${won(amt)} (1회 평균 ${won(per)}) − 1회당 공제 max(3만원, 30%) ${won(dp)} → ${won(pay)}`);}
+    const uA=W(ytd[k+'Amt']),uC=W(ytd[k+'Cnt']);
+    if(r.count&&uC+cnt>r.count){const ok=Math.max(0,r.count-uC);pay=ok?pay*ok/cnt:0;steps.push(`연 ${r.count}회 중 남은 ${ok}회까지만`);warn.push(`${r.name} 연간 횟수 확인 필요`);}
+    if(uA+pay>r.annual){pay=Math.max(0,r.annual-uA);steps.push(`연 ${won(r.annual)} 한도 중 남은 금액까지만`);}
+    if(k==='manual'&&uC+cnt>10)warn.push('도수·체외충격파·증식치료는 10회마다 증상 개선 확인(진료기록)이 있어야 다음 10회를 보상합니다.');
+    if(k==='inject')warn.push('주사료 횟수는 통원(입원) 1번에 여러 번 맞아도 1회로 셉니다. 회수를 방문 수로 넣었는지 확인하세요.');
+    ytd[k+'Amt']=uA+pay;ytd[k+'Cnt']=uC+cnt;parts.push({label:r.name,pay});
+  }
+  return finish(parts,steps,warn);
+}
+
+/* 비율 공제(통원) 계산: 표준형 = 보상대상 20%, 선택형Ⅱ = 급여10%+비급여20% */
+function pctDeduct(cfg,variant,cov,non){
+  if(cfg.pctMode==='none')return {amt:0,txt:''};
+  const r=(cfg.rateOverride)||GENSCUR.inpatient.rate[variant];
+  const amt=cov*r.cov+non*r.non;
+  return {amt,txt:`급여 ${won(cov)}×${pct(r.cov)} + 비급여 ${won(non)}×${pct(r.non)} = ${won(amt)}`};
+}
+let GENSCUR=null;
+
+/* ---------- 한 건 계산 ----------
+ claim = {gen, variant, riders:{manual,inject,mri,nonCov(4·5세대 비급여특약)}, sums:{inpatient:가입금액, out:외래 회당, rx:처방 건당},
+          ytd:{inSelf:올해 입원 자기부담 누적, outCount, rxCount, manualAmt, manualCnt, injectAmt, injectCnt, mriAmt, ...}}
+ row = {kind:'입원'|'외래'|'처방', cause:'질병'|'상해', facility, date, days,
+        cov:급여 본인부담(일부본인부담 본인부담금+전액본인부담), non:비급여 합계(상급병실차액 포함 전체),
+        room:상급병실료 차액, manual:{amt,cnt}, inject:{amt,cnt}, mri:{amt,cnt}, ceilingRefund:본인부담상한 초과(환급대상),
+        nonNHI:bool, excludedCov, excludedNon (면책 금액) }
+*/
+function calcRow(claim,row,ytd){
+  const g=GENS[claim.gen];if(!g)throw new Error('세대 규칙 없음: '+claim.gen);
+  GENSCUR=g;
+  if(row.mergedInto!=null)return {parts:[],steps:[`같은 날 외래(${row.mergedInto+1}번 줄)와 합쳐 통원 1회로 계산했습니다.`],warn:[],total:0};
+  if(g.mergeRx&&row.kind==='처방')row=Object.assign({},row,{kind:'외래'});
+  const v=claim.variant&&g.variants.includes(claim.variant)?claim.variant:g.variants[0];
+  const steps=[];const parts=[];const warn=[];
+  const cov0=row.cov!=null&&row.cov!==''?W(row.cov):W(row.covPart)+W(row.covFull),non0=W(row.non),room=W(row.room),refund=W(row.ceilingRefund);
+  const xc=W(row.excludedCov),xn=W(row.excludedNon);
+  const m=row.manual||{},inj=row.inject||{},mri=row.mri||{};
+  const three=W(m.amt)+W(inj.amt)+W(mri.amt);
+  const useRefund=claim.gen!=='G1';
+  let cov=Math.max(0,cov0-(useRefund?refund:0)-xc);
+  if(refund&&!useRefund)warn.push('1세대 약관에는 본인부담 상한제 환급액 차감 규정이 없어 빼지 않았습니다. 보상과 처리 기준을 확인하세요.');
+  if(refund&&useRefund)steps.push(`본인부담 상한제 환급 대상 ${won(refund)}은 지급하지 않으므로 급여 본인부담에서 뺍니다.`);
+  if(xc)steps.push(`보상하지 않는 급여 항목 ${won(xc)}을 뺍니다.`);
+  if(xn)steps.push(`보상하지 않는 비급여 항목 ${won(xn)}을 뺍니다.`);
+  // 기본 비급여(상급병실차액·3대비급여 분리)
+  let nonBase=Math.max(0,non0-xn-(row.kind==='입원'?room:0));
+  if(g.gen5) return g.gen5(claim,v,row,ytd,{cov,nonBase,room,steps,warn});
+  if(g.riders||(g.split&&g!==GENS.G1)){ nonBase=Math.max(0,nonBase-three); if(three)steps.push(`3대 비급여(도수·체외충격파·증식 ${won(W(m.amt))}, 주사 ${won(W(inj.amt))}, MRI ${won(W(mri.amt))})는 기본 담보에서 빼고 특약으로 따로 계산합니다.`);}
+  if(g.split) return g.split(claim,v,row,ytd,{cov,nonBase,room,steps,warn,m,inj,mri});
+  let pay=0;
+  if(row.kind==='입원'){
+    const r=g.inpatient.rate[v];
+    if(row.nonNHI){
+      const base=cov+nonBase+room;pay=base*g.inpatient.nonNHI;
+      steps.push(`국민건강보험을 적용받지 못한 입원이므로 실제 부담액(상급병실 차액 포함) ${won(base)}의 ${pct(g.inpatient.nonNHI)} = ${won(pay)}`);
+    }else{
+      const self=cov*r.cov+nonBase*r.non;
+      steps.push(`입원 자기부담: 급여 ${won(cov)}×${pct(r.cov)} + 비급여 ${won(nonBase)}×${pct(r.non)} = ${won(self)}`);
+      let selfKept=self;
+      if(g.inpatient.annualCap){
+        const before=cGet(ytd,'inSelf',row.cause);const room_=Math.max(0,g.inpatient.annualCap-before);
+        if(self>room_){selfKept=room_;steps.push(`올해 ${row.cause}입원 자기부담 누적 ${won(before)} + 이번 ${won(self)} 이 연간 상한 ${won(g.inpatient.annualCap)}을 넘으므로 넘는 ${won(self-room_)}도 지급합니다.`);}
+        cSet(ytd,'inSelf',row.cause,before+selfKept);
+      }
+      pay=cov+nonBase-selfKept;
+      steps.push(`입원 지급액 = (급여 ${won(cov)} + 비급여 ${won(nonBase)}) − 자기부담 ${won(selfKept)} = ${won(pay)}`);
+    }
+    if(room&&!row.nonNHI){
+      const days=Math.max(1,W(row.days));const half=room*g.inpatient.roomDiff.keep;const cap=g.inpatient.roomDiff.dailyAvg*days;
+      const rp=Math.min(half,cap);
+      steps.push(`상급병실료 차액 ${won(room)}의 50% = ${won(half)}, 한도 1일 평균 ${won(g.inpatient.roomDiff.dailyAvg)}×${days}일 = ${won(cap)} → ${won(rp)}`);
+      parts.push({label:'상급병실료 차액',pay:rp});
+    }
+    const limit=W(claim.sums&&claim.sums.inpatient);
+    parts.unshift({label:`${row.cause}입원 의료비`,pay});
+    let tot=parts.reduce((a,b)=>a+b.pay,0);
+    if(limit&&tot>limit){steps.push(`입원 가입금액 ${won(limit)}을 넘어 ${won(limit)}까지만 지급합니다.`);const k=limit/tot;parts.forEach(p=>p.pay*=k);tot=limit;warn.push('입원 가입금액 한도에 걸렸습니다. 같은 질병·상해로 이미 받은 입원 보험금이 있으면 남은 한도를 확인하세요.');}
+    if(g.riders)riderCalc(g,claim,row,ytd,parts,steps,warn);
+    return finish(parts,steps,warn,tot+parts.filter(p=>p.rider).reduce((a,b)=>a+b.pay,0));
+  }
+  // 외래 / 처방
+  const cfg=row.kind==='처방'?g.rx:g.outpatient;
+  const base=cov+nonBase;
+  if(row.nonNHI){
+    const fixed=row.kind==='처방'?cfg.fixed:cfg.fixed[facClass(row.facility)];
+    let ded=fixed;if(cfg.pctMode==='variant'){const r=g.inpatient.rate[v];ded=Math.max(fixed,cov*r.cov+nonBase*r.non);}
+    pay=Math.max(0,base-ded)*g.inpatient.nonNHI;
+    steps.push(`국민건강보험 미적용 통원: (실제 부담액 ${won(base)} − 항목별 공제 ${won(ded)}) × ${pct(g.inpatient.nonNHI)} = ${won(pay)}`);
+  }else{
+    const fixed=row.kind==='처방'?cfg.fixed:cfg.fixed[facClass(row.facility)];
+    let ded=fixed,txt=`정액 공제 ${won(fixed)}`;
+    if(cfg.pctMode==='variant'){
+      const r=g.inpatient.rate[v];const p=cov*r.cov+nonBase*r.non;
+      txt=`공제 = 정액 ${won(fixed)}과 (급여 ${won(cov)}×${pct(r.cov)} + 비급여 ${won(nonBase)}×${pct(r.non)} = ${won(p)}) 중 큰 금액`;
+      ded=Math.max(fixed,p);
+    }
+    pay=Math.max(0,base-ded);
+    steps.push(`${row.kind}${row.mergedCount>1?`(같은 날 ${row.mergedCount}건을 통원 1회로, 가장 높은 공제 적용)`:''} 보상대상 ${won(base)} − ${txt}(${won(ded)}) = ${won(pay)}`);
+  }
+  const cap=W(row.kind==='처방'?claim.sums&&claim.sums.rx:claim.sums&&claim.sums.out);
+  if(cap&&pay>cap){steps.push(`${row.kind} ${row.kind==='처방'?'건':'회'}당 가입금액 ${won(cap)} 한도 적용`);pay=cap;}
+  const cntKey=row.kind==='처방'?'rxCount':'outCount';const lim=g.counts[row.kind==='처방'?'rx':'out'];
+  const cc=cGet(ytd,cntKey,row.cause)+1;cSet(ytd,cntKey,row.cause,cc);
+  if(lim&&cc>lim){warn.push(`올해 ${row.kind} 횟수가 ${lim}회를 넘었습니다. 이 건은 보상되지 않을 수 있습니다.`);pay=0;steps.push(`연간 ${lim}회 한도 초과 → 0원`);}
+  parts.push({label:`${row.cause}${row.kind==='처방'?'처방조제비':'외래'}`,pay});
+  if(g.riders)riderCalc(g,claim,row,ytd,parts,steps,warn);
+  return finish(parts,steps,warn);
+}
+function riderCalc(g,claim,row,ytd,parts,steps,warn){
+  const R=g.riders;
+  for(const k of ['manual','inject','mri']){
+    const it=row[k]||{};const amt=W(it.amt);if(!amt)continue;
+    const r=R[k];
+    if(!(claim.riders&&claim.riders[k])){steps.push(`${r.name} 미가입 → ${won(amt)}은 보상하지 않습니다.`);parts.push({label:r.name,pay:0,rider:true});continue;}
+    const cnt=(k==='inject'&&row.kind==='입원')?1:Math.max(1,W(it.cnt)||1);
+    if(k==='inject'&&row.kind==='입원'&&W(it.cnt)>1)steps.push(`비급여주사: 1회 입원 중 ${W(it.cnt)}번 맞아도 약관상 1회로 계산합니다.`);
+    // 회당 공제: 회마다 max(2만, 30%) — 회별 금액을 모르면 균등 분할
+    const per=amt/cnt;const dedPer=Math.max(r.perFixed,per*r.rate);
+    let pay=Math.max(0,per-dedPer)*cnt;
+    steps.push(`${r.name}: ${cnt}회 ${won(amt)} (1회 평균 ${won(per)}) − 1회당 공제 max(${won(r.perFixed)}, ${pct(r.rate)}) ${won(dedPer)} → ${won(pay)}`);
+    const usedA=W(ytd[k+'Amt']),usedC=W(ytd[k+'Cnt']);
+    if(r.count&&usedC+cnt>r.count){const ok=Math.max(0,r.count-usedC);pay=ok?pay*ok/cnt:0;steps.push(`연간 ${r.count}회 중 남은 ${ok}회까지만 보상`);warn.push(`${r.name} 연간 횟수 한도 확인 필요`);}
+    if(usedA+pay>r.annual){pay=Math.max(0,r.annual-usedA);steps.push(`연간 한도 ${won(r.annual)} 중 남은 금액까지만 보상`);warn.push(`${r.name} 연간 한도 확인 필요`);}
+    ytd[k+'Amt']=usedA+pay;ytd[k+'Cnt']=usedC+cnt;
+    parts.push({label:r.name,pay,rider:true});
+  }
+}
+/* 원인(상해·질병)별 카운터. 화면에서 원인 없이 넣은 값은 이번 청구 원인의 기존 사용분으로 본다 */
+function cGet(ytd,key,cause){const k=key+'_'+cause;return W(ytd[k]!=null?ytd[k]:ytd[key]);}
+function cSet(ytd,key,cause,v){ytd[key+'_'+cause]=v;}
+/* 연간 보험가입금액 한도(입원·통원 합산, 상해·질병 각각) */
+function annualCap(claim,ytd,key,cause,pay,steps,label){
+  const cap=W(claim.sums&&claim.sums[key]);if(!cap)return pay;
+  const k='paid_'+key+'_'+cause;const used=W(ytd[k]);const left=Math.max(0,cap-used);
+  if(pay>left){steps.push(`${label} 연간 가입금액 ${won(cap)} 중 남은 ${won(left)}까지만 지급`);pay=left;}
+  ytd[k]=used+pay;return pay;
+}
+function finish(parts,steps,warn,forced){
+  const total=forced!=null?forced:parts.reduce((a,b)=>a+b.pay,0);
+  return {parts:parts.map(p=>({...p,pay:Math.round(p.pay)})),steps,warn,total:Math.round(total)};
+}
+/* 같은 날·같은 원인(사고/질병) 통원을 1회(1일)로 합친다.
+   - 모든 세대: 같은 날 외래 여러 번 = 외래 1회, 공제는 가장 높은 등급(2~5세대 약관 제2조③ 등, 1세대 '통원 1일당')
+   - 1·4·5세대: 처방조제도 외래와 합산(통원 1회 = 외래+처방)
+   - 2·3세대: 처방은 처방전 1건당 따로 계산 */
+const TIER={clinic:1,pharmacy:0,hospital:2,tertiary:3};
+function facRank(gen,f){
+  if(gen==='G4'||gen==='G5')return bigHosp(f)?2:(/약국/.test(f||'')?0:1);
+  return TIER[facClass(f)]??2;
+}
+const SUMF=['cov','covPart','covFull','nhis','non','room','ceilingRefund','excludedCov','excludedNon'];
+function mergeVisits(gen,rows,mergeRx){
+  const isG5=gen==='G5';
+  rows=rows.map(r=>{r=Object.assign({},r);
+    if(isG5){if(r.covPart==null&&r.cov!=null&&r.cov!==''){r.covPart=W(r.cov);}delete r.cov;}
+    else if((r.cov==null||r.cov==='')&&(r.covPart!=null||r.covFull!=null)){r.cov=W(r.covPart)+W(r.covFull);}
+    return r;});
+  const out=rows.map(r=>r);const groups={};
+  rows.forEach((r,i)=>{
+    if(r.kind==='입원'||!r.date)return;
+    if(gen==='G1'&&(/한의원|한방/.test(r.facility||'')||(r.cause==='질병'&&/치과/.test(r.facility||''))))return; // 보상 제외 기관은 따로 0원 처리
+    const bucket=mergeRx?'통원':r.kind; /* 2·3세대: 외래끼리, 처방끼리 각각 1회(1건) */
+    const k=[r.date,r.cause,bucket,r.nonNHI?1:0,r.severe?1:0].join('|');(groups[k]=groups[k]||[]).push(i);
+  });
+  for(const k in groups){
+    const idx=groups[k];if(idx.length<2)continue;
+    const vis=idx.filter(i=>rows[i].kind==='외래');const head=vis.length?vis[0]:idx[0];
+    const isRx=idx.every(i=>rows[i].kind==='처방');
+    const m=Object.assign({},rows[head],{kind:isRx?'처방':'외래'});
+    for(const f of SUMF){const any=idx.some(i=>rows[i][f]!=null&&rows[i][f]!=='');m[f]=any?idx.reduce((a,i)=>a+W(rows[i][f]),0):undefined;}
+    for(const t of ['manual','inject','mri'])m[t]={amt:idx.reduce((a,i)=>a+W((rows[i][t]||{}).amt),0),cnt:idx.reduce((a,i)=>a+W((rows[i][t]||{}).cnt),0)};
+    // 공제 등급: 외래(처방 포함 시 처방한 기관)의 가장 높은 등급
+    let best=rows[head].facility,br=-1;for(const i of idx){const rk=facRank(gen,rows[i].facility);if(rows[i].kind!=='처방'||!vis.length){if(rk>br){br=rk;best=rows[i].facility;}}}
+    m.facility=best;m.mergedCount=idx.length;m.nonNHI=!!rows[head].nonNHI;m.severe=!!rows[head].severe;
+    m.kcd=rows[head].kcd;
+    if((gen==='G4'||gen==='G5')&&m.inject.amt)m.inject.cnt=1; /* 주사는 통원 1회 중 여러 번 맞아도 1회 */
+    out[head]=m;for(const i of idx)if(i!==head)out[i]=Object.assign({},rows[i],{mergedInto:head});
+  }
+  return out;
+}
+function calcClaim(claim,rows){
+  const ytd=Object.assign({},claim.ytd||{});
+  const g=GENS[claim.gen];
+  rows=mergeVisits(claim.gen,rows,!!(g&&g.mergeRx));
+  const sorted=rows.map((r,i)=>({r,i})).sort((a,b)=>String(a.r.date||'').localeCompare(String(b.r.date||''))||a.i-b.i);
+  const out=new Array(rows.length);
+  for(const {r,i} of sorted)out[i]=calcRow(claim,r,ytd);
+  return {rows:out,total:out.reduce((a,b)=>a+b.total,0),ytd};
+}
+
+/* 면책 후보: KCD·기관·항목명으로 경고(자동으로 빼지 않음 — 대표님 확인) */
+function exclusionHints(claim,row){
+  const h=[];const k=String(row.kcd||'').toUpperCase().replace(/\s/g,'');
+  const names=String(row.itemsText||'');
+  if(/^K0[0-8]/.test(k))h.push('치과 질환(K00~K08): 비급여는 보상하지 않습니다(급여는 보상).');
+  if(/^F(0[4-9]|[1-9]\d)/.test(k))h.push('정신 및 행동장애(F04~F99): 세대·코드에 따라 보상 제외. 급여 일부 코드만 보상됩니다.');
+  if(/^O|^Z3[3-9]/.test(k))h.push('임신·출산 관련: 2009~2021 실손은 보상 제외(4세대 이후 일부 급여 보상).');
+  if(/^E66/.test(k))h.push('비만(E66): 보상 제외.');
+  if(/^N9[6-8]/.test(k))h.push('불임·습관성 유산(N96~N98): 보상 제외.');
+  if(/^(I84|K6[0-2]|K64)/.test(k))h.push('항문질환: 비급여는 보상 제외(급여는 보상).');
+  if(/^Z0[0-3]|^Z1[0-3]/.test(k))h.push('건강검진·검사 목적(Z00~Z13): 보상 제외. 이상 소견으로 추가 검사·치료한 의료비는 보상.');
+  if(/^Z2[3-7]/.test(k))h.push('예방접종: 보상 제외.');
+  if(/^L(6[0-5]|70|72|80|81)/.test(k)||/^B07/.test(k))h.push('피부(여드름·탈모·사마귀·주근깨 등) 질환: 치료 목적이 아니면 보상 제외. 코드와 목적 확인 필요.');
+  if(/^N52|^R06\.5|^N47/.test(k))h.push('발기부전·코골음·단순포경: 보상 제외 대상인지 확인.');
+  if(/한의원|한방/.test(row.facility||'')&&W(row.non))h.push('한방 비급여: 보상 제외(급여만 보상).');
+  if(/영양|비타민|태반|마늘|백옥|신데렐라|감초/.test(names))h.push('영양제·비타민 주사: 치료 목적이 아니면 보상 제외.');
+  if(/미용|성형|보톡스|필러|라식|라섹|쌍꺼풀|제모/.test(names))h.push('미용·외모개선 목적: 보상 제외.');
+  if(/진단서|증명서|제증명/.test(names))h.push('진단서 등 제증명 발급비: 보상 제외.');
+  if(/간병|보조기|안경|콘택트/.test(names))h.push('간병비·보조기·안경 등: 보상 제외(일부 세대 보조기 예외 확인).');
+  if(/소변기|소변백|기저귀|요강|환자복|보호대|목발|휠체어/.test(names))h.push('소변기·기저귀 같은 의료소모품·용품 구입비: 보상에서 빠질 수 있습니다(양태양 고객 청구에서 현대해상이 남자소변기 1,700원을 제외).');
+  return h;
+}
+
+const api={GENS,FAC,facClass,calcRow,calcClaim,exclusionHints,won,pct};
+if(typeof module!=='undefined')module.exports=api;else root.SilsonEngine=api;
+})(typeof window!=='undefined'?window:globalThis);
+
+</script>
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const E=window.SilsonEngine;const won=E.won;
+const RRN=/\d{6}\s*-?\s*[1-8]\d{6}/g;
+const clean=v=>typeof v==='string'?v.replace(RRN,'******-*******'):v;
+const today=()=>new Date().toISOString().slice(0,10);
+
+/* ---------- 세대 정의(화면) ---------- */
+const GEN_UI={
+  G1:{name:'1세대 (~2009.9)',from:'1900-01-01',to:'2009-09-30',riders:[],sums:[['inpatient','입원 보상한도(1사고·질병당)'],['out','통원 1일 한도']],ytd:[['outDays','같은 사고·질병으로 이미 통원한 일수']]},
+  G2a:{name:'2세대 표준화 (2009.10~2015.8)',from:'2009-10-01',to:'2015-08-31',riders:[],sums:[['inpatient','입원 가입금액'],['out','외래 회당 한도'],['rx','처방 건당 한도']],ytd:[['inSelf','올해 입원 자기부담 누적'],['outCount','올해 외래 횟수'],['rxCount','올해 처방 횟수']]},
+  G2b:{name:'2세대 후기 (2015.9~2017.3)',from:'2015-09-01',to:'2017-03-31',riders:[],sums:[['inpatient','입원 가입금액'],['out','외래 회당 한도'],['rx','처방 건당 한도']],ytd:[['inSelf','올해 입원 자기부담 누적'],['outCount','올해 외래 횟수'],['rxCount','올해 처방 횟수']]},
+  G3:{name:'3세대 (2017.4~2021.6)',from:'2017-04-01',to:'2021-06-30',riders:[['manual','도수·체외충격파·증식치료 특약'],['inject','비급여주사료 특약'],['mri','비급여 MRI 특약']],sums:[['inpatient','입원 가입금액'],['out','외래 회당 한도'],['rx','처방 건당 한도']],ytd:[['inSelf','올해 입원 자기부담 누적'],['outCount','올해 외래 횟수'],['rxCount','올해 처방 횟수'],['manualAmt','올해 도수 등 받은 금액'],['manualCnt','올해 도수 등 횟수'],['injectAmt','올해 주사 받은 금액'],['injectCnt','올해 주사 횟수'],['mriAmt','올해 MRI 받은 금액']]},
+  G4:{name:'4세대 (2021.7~2026.5.5)',from:'2021-07-01',to:'2026-05-05',riders:[['nonCov','비급여 특약'],['manual','3대비급여 도수 등'],['inject','3대비급여 주사'],['mri','3대비급여 MRI']],sums:[['covAnnual','급여 연간 가입금액'],['nonAnnual','비급여 연간 가입금액'],['out','급여 통원 회당 한도'],['nonOut','비급여 통원 회당 한도']],ytd:[['inSelf','올해 급여 입원 자기부담 누적'],['paid_covAnnual_질병','올해 질병급여 받은 금액'],['paid_covAnnual_상해','올해 상해급여 받은 금액'],['paid_nonAnnual_질병','올해 질병비급여 받은 금액'],['paid_nonAnnual_상해','올해 상해비급여 받은 금액'],['nonOutCount','올해 비급여 통원 횟수'],['manualAmt','올해 도수 등 받은 금액'],['manualCnt','올해 도수 등 횟수'],['injectAmt','올해 주사 받은 금액'],['injectCnt','올해 주사 횟수'],['mriAmt','올해 MRI 받은 금액']]},
+  G5:{name:'5세대 (2026.5.6~)',from:'2026-05-06',to:'2999-12-31',riders:[['sev','중증비급여 특약'],['nonsev','비중증비급여 특약'],['nonsevMri','비중증 MRI 특약']],sums:[['covAnnual','급여 연간 가입금액'],['nonAnnual','중증비급여 연간 가입금액'],['nonsevAnnual','비중증비급여 연간 가입금액'],['out','급여 통원 회당 한도'],['sevOut','중증비급여 통원 회당 한도'],['nonOut','비중증비급여 통원 1일 한도']],ytd:[['inSelf','올해 급여 입원 자기부담 누적'],['sevDed','올해 중증 종합병원 입원 공제 누적'],['paid_covAnnual_질병','올해 질병급여 받은 금액'],['paid_covAnnual_상해','올해 상해급여 받은 금액'],['paid_nonsevAnnual_질병','올해 질병 비중증 받은 금액'],['paid_nonsevAnnual_상해','올해 상해 비중증 받은 금액'],['nonsevDays','올해 비중증 통원 일수'],['sevOutCount','올해 중증 비급여 통원 횟수']]}
+};
+const DEF_SUMS={G1:{inpatient:30000000,out:100000},G2a:{inpatient:50000000,out:250000,rx:50000},G2b:{inpatient:50000000,out:250000,rx:50000},G3:{inpatient:50000000,out:250000,rx:50000},G4:{covAnnual:50000000,nonAnnual:50000000,out:200000,nonOut:200000},G5:{covAnnual:50000000,nonAnnual:50000000,nonsevAnnual:10000000,out:200000,sevOut:200000,nonOut:200000}};
+const DEF_RIDERS={G3:{manual:true,inject:true,mri:true},G4:{nonCov:true,manual:true,inject:true,mri:true},G5:{sev:true,nonsev:true,nonsevMri:true}};
+const FACS=['의원','병원','종합병원','상급종합병원','요양병원','치과의원','치과병원','한의원','한방병원','보건소','보건지소','보건의료원','약국'];
+
+/* ---------- 상태 ---------- */
+let st=blank();let caseId=null;let db=null,dl=null,sample=null,imgLimit=null;
+function blank(){return {cust:'',joinDate:'',gen:'G4',variant:'',riders:{...DEF_RIDERS.G4},sums:{...DEF_SUMS.G4},ytd:{},rows:[],docs:[]};}
+function genFromDate(d){if(!d)return null;for(const [k,g] of Object.entries(GEN_UI))if(d>=g.from&&d<=g.to)return k;return null;}
+
+/* ---------- 1. 가입내용 ---------- */
+function renderPolicy(){
+  $('#cust').value=st.cust||'';$('#joinDate').value=st.joinDate||'';
+  $('#gen').innerHTML=Object.entries(GEN_UI).map(([k,g])=>`<option value="${k}"${k===st.gen?' selected':''}>${esc(g.name)}</option>`).join('');
+  const vs=E.GENS[st.gen].variants;if(!vs.includes(st.variant))st.variant=vs[0];
+  $('#variant').innerHTML=vs.map(v=>`<option${v===st.variant?' selected':''}>${esc(v)}</option>`).join('');
+  $('#variant').disabled=vs.length<2;
+  const g=GEN_UI[st.gen];
+  $('#riderBox').innerHTML=g.riders.length?g.riders.map(([k,n])=>`<label><input type="checkbox" data-r="${k}"${st.riders[k]?' checked':''}> ${esc(n)}</label>`).join(''):'<span class="note">이 세대는 특약 구분 없이 기본 담보로 보상합니다.</span>';
+  $('#sumBox').innerHTML=g.sums.map(([k,n])=>`<label class="f">${esc(n)}<input class="num" inputmode="numeric" data-s="${k}" value="${fmt(st.sums[k])}"></label>`).join('');
+  $('#ytdBox').innerHTML=g.ytd.map(([k,n])=>`<label class="f">${esc(n)}<input class="num" inputmode="numeric" data-y="${k}" value="${fmt(st.ytd[k])}"></label>`).join('');
+  $('#riderBox').querySelectorAll('input').forEach(i=>i.onchange=()=>{st.riders[i.dataset.r]=i.checked;recalc();});
+  $('#sumBox').querySelectorAll('input').forEach(i=>i.oninput=()=>{st.sums[i.dataset.s]=toN(i.value);recalc();});
+  $('#ytdBox').querySelectorAll('input').forEach(i=>i.oninput=()=>{st.ytd[i.dataset.y]=toN(i.value);recalc();});
+}
+const toN=v=>{const n=Number(String(v??'').replace(/[^\d.-]/g,''));return isFinite(n)?Math.round(n):0};
+const fmt=v=>v==null||v===''?'':Number(v).toLocaleString('ko-KR');
+$('#cust').oninput=e=>{st.cust=clean(e.target.value);recalc(false)};
+$('#joinDate').onchange=e=>{st.joinDate=e.target.value;const g=genFromDate(st.joinDate);if(g&&g!==st.gen)setGen(g);else recalc();};
+$('#gen').onchange=e=>setGen(e.target.value);
+$('#variant').onchange=e=>{st.variant=e.target.value;recalc();};
+function setGen(g){st.gen=g;st.riders={...(DEF_RIDERS[g]||{})};st.sums={...DEF_SUMS[g]};st.ytd={};st.variant='';renderPolicy();renderRows();recalc();}
+
+/* ---------- 3. 진료 내역 표 ---------- */
+function cols(){
+  const g5=st.gen==='G5';
+  return [
+    ['ok','확인','ck'],['date','진료일','d'],['kind','구분','sel:입원,외래,처방'],['cause','원인','sel:질병,상해'],['facility','기관 종별','fac'],['hosp','병원 이름','t'],['kcd','질병코드','k'],
+    ...(g5?[['covPart','급여 일부본인부담','n'],['covFull','전액본인부담','n'],['nhis','공단부담금','n']]:[['cov','급여 본인부담(일부+전액)','n']]),
+    ['non','비급여 합계','n'],['room','상급병실 차액','n'],['days','입원일수','n'],
+    ['manual.amt','도수·체외충격파·증식','n'],['manual.cnt','회','n'],['inject.amt','비급여 주사','n'],['inject.cnt','방문 회','n'],['mri.amt','MRI·MRA','n'],
+    ['excludedNon','보상 제외 비급여','n'],['ceilingRefund','상한액 초과금','n'],
+    ...(g5?[['severe','중증','cb']]:[]),['nonNHI','건보 미적용','cb'],['del','','x']
+  ];
+}
+const getP=(o,p)=>p.split('.').reduce((a,k)=>a==null?undefined:a[k],o);
+const setP=(o,p,v)=>{const ks=p.split('.');let a=o;for(let i=0;i<ks.length-1;i++){a[ks[i]]=a[ks[i]]||{};a=a[ks[i]];}a[ks[ks.length-1]]=v;};
+function renderRows(){
+  const C=cols();
+  $('#rowsT thead').innerHTML='<tr>'+C.map(c=>`<th>${esc(c[1])}</th>`).join('')+'</tr>';
+  const tb=$('#rowsT tbody');
+  if(!st.rows.length){tb.innerHTML=`<tr><td colspan="${C.length}" class="note" style="padding:14px">서류를 읽거나 '줄 추가'로 영수증 1장(같은 날 약국은 따로 1줄)을 1줄로 넣으세요.</td></tr>`;$('#rowsNote').textContent='';return;}
+  tb.innerHTML=st.rows.map((r,i)=>'<tr>'+C.map(([k,_,t])=>{
+    const v=getP(r,k);const a=`data-i="${i}" data-k="${k}"`;
+    if(t==='ck')return `<td class="ck"><input type="checkbox" ${a}${v?' checked':''} aria-label="원본과 대조 확인"></td>`;
+    if(t==='cb')return `<td class="ck"><input type="checkbox" ${a}${v?' checked':''}></td>`;
+    if(t==='x')return `<td><button class="btn sm" data-del="${i}" type="button" aria-label="줄 삭제">삭제</button></td>`;
+    if(t==='d')return `<td><input class="d" type="date" ${a} value="${esc(v||'')}"></td>`;
+    if(t==='k')return `<td><input class="k" ${a} value="${esc(v||'')}"></td>`;
+    if(t==='t')return `<td><input ${a} value="${esc(v||'')}" style="width:120px"></td>`;
+    if(t==='fac')return `<td><select ${a}>${FACS.map(f=>`<option${f===v?' selected':''}>${f}</option>`).join('')}</select></td>`;
+    if(t.startsWith('sel:'))return `<td><select ${a}>${t.slice(4).split(',').map(o=>`<option${o===v?' selected':''}>${o}</option>`).join('')}</select></td>`;
+    return `<td><input class="num" inputmode="numeric" ${a} value="${fmt(v)}" style="width:${/cnt$|days/.test(k)?'52px':'96px'}"></td>`;
+  }).join('')+'</tr>').join('');
+  tb.querySelectorAll('[data-k]').forEach(el=>{
+    const ev=el.type==='checkbox'||el.tagName==='SELECT'||el.type==='date'?'change':'input';
+    el.addEventListener(ev,()=>{const r=st.rows[+el.dataset.i],k=el.dataset.k;
+      let v=el.type==='checkbox'?el.checked:el.classList.contains('num')?toN(el.value):clean(el.value);
+      setP(r,k,v);recalc();});
+  });
+  tb.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{st.rows.splice(+b.dataset.del,1);renderRows();recalc();});
+  rowsNote();
+}
+function rowsNote(){
+  const unchecked=st.rows.filter(r=>!r.ok).length;
+  $('#rowsNote').textContent=!st.rows.length?'':unchecked?`확인 안 된 줄 ${unchecked}개 — 원본 서류와 숫자를 대조한 뒤 체크하세요.`:'모든 줄을 원본과 대조했습니다.';
+}
+$('#addRow').onclick=()=>{st.rows.push({ok:false,date:today(),kind:'외래',cause:'질병',facility:'의원'});renderRows();recalc();};
+
+/* ---------- 4. 계산 ---------- */
+let last=null;
+function claimObj(){return {gen:st.gen,variant:st.variant,riders:st.riders,sums:st.sums,ytd:st.ytd};}
+function engineRow(r){const o={...r};delete o.ok;delete o.hosp;delete o._sess;delete o._src;delete o._diag;
+  if(st.gen==='G5'){if(o.covPart==null&&o.cov!=null)o.covPart=o.cov;delete o.cov;}
+  return o;}
+function recalc(rerenderRows){
+  if(rerenderRows)renderRows();
+  rowsNote();
+  const box=$('#result');
+  if(!st.rows.length){box.innerHTML='<p class="note">진료 내역을 넣으면 바로 계산됩니다.</p>';last=null;return;}
+  let res;try{res=E.calcClaim(claimObj(),st.rows.map(engineRow));}catch(e){box.innerHTML=`<p class="callout"><b>계산할 수 없습니다.</b> ${esc(e.message)}</p>`;last=null;return;}
+  const hints=[];st.rows.forEach((r,i)=>E.exclusionHints(claimObj(),{...r,itemsText:r.itemsText||''}).forEach(h=>hints.push(`${i+1}번 줄: ${h}`)));
+  const warns=[...new Set(res.rows.flatMap((x,i)=>x.warn.map(w=>w)))];
+  const sumBy={};res.rows.forEach(x=>x.parts.forEach(p=>{sumBy[p.label]=(sumBy[p.label]||0)+p.pay;}));
+  const unchecked=st.rows.filter(r=>!r.ok).length;
+  last={res,hints,warns,sumBy,unchecked,at:new Date().toISOString()};
+  box.innerHTML=`
+    <div class="total"><div><div class="lab">예상 지급액 합계</div><div class="big">${won(res.total)}</div></div>
+      <div><div class="lab">청구 의료비(본인 부담) 합계</div><div class="num" style="font-size:18px">${won(st.rows.reduce((a,r)=>a+(+r.cov||0)+(+r.covPart||0)+(+r.covFull||0)+(+r.non||0),0))}</div></div>
+      <span class="badge ${unchecked?'need':'ok'}">${unchecked?`원본 대조 안 된 줄 ${unchecked}개`:'모든 줄 원본 대조 완료'}</span></div>
+    <div class="tbl"><table class="parts"><thead><tr><th>담보</th><th style="text-align:right">예상 지급액</th></tr></thead><tbody>
+      ${Object.entries(sumBy).map(([k,v])=>`<tr><td>${esc(k)}</td><td class="num">${won(v)}</td></tr>`).join('')}
+    </tbody></table></div>
+    <div class="tbl"><table><thead><tr><th>줄</th><th>진료일</th><th>구분</th><th>기관</th><th style="text-align:right">예상 지급액</th></tr></thead><tbody>
+      ${st.rows.map((r,i)=>{const x=res.rows[i];return `<tr><td>${i+1}</td><td>${esc(r.date||'')}</td><td>${esc(r.cause||'')} ${esc(r.kind||'')}</td><td>${esc(r.hosp||r.facility||'')}</td><td class="num">${x.parts.length||x.total?won(x.total):'<span class="note">합산</span>'}</td></tr>
+        <tr><td></td><td colspan="4"><details class="calc"><summary>계산 과정</summary><ol>${x.steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol></details></td></tr>`}).join('')}
+    </tbody></table></div>
+    ${warns.length||hints.length?`<div class="callout"><b>확인할 점</b><ul class="warns">${[...warns,...hints].map(w=>`<li>${esc(w)}</li>`).join('')}</ul></div>`:''}
+    <p class="note">근거: ${esc(E.GENS[st.gen].src)}. 예상 금액이며, 보험사 심사(면책·한도 사용액·서류 판단)에 따라 달라질 수 있습니다.</p>`;
+}
+
+{const _rc=recalc;recalc=function(...a){_rc(...a);scheduleDraft();};}
+/* ---------- 2. 서류 읽기 ---------- */
+let docs=[];let ctl=null;
+const KIND_OPTS=['자동 판별','진료비 영수증','약제비 영수증','진료비 세부내역서','진단서','초진기록지','기타'];
+function renderFiles(){
+  $('#files').innerHTML=docs.map((d,i)=>`<div class="file"><div><div class="nm">${esc(d.name)}</div><div class="st ${d.state==='done'?'ok':d.state==='err'?'err':''}">${esc(d.msg||'읽기 전')}</div></div>
+    <select data-dk="${i}" aria-label="서류 종류">${KIND_OPTS.map(o=>`<option${o===d.kind?' selected':''}>${o}</option>`).join('')}</select>
+    <button class="btn sm" data-dx="${i}" type="button">빼기</button></div>`).join('');
+  const kept=(st.readDocs||[]).filter(x=>!docs.some(d=>clean(d.name)===x.name));
+  if(kept.length)$('#files').insertAdjacentHTML('beforeend',kept.map(x=>`<div class="file"><div><div class="nm">${esc(x.name)}</div><div class="st ok">${esc(x.msg||'읽음')} · 읽은 결과는 아래 표에 남아 있습니다</div></div><span class="note">파일은 저장하지 않음</span><span></span></div>`).join(''));
+  $('#files').querySelectorAll('[data-dk]').forEach(s=>s.onchange=()=>{docs[+s.dataset.dk].kind=s.value;});
+  $('#files').querySelectorAll('[data-dx]').forEach(b=>b.onclick=()=>{docs.splice(+b.dataset.dx,1);renderFiles();});
+  $('#readBtn').disabled=!docs.length||!sample;
+}
+function addFiles(list){for(const f of list){if(!/^image\/|pdf$/.test(f.type)&&!/\.pdf$/i.test(f.name))continue;docs.push({file:f,name:f.name,kind:guessKind(f.name),state:'',msg:''});}renderFiles();}
+function guessKind(n){if(/세부|내역/.test(n))return '진료비 세부내역서';if(/약제|약국/.test(n))return '약제비 영수증';if(/영수/.test(n))return '진료비 영수증';if(/진단/.test(n))return '진단서';if(/초진|기록/.test(n))return '초진기록지';return '자동 판별';}
+$('#fileIn').onchange=e=>{addFiles(e.target.files);e.target.value='';};
+const drop=$('#drop');
+['dragenter','dragover'].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault();drop.classList.add('on');}));
+['dragleave','drop'].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault();drop.classList.remove('on');}));
+drop.addEventListener('drop',e=>addFiles(e.dataTransfer.files));
+
+let pdfjsP=null;
+const loadPdfjs=()=>pdfjsP||(pdfjsP=new Promise((res,rej)=>{if(window.pdfjsLib)return res(window.pdfjsLib);const s=document.createElement('script');s.src='https:\/\/cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';s.onload=()=>{const L=window.pdfjsLib;if(!L)return rej(new Error('pdf.js'));L.GlobalWorkerOptions.workerSrc='https:\/\/cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';res(L)};s.onerror=()=>{pdfjsP=null;rej(new Error('pdf.js load'))};document.head.appendChild(s)}));
+/* 페이지를 위·아래로 겹쳐 잘라 해상도를 지킨다(Claude에 보낼 때 1장당 약 120만 화소로 줄어들기 때문) */
+async function toTiles(canvas){
+  const out=[];const W=canvas.width,H=canvas.height;const n=H/W>1.15?3:(H/W>0.7?2:1);const band=Math.ceil(H/n),ov=Math.round(band*0.08);
+  for(let k=0;k<n;k++){const y0=Math.max(0,k*band-ov),y1=Math.min(H,(k+1)*band+ov);const c=document.createElement('canvas');c.width=W;c.height=y1-y0;c.getContext('2d').drawImage(canvas,0,y0,W,y1-y0,0,0,W,y1-y0);
+    out.push(await new Promise(r=>c.toBlob(r,'image/jpeg',0.92)));}
+  return out;
+}
+async function docImages(d){
+  if(/pdf$/i.test(d.file.type)||/\.pdf$/i.test(d.name)){
+    const L=await loadPdfjs();const pdf=await L.getDocument({data:await d.file.arrayBuffer()}).promise;const pages=[];
+    for(let p=1;p<=Math.min(pdf.numPages,8);p++){const pg=await pdf.getPage(p);const vp=pg.getViewport({scale:2.2});const c=document.createElement('canvas');c.width=vp.width;c.height=vp.height;await pg.render({canvasContext:c.getContext('2d'),viewport:vp}).promise;pages.push(...await toTiles(c));}
+    if(pdf.numPages>8)d.msg='앞 8쪽만 읽었습니다.';
+    return pages;
+  }
+  const bmp=await createImageBitmap(d.file);const c=document.createElement('canvas');const sc=Math.min(1,2600/Math.max(bmp.width,bmp.height));c.width=Math.round(bmp.width*sc);c.height=Math.round(bmp.height*sc);c.getContext('2d').drawImage(bmp,0,0,c.width,c.height);
+  return toTiles(c);
+}
+const PROMPT=kind=>`당신은 한국 실손의료보험 보험금 검산을 돕는 서류 판독 담당입니다. 첨부 이미지는 한 서류(${kind==='자동 판별'?'종류를 먼저 판별':kind})를 위에서 아래로 겹치게 잘라 순서대로 붙인 것입니다. 겹친 부분의 숫자를 두 번 세지 마세요.
+규칙:
+- 주민등록번호, 전화번호, 주소는 절대 출력하지 마세요.
+- 숫자는 서류에 인쇄된 값 그대로 원 단위 정수로 적고, 읽을 수 없으면 null로 두고 unsure에 이유를 적으세요. 추측하지 마세요.
+- 날짜는 YYYY-MM-DD.
+JSON 하나만 출력:
+{"docType":"진료비 영수증|약제비 영수증|진료비 세부내역서|진단서|초진기록지|기타",
+ "hospital":"병원·약국 이름","facilityType":"의원|병원|종합병원|상급종합병원|요양병원|치과의원|치과병원|한의원|한방병원|보건소|보건지소|보건의료원|약국|null",
+ "receipts":[{"date":"진료 시작일","dateTo":"진료 종료일","kind":"입원|외래|처방","days":입원일수|null,
+   "covPart":급여 일부본인부담 본인부담금 합계,"nhis":공단부담금 합계,"covFull":전액본인부담 합계,"non":비급여 합계(선택진료료+선택진료료 이외),"ceilingRefund":상한액 초과금|0,"total":환자부담총액,"paid":납부한 금액}],
+ "details":[{"date":"YYYY-MM-DD","manual":도수치료·체외충격파·증식치료 비급여 금액 합계,"manualCnt":그날 회수,"inject":비급여 주사료(약제+주사행위) 합계,"injectCnt":그날 주사 맞은 방문 1회=1,"mri":비급여 MRI·MRA 금액(조영제·판독료 포함),"room":상급병실료 차액(비급여 병실료),"excluded":[{"name":"보상 제외 가능 항목명(진단서 등 제증명 발급비, 영양제, 미용, 소변기·기저귀 같은 용품 구입비 등)","amt":금액}],"nonItems":"비급여 주요 항목명을 쉼표로"}],
+ "diagnosis":{"codes":["KCD 코드(예 M51.1)"],"names":["진단명"],"onset":"발병일·사고일|null","cause":"질병|상해|null","specialCode":"산정특례 V코드|null","injuryDesc":"사고 경위 한 줄|null"},
+ "unsure":["확실하지 않은 값과 이유"]}
+해당 없는 배열은 []로, 해당 없는 객체 필드는 null로 두세요.`;
+const KIND_ORDER=k=>/영수증/.test(k)?0:k==='자동 판별'?1:/세부/.test(k)?2:3; /* 영수증 → 세부내역 → 진단서 순으로 읽어야 바로 연결된다 */
+$('#readBtn').onclick=async()=>{
+  if(!sample)return;ctl=new AbortController();$('#stopBtn').hidden=false;$('#readBtn').disabled=true;
+  const resuming=st.reading&&(st.reading.pending||[]).length;
+  if(!resuming){st.readSess='s'+Date.now().toString(36); /* 숫자만 쓰면 주민번호 가리기 규칙에 걸려 지워진다 */st.pendingDetails=[];st.sessDiag=null;st.readNotes=[];}
+  const list=docs.filter(d=>d.state!=='done').sort((a,b)=>KIND_ORDER(a.kind)-KIND_ORDER(b.kind));
+  st.reading={pending:list.map(d=>clean(d.name)),startedAt:new Date().toISOString()};saveDraft();
+  $('#readNote').textContent='읽는 중에는 이 방에 머물러 주세요. 다른 방으로 가면 읽기가 멈추고, 그때까지 다 읽은 서류만 표에 남습니다.';
+  let added=0;
+  for(const d of list){
+    if(ctl.signal.aborted)break;
+    d.state='busy';d.msg='이미지 준비 중';renderFiles();
+    try{
+      let imgs=await docImages(d);const max=imgLimit?imgLimit.maxCount:20;let cut='';
+      if(imgs.length>max){imgs=imgs.slice(0,max);cut=` · 앞 ${max}조각만 읽음`;}
+      d.msg='Claude가 읽는 중… (30초~2분)';renderFiles();
+      const j=await sample.json(PROMPT(d.kind),{images:imgs,modelTier:'complex',signal:ctl.signal,cache:false});
+      d.state='done';d.msg=`${j.docType||'서류'} 읽음${(j.unsure||[]).length?` · 불확실 ${j.unsure.length}건`:''}${cut}`;
+      st.readDocs=(st.readDocs||[]).filter(x=>x.name!==clean(d.name)).concat([{name:clean(d.name),msg:d.msg}]);
+      added+=mergeOne(d,j);
+      st.reading.pending=st.reading.pending.filter(n=>n!==clean(d.name));
+      renderRows();recalc();saveDraft(); /* 한 장 읽을 때마다 바로 보관 */
+    }catch(e){d.state='err';d.msg=e&&e.code==='cancelled'?'멈춤':e&&e.code==='not_granted'?'Claude 사용이 허용되지 않았습니다.':e&&e.code==='image_rejected'?'이미지를 읽을 수 없습니다. 다른 사진으로 바꿔 주세요.':e&&e.code==='rate_limited'?'잠시 후 다시 눌러 주세요.':'읽지 못했습니다. 직접 입력해 주세요.';}
+    renderFiles();
+  }
+  $('#stopBtn').hidden=true;$('#readBtn').disabled=!docs.length;
+  const left=(st.reading.pending||[]);
+  for(const x of (st.pendingDetails||[]))st.readNotes.push(`${x._src}: ${x.date} 세부내역과 맞는 영수증이 없습니다. 영수증을 함께 올렸는지 확인하세요.`);
+  if(!left.length){st.reading=null;st.pendingDetails=[];}
+  saveDraft();showReadNotes(added,left);
+};
+$('#stopBtn').onclick=()=>ctl&&ctl.abort();
+function showReadNotes(added,left){
+  const head=left&&left.length?`읽다 멈춘 서류: ${left.map(esc).join(', ')} — 이 서류만 다시 올려 '서류 읽어서 진료내역 채우기'를 눌러 주세요.<br>`:'';
+  $('#readNote').innerHTML=head+(added!=null?`${added}줄을 채웠습니다. `:'')+`표의 숫자를 원본과 대조한 뒤 '확인'에 체크하세요.`+((st.readNotes||[]).length?'<br>'+st.readNotes.map(esc).join('<br>'):'');
+}
+
+/* 서류 1장 결과를 바로 진료 내역에 반영(영수증 1장 = 1줄, 세부내역은 날짜로 연결, 진단서는 코드·원인) */
+function mergeOne(d,j){
+  const notes=st.readNotes=st.readNotes||[];const sess=st.readSess;let n=0;
+  const fac=FACS.includes(j.facilityType)?j.facilityType:(j.docType==='약제비 영수증'?'약국':null);
+  for(const r of (j.receipts||[])){
+    const kind=['입원','외래','처방'].includes(r.kind)?r.kind:(fac==='약국'?'처방':'외래');
+    const row={ok:false,date:r.date||'',kind,cause:'질병',facility:fac||'의원',hosp:clean(j.hospital||''),
+      cov:n0(r.covPart)+n0(r.covFull),non:n0(r.non),ceilingRefund:n0(r.ceilingRefund),days:r.days||null,_sess:sess,_src:clean(d.name)};
+    if(st.gen==='G5'){row.covPart=n0(r.covPart);row.covFull=n0(r.covFull);row.nhis=n0(r.nhis);delete row.cov;}
+    const amt=n0(r.covPart)+n0(r.covFull)+n0(r.non);
+    if(!amt){notes.push(`${d.name}: 금액이 없는 영수증 줄은 넣지 않았습니다.`);continue;}
+    const dup=st.rows.find(x=>x._sess===sess&&x.hosp===row.hosp&&(x.cov!=null?x.cov:n0(x.covPart)+n0(x.covFull))===n0(r.covPart)+n0(r.covFull)&&n0(x.non)===n0(r.non));
+    if(dup){notes.push(`${d.name}: ${dup._src||'다른 서류'}와 금액이 똑같은 영수증이라 같은 영수증으로 보고 한 번만 넣었습니다. 실제로 영수증이 2장이면 '줄 추가'로 넣어 주세요.`);if(!dup.date&&row.date)dup.date=row.date;if(row.kind==='입원')dup.kind='입원';continue;}
+    st.rows.push(row);n++;
+    if(r.total!=null&&r.covPart!=null){const sum=n0(r.covPart)+n0(r.covFull)+n0(r.non);if(Math.abs(sum-n0(r.total))>10)notes.push(`${d.name}: 본인부담+전액본인+비급여(${won(sum)})가 환자부담총액(${won(n0(r.total))})과 다릅니다. 영수증을 다시 확인하세요.`);}
+  }
+  (j.details||[]).forEach(x=>st.pendingDetails.push({...x,_src:clean(d.name)}));
+  if(j.diagnosis&&((j.diagnosis.codes||[]).length||j.diagnosis.cause)){
+    const g=j.diagnosis;if(!st.sessDiag)notes.push(`진단: ${(g.codes||[]).join(', ')} ${(g.names||[]).join(', ')}${g.onset?` · 발병/사고일 ${g.onset}`:''}${g.specialCode?` · 산정특례 ${g.specialCode}`:''}`);
+    st.sessDiag=st.sessDiag||{codes:g.codes||[],cause:g.cause,specialCode:g.specialCode||null};
+  }
+  (j.unsure||[]).forEach(u=>notes.push(`${d.name}: ${clean(u)}`));
+  attachPending();applyDiag();return n;
+}
+function attachPending(){
+  const sess=st.readSess;const rows=st.rows.filter(r=>r._sess===sess);const keep=[];
+  for(const x of (st.pendingDetails||[])){
+    const r=rows.find(r=>r.date===x.date&&r.kind!=='처방')||rows.find(r=>r.kind==='입원'&&r.date<=x.date)||null;
+    if(!r){keep.push(x);continue;}
+    const add=(k,a,c)=>{if(!n0(a))return;r[k]=r[k]||{amt:0,cnt:0};r[k].amt+=n0(a);r[k].cnt+=n0(c)||1;};
+    add('manual',x.manual,x.manualCnt);add('inject',x.inject,x.injectCnt);if(n0(x.mri))add('mri',x.mri,1);
+    if(n0(x.room))r.room=(r.room||0)+n0(x.room);
+    const ex=(x.excluded||[]).reduce((a,e)=>a+n0(e.amt),0);if(ex){r.excludedNon=(r.excludedNon||0)+ex;st.readNotes.push(`${r.date}: 보상 제외로 본 항목 ${(x.excluded||[]).map(e=>clean(e.name)+' '+won(n0(e.amt))).join(', ')} — 맞는지 확인하세요.`);}
+    if(x.nonItems)r.itemsText=((r.itemsText||'')+' '+clean(x.nonItems)).trim();
+  }
+  st.pendingDetails=keep;
+}
+function applyDiag(){
+  const g=st.sessDiag;if(!g)return;const cause=g.cause==='상해'?'상해':'질병';const kcd=(g.codes||[])[0]||'';
+  st.rows.filter(r=>r._sess===st.readSess&&!r._diag).forEach(r=>{r.cause=cause;if(!r.kcd)r.kcd=kcd;if(st.gen==='G5'&&g.specialCode)r.severe=true;r._diag=1;});
+}
+const n0=v=>{const n=Number(v);return isFinite(n)?Math.round(n):0};
+
+/* 포탈 담보 붙여넣기 → 가입내용 */
+$('#policyFill').onclick=async()=>{
+  const t=clean($('#policyText').value.trim());if(!t||!sample)return;$('#policyNote').textContent='읽는 중…';
+  try{
+    const j=await sample.json(`다음은 현대해상 하이 영업포탈 담보총괄 화면에서 복사한 실손의료비 담보 내용입니다. 개인정보는 출력하지 마세요.
+JSON 하나만: {"joinDate":"실손 가입일 YYYY-MM-DD|null","gen":"G1|G2a|G2b|G3|G4|G5|null","variant":"표준형|선택형Ⅱ|통원A(1일 5천원 공제)|통원B(1일 1만원 공제)|기본|null","riders":{"manual":bool,"inject":bool,"mri":bool,"nonCov":bool,"sev":bool,"nonsev":bool,"nonsevMri":bool},"sums":{"inpatient":원,"out":원,"rx":원,"covAnnual":원,"nonAnnual":원,"nonsevAnnual":원,"nonOut":원}}
+세대 기준: ~2009.9 G1, 2009.10~2015.8 G2a, 2015.9~2017.3 G2b, 2017.4~2021.6 G3, 2021.7~2026.5.5 G4, 2026.5.6~ G5. 가입금액이 천원 단위로 표시되어 있으면 원으로 바꾸세요. 모르는 값은 null.
+---
+${t.slice(0,6000)}`,{modelTier:'default',cache:false});
+    if(j.gen&&GEN_UI[j.gen]){st.gen=j.gen;st.riders={...(DEF_RIDERS[j.gen]||{})};st.sums={...DEF_SUMS[j.gen]};}
+    if(j.joinDate)st.joinDate=j.joinDate;if(j.variant)st.variant=j.variant;
+    for(const [k,v] of Object.entries(j.riders||{}))if(typeof v==='boolean')st.riders[k]=v;
+    for(const [k,v] of Object.entries(j.sums||{}))if(v)st.sums[k]=n0(v);
+    renderPolicy();renderRows();recalc();$('#policyNote').textContent='채웠습니다. 세대·특약·가입금액을 한 번 확인하세요.';
+  }catch(e){$('#policyNote').textContent='읽지 못했습니다. 직접 입력해 주세요.';}
+};
+
+/* ---------- 보고서 ---------- */
+function reportHtml(){
+  if(!last)return null;const {res,warns,hints,sumBy,unchecked}=last;const g=GEN_UI[st.gen];
+  const css=`body{font-family:'Malgun Gothic','Apple SD Gothic Neo',sans-serif;color:#18241f;max-width:820px;margin:28px auto;padding:0 20px;line-height:1.65;font-size:13px}h1{font-size:21px;border-bottom:2px solid #18241f;padding-bottom:6px;margin:0 0 6px}h2{font-size:14px;color:#1f5f4a;margin-top:20px}.meta{color:#56645d;font-size:12px}table{border-collapse:collapse;width:100%;font-size:12px}th,td{border:1px solid #c9d1cc;padding:5px 7px;text-align:left;vertical-align:top}th{background:#eaf1ed}td.n{text-align:right;white-space:nowrap}.big{font-size:22px;font-weight:700}.warn{background:#fbf1e2;border-left:3px solid #9a5b14;padding:8px 10px}ol,ul{margin:4px 0;padding-left:20px}`;
+  const rowsT=`<table><thead><tr><th>줄</th><th>진료일</th><th>구분</th><th>기관</th><th>질병코드</th><th>급여 본인부담</th><th>비급여</th><th>3대 비급여</th><th>예상 지급</th></tr></thead><tbody>${st.rows.map((r,i)=>{const three=['manual','inject','mri'].map(k=>n0((r[k]||{}).amt)).reduce((a,b)=>a+b,0);const cv=st.gen==='G5'?n0(r.covPart)+n0(r.covFull):n0(r.cov);return `<tr><td>${i+1}</td><td>${esc(r.date||'')}</td><td>${esc(r.cause||'')} ${esc(r.kind||'')}</td><td>${esc(r.hosp||'')} (${esc(r.facility||'')})</td><td>${esc(r.kcd||'')}</td><td class="n">${won(cv)}</td><td class="n">${won(n0(r.non))}</td><td class="n">${three?won(three):'-'}</td><td class="n">${won(res.rows[i].total)}</td></tr>`}).join('')}</tbody></table>`;
+  const parts=`<table><thead><tr><th>담보</th><th>예상 지급액</th></tr></thead><tbody>${Object.entries(sumBy).map(([k,v])=>`<tr><td>${esc(k)}</td><td class="n">${won(v)}</td></tr>`).join('')}<tr><th>합계</th><th class="n">${won(res.total)}</th></tr></tbody></table>`;
+  const steps=st.rows.map((r,i)=>`<h2>${i+1}번 줄 계산 (${esc(r.date||'')} ${esc(r.kind||'')})</h2><ol>${res.rows[i].steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol>`).join('');
+  const riders=g.riders.length?g.riders.map(([k,n])=>`${n} ${st.riders[k]?'가입':'미가입'}`).join(' · '):'특약 구분 없음';
+  const sums=g.sums.map(([k,n])=>`${n} ${st.sums[k]?won(st.sums[k]):'-'}`).join(' · ');
+  const body=`<p class="meta">박문철보험컨설팅 · 보험금 청구 검산보고서 · ${new Date().toLocaleDateString('ko-KR')} 작성</p>
+<h1>${esc(st.cust||'고객')}님 실손의료비 검산보고서</h1>
+<p class="meta">${esc(g.name)}${st.variant&&st.variant!=='기본'?' · '+esc(st.variant):''}${st.joinDate?' · 가입일 '+esc(st.joinDate):''}</p>
+<h2>결론</h2><p>예상 지급액 <span class="big">${won(res.total)}</span></p>
+${unchecked?`<p class="warn">원본 서류와 대조하지 않은 줄이 ${unchecked}개 있습니다. 최종 보고 전에 대조가 필요합니다.</p>`:'<p class="meta">모든 진료 내역을 원본 서류와 대조했습니다.</p>'}
+<h2>담보별 예상 지급액</h2>${parts}
+<h2>가입내용</h2><p>${esc(riders)}<br>${esc(sums)}</p>
+<h2>청구 진료 내역</h2>${rowsT}
+${warns.length||hints.length?`<h2>확인할 점</h2><ul>${[...warns,...hints].map(w=>`<li>${esc(w)}</li>`).join('')}</ul>`:''}
+${steps}
+<h2>근거와 유의사항</h2><p>근거 약관: ${esc(E.GENS[st.gen].src)} (현대해상 보험상품 공시실). 이 보고서는 제출 서류와 입력한 가입내용으로 계산한 예상 금액입니다. 실제 지급액은 보험사 심사(면책 여부, 이미 사용한 한도, 서류 판단)에 따라 달라질 수 있습니다.</p>`;
+  return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>${esc(st.cust||'고객')} 검산보고서</title><style>${css}</style></head><body>${body}</body></html>`;
+}
+let h2pP=null;
+const loadH2P=()=>h2pP||(h2pP=new Promise((res,rej)=>{if(window.html2pdf)return res(window.html2pdf);const s=document.createElement('script');s.src='https:\/\/cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';s.onload=()=>window.html2pdf?res(window.html2pdf):rej(new Error('no lib'));s.onerror=()=>{h2pP=null;rej(new Error('load'))};document.head.appendChild(s)}));
+async function pdfFromHtml(full){const h2p=await loadH2P();const css=(full.match(/<style>([\s\S]*?)<\/style>/)||[])[1]||'';const body=(full.match(/<body>([\s\S]*)<\/body>/)||[])[1]||'';
+  const scoped=css.replace(/(^|})\s*([^{}]+)\{/g,(m,b,sel)=>`${b} ${sel.split(',').map(x=>x.trim()==='body'?'.pdfx':'.pdfx '+x.trim()).join(',')}{`);
+  /* A4 본문 영역(190×273mm)을 px로 고정해 한 장씩 직접 채운다. 페이지 경계에서 글자가 잘리지 않게 블록 단위로 넘긴다. */
+  const PW=718,PH=1015;
+  const STY=`<style>${scoped.replace(/page-break-after:always/g,'page-break-after:auto')}.pdfx{max-width:none;margin:0;padding:0;background:#fff;color:#1d2433;box-sizing:border-box} .pdfx h1{margin-top:0} .pdfx table{min-width:0;width:calc(100% - 4px);border-collapse:separate;border-spacing:0;border:1px solid #c9ccd3;margin-bottom:4px} .pdfx th,.pdfx td{border:0;border-right:1px solid #c9ccd3;border-bottom:1px solid #c9ccd3} .pdfx tr>*:last-child{border-right:0} .pdfx tbody tr:last-child>*{border-bottom:0} .pdfx th,.pdfx td{overflow-wrap:anywhere} .pdfx ul{margin:0;padding-left:20px} .pdfx ul+ul li{margin-top:4px} .pdfx mark{background:none;color:inherit} .pdfx{word-break:keep-all} .pdfx .mk{background:#fff1a6;display:inline-block}</style>`;
+  const holder=document.createElement('div');holder.style.cssText='position:absolute;left:0;top:0;width:0;height:0;overflow:hidden';
+  const src=document.createElement('div');src.className='pdfx';src.style.width=PW+'px';src.innerHTML=STY+body;src.querySelectorAll('mark').forEach(m=>{m.innerHTML=m.textContent.split(/(\s+)/).map(w=>!w||/^\s+$/.test(w)?w:`<span class="mk">${esc(w)}</span>`).join('')});holder.appendChild(src);document.body.appendChild(holder);
+  const pages=[];let pg=null;
+  const newPage=()=>{pg=document.createElement('div');pg.className='pdfx';pg.style.cssText=`width:${PW}px;height:${PH}px;overflow:hidden`;pg.innerHTML=STY;holder.appendChild(pg);pages.push(pg)};
+  const over=()=>pg.scrollHeight>PH;
+  const keepHead=()=>{const prev=pg.lastElementChild;if(prev&&/^H[12]$/.test(prev.tagName)&&pg.children.length>2){newPage();pg.appendChild(prev)}else newPage()};
+  const place=el=>{pg.appendChild(el);if(over()&&pg.children.length>2){el.remove();keepHead();pg.appendChild(el)}};
+  try{
+    newPage();
+    const top=[...src.children].filter(e=>e.tagName!=='STYLE');
+    top.forEach((blk,si)=>{
+      const items=blk.tagName==='SECTION'?[...blk.children]:[blk];
+      if(blk.tagName==='SECTION'&&si>0&&pg.children.length>1&&!(pages.length===1&&pg.children.length===2&&!pg.querySelector('section,h1')))newPage();
+      for(const el of items){
+        if(el.tagName==='TABLE'){
+          const head=el.tHead?el.tHead.outerHTML:'';const rows=[...el.querySelectorAll('tbody tr')];
+          const shell=()=>{const t=document.createElement('table');t.innerHTML=head+'<tbody></tbody>';return t};
+          let t=shell();place(t);
+          for(const r of rows){t.tBodies[0].appendChild(r);if(over()&&t.tBodies[0].rows.length>1){r.remove();newPage();t=shell();pg.appendChild(t);t.tBodies[0].appendChild(r)}else if(over()&&t.tBodies[0].rows.length===1&&pg.children.length>2){t.remove();keepHead();pg.appendChild(t)}}
+        }else if(el.tagName==='UL'){
+          for(const li of [...el.children]){const u=document.createElement('ul');u.appendChild(li);place(u)}
+        }else place(el);
+      }
+    });
+    const opt={margin:[12,10,12,10],image:{type:'jpeg',quality:0.95},html2canvas:{scale:2,backgroundColor:'#ffffff',scrollX:0,scrollY:0},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'},pagebreak:{mode:[]}};
+    let w=h2p().set(opt).from(pages[0]).toPdf();
+    for(const p of pages.slice(1))w=w.get('pdf').then(pdf=>{pdf.addPage()}).from(p).toContainer().toCanvas().toPdf();
+    return await w.outputPdf('blob');
+  }finally{holder.remove()}}
+
+async function exportReport(kind){
+  const note=$('#saveNote');const html=reportHtml();if(!html){note.textContent='먼저 진료 내역을 넣어 주세요.';return;}
+  if(!dl){note.textContent='이 화면에서는 파일 저장을 쓸 수 없습니다.';return;}
+  const name=`${(st.cust||'고객').replace(/[\\/:*?"<>|]/g,'')}_실손검산보고서_${today()}`;
+  let data;if(kind==='pdf'){note.textContent='PDF 만드는 중…';try{data=await pdfFromHtml(html);}catch(e){note.textContent='PDF를 만들지 못했습니다. 보고서 문서(.html)로 저장해 주세요.';return;}}else data=html;
+  try{await dl.save({filename:`${name}.${kind}`,data});note.textContent=`${name}.${kind} 저장했습니다.`;}catch(e){note.textContent=e&&e.code==='declined'?'저장을 취소했습니다.':'저장하지 못했습니다.';}
+}
+$('#pdfBtn').onclick=()=>exportReport('pdf');
+$('#htmlBtn').onclick=()=>exportReport('html');
+
+/* ---------- 저장(검산 기록) ---------- */
+function snapshot(){const s=JSON.parse(JSON.stringify({...st,docs:undefined}));s.rows=(s.rows||[]).map(r=>{for(const k in r)r[k]=clean(r[k]);delete r._src;return r;});
+  return {...s,cust:clean(s.cust||''),total:last?last.res.total:null,updatedAt:new Date().toISOString(),docNames:docs.map(d=>clean(d.name))};}
+$('#saveCase').onclick=async()=>{
+  const note=$('#saveNote');if(!db){note.textContent='저장 기능을 쓸 수 없습니다.';return;}
+  if(!st.rows.length){note.textContent='저장할 진료 내역이 없습니다.';return;}
+  caseId=caseId||('c'+Date.now());
+  try{await db.collection('cases').doc(caseId).set(snapshot());note.textContent='저장했습니다.';}catch(e){note.textContent='저장하지 못했습니다(편집 권한 확인).';}
+};
+let cases=[];
+function renderCases(){$('#caseSel').innerHTML='<option value="">새 검산</option>'+cases.map(c=>`<option value="${esc(c.id)}"${c.id===caseId?' selected':''}>${esc((c.cust||'고객')+' · '+(c.updatedAt||'').slice(0,10)+(c.total!=null?' · '+won(c.total):''))}</option>`).join('');}
+$('#caseSel').onchange=e=>{const c=cases.find(x=>x.id===e.target.value);if(!c){reset();return;}caseId=c.id;st={...blank(),...c};delete st.id;docs=[];renderAll();};
+$('#newCase').onclick=()=>reset();
+function reset(){caseId=null;st=blank();docs=[];clearDraft();renderAll();$('#caseSel').value='';$('#readNote').textContent='서류는 이 화면에서만 읽고 저장하지 않습니다. 주민번호는 읽지 않습니다.';$('#dbNote').textContent='';}
+function renderAll(){renderPolicy();renderRows();renderFiles();recalc();$('#saveNote').textContent='';
+  if(st.reading&&(st.reading.pending||[]).length)showReadNotes(null,st.reading.pending);
+  else if(st.readNotes&&st.readNotes.length)$('#readNote').innerHTML=`읽은 결과 메모:<br>${st.readNotes.map(esc).join('<br>')}`;}
+
+/* ---------- 작업 중 내용 자동 보관: 다른 방에 다녀와도 이어서 ----------
+   1) 로그인 사용자 개인 공간(data/users/<id>/claimDraft) — 다른 기기에서도 이어짐
+   2) 이 브라우저 저장소 — 개인 공간을 못 쓸 때 대비
+   서류 파일 자체는 보관하지 않는다(주민번호 등 개인정보). 읽은 숫자만 남긴다. */
+const DKEY='claimRoomDraft.v1';let uid=null,draftT=null,draftReady=false;
+function draftObj(){const s=JSON.parse(JSON.stringify({...st}));s.rows=(s.rows||[]).map(r=>{for(const k in r)r[k]=clean(r[k]);delete r._src;return r;});s.cust=clean(s.cust||'');return {st:s,caseId,savedAt:new Date().toISOString()};}
+function isEmpty(x){return !x||!x.st||(!(x.st.rows||[]).length&&!x.st.cust&&!x.st.joinDate);}
+function scheduleDraft(){if(!draftReady)return;clearTimeout(draftT);draftT=setTimeout(saveDraft,700);}
+async function saveDraft(){
+  const d=draftObj();
+  try{localStorage.setItem(DKEY,JSON.stringify(d));}catch(e){}
+  if(db&&uid){try{await db.collection('data/users/'+uid).doc('claimDraft').set(d);}catch(e){}}
+}
+function applyDraft(d,where){
+  if(isEmpty(d))return false;
+  st={...blank(),...d.st};caseId=d.caseId||null;docs=[];renderAll();if(caseId)renderCases();
+  $('#dbNote').textContent=`작업 중이던 검산을 이어서 불러왔습니다${where}(${d.savedAt?new Date(d.savedAt).toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}):''} 저장분). 서류 사진은 보관하지 않으니 다시 읽어야 할 때만 올려 주세요.`;
+  return true;
+}
+function clearDraft(){try{localStorage.removeItem(DKEY);}catch(e){}if(db&&uid)db.collection('data/users/'+uid).doc('claimDraft').delete().catch(()=>{});}
+
+const hotData=window.claude?.hot?.data;
+renderAll();
+{let local=null;try{local=JSON.parse(localStorage.getItem(DKEY)||'null');}catch(e){}
+ if(hotData&&hotData.st)applyDraft(hotData,'');else if(local)applyDraft(local,'');}
+try{window.claude?.hot?.snapshot?.(()=>draftObj());}catch(e){}
+draftReady=true;
+(async()=>{
+  try{dl=await window.claude?.use?.('downloads');}catch(e){dl=null}
+  try{sample=await window.claude?.use?.('sample');if(sample){imgLimit=(await sample.limits().catch(()=>null))?.images||null;}}catch(e){sample=null}
+  if(!sample){$('#readNote').textContent='이 화면에서는 서류 자동 읽기를 쓸 수 없습니다. 진료 내역을 직접 입력하세요.';$('#policyFill').disabled=true;}
+  else if(!imgLimit){$('#readNote').textContent='이 화면에서는 이미지 읽기를 쓸 수 없습니다. 진료 내역을 직접 입력하세요.';}
+  renderFiles();
+  if(!imgLimit)$('#readBtn').disabled=true;
+})();
+(async()=>{
+  const t=setTimeout(()=>{$('#dbNote').textContent='저장된 검산을 불러오지 못했습니다.';},10000);
+  try{db=await window.claude?.use?.('db');}catch(e){db=null}
+  if(!db){clearTimeout(t);if(!/이어서/.test($('#dbNote').textContent))$('#dbNote').textContent='저장된 검산을 불러오지 못했습니다. 계산과 보고서는 그대로 쓸 수 있습니다.';return;}
+  try{const user=await window.claude?.use?.('user');uid=user?await user.id():null;}catch(e){uid=null}
+  if(uid){try{const snap=await db.collection('data/users/'+uid).doc('claimDraft').get();const remote=snap&&snap.data&&snap.data();
+    let local=null;try{local=JSON.parse(localStorage.getItem(DKEY)||'null');}catch(e){}
+    const cur=isEmpty({st})?null:draftObj();
+    if(remote&&!isEmpty(remote)&&(!cur||String(remote.savedAt)>String((local&&local.savedAt)||''))){applyDraft(remote,' (계정에 보관된 내용)');}
+    else if(cur)saveDraft();
+  }catch(e){}}
+  db.collection('cases').orderBy('updatedAt','desc').limit(50).onSnapshot(s=>{clearTimeout(t);if(!/이어서/.test($('#dbNote').textContent))$('#dbNote').textContent='';cases=s.docs.map(d=>({id:d.id,...d.data()}));renderCases();},()=>{clearTimeout(t);$('#dbNote').textContent='';});
+})();
+</script>
+
+</body></html>
