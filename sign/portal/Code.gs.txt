@@ -26,6 +26,8 @@ function doGet(e) {
   }
   if (p.action === "ping") return out({ ok: true, name: "박문철보험대리점 업무포탈", time: new Date().toISOString(), ai: !!prop("ANTHROPIC_API_KEY") });
   if (!auth(p.key)) return out({ ok: false, error: "unauthorized" });
+  if (p.action === "recs") return out({ ok: true, data: listRecs(Number(p.days) || 7) });
+  if (p.action === "rec") return out(recFile(p.id));
   if (p.action === "all") {
     var res = {};
     COLS.forEach(function (c) { if (c !== "customers") res[c] = readAll(c); });
@@ -192,3 +194,35 @@ function importSeed(urlOrFileId) {
   });
   if (seed.customers) { replaceCustomers(seed.customers, (seed.customers_meta || {}).meta || {}); Logger.log("customers: " + seed.customers.length + "명"); }
 }
+
+/* ---------- 업무폰 통화 녹음 (PC 자동 정리 프로그램이 사용: ai 오피스/통화자동정리) ---------- */
+var REC_FOLDERS = { "17zSkwfeDR-0JpB2bUu9lMSry8THAAN7A": "hwang", "1uuh44lzLXzbynv0y1TTam6tGXJZtXlSB": "park" };
+/** 아직 통화 기록(calls.files)에 없는 녹음 파일 목록 */
+function listRecs(days) {
+  var done = {};
+  readAll("calls").forEach(function (c) {
+    var f = c.files; if (typeof f === "string") { try { f = JSON.parse(f); } catch (e) { f = [f]; } }
+    (f || []).forEach(function (x) { done[x] = 1; });
+  });
+  var since = new Date(Date.now() - days * 864e5).toISOString();
+  var res = [];
+  Object.keys(REC_FOLDERS).forEach(function (fid) {
+    var it = DriveApp.searchFiles("'" + fid + "' in parents and trashed = false and createdDate > '" + since + "'");
+    while (it.hasNext()) {
+      var f = it.next();
+      if (done[f.getId()] || !/\.(m4a|mp3|amr|3gp|wav|aac|ogg)$/i.test(f.getName())) continue;
+      res.push({ id: f.getId(), name: f.getName(), room: REC_FOLDERS[fid], size: f.getSize(), created: f.getDateCreated().toISOString() });
+    }
+  });
+  res.sort(function (a, b) { return a.created < b.created ? -1 : 1; });
+  return res;
+}
+/** 녹음 파일 내용(base64). 녹음 폴더 안의 파일만 내준다. */
+function recFile(id) {
+  var f = DriveApp.getFileById(id); var ok = false; var ps = f.getParents();
+  while (ps.hasNext()) { if (REC_FOLDERS[ps.next().getId()]) ok = true; }
+  if (!ok) return { ok: false, error: "not_rec" };
+  return { ok: true, name: f.getName(), b64: Utilities.base64Encode(f.getBlob().getBytes()) };
+}
+/** 편집기에서 한 번 실행해 드라이브 권한을 승인한다 */
+function test_recs() { Logger.log(JSON.stringify(listRecs(7).slice(0, 5))); }
