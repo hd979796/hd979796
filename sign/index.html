@@ -50,6 +50,14 @@ label.big{text-align:center;box-sizing:border-box}
 .inapp{background:rgba(179,38,30,.1);border:1px solid var(--danger);color:var(--fg);border-radius:10px;padding:9px 11px;font-size:13.5px;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
 .inapp a,.inapp button{font:inherit;font-weight:700;background:var(--danger);color:#fff;border:0;border-radius:8px;padding:8px 12px;text-decoration:none;cursor:pointer}
 .inapp .grow{flex:1 1 200px}
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.choice{border:1px solid var(--accent);background:var(--accent-soft);color:var(--fg);border-radius:12px;padding:12px 10px;cursor:pointer;display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left;min-height:72px}
+.choice b{font-size:16px;color:var(--accent)}
+.choice span{font-size:12.5px;color:var(--muted)}
+.choice:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.choice[disabled]{opacity:.55;cursor:wait}
+.choice.done{border-color:var(--ok);background:var(--ok-soft)}.choice.done b{color:var(--ok)}
+@media (max-width:340px){.choices{grid-template-columns:1fr}}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 
 #stage{flex:1 1 auto;min-height:0;overflow:auto;padding:10px max(12px,env(safe-area-inset-left,0px)) 24px max(12px,env(safe-area-inset-right,0px))}
@@ -108,7 +116,7 @@ input[type=text]{font:inherit;border:1px solid var(--line);border-radius:10px;pa
       <label class="step next" id="bOpen"><input type="file" id="fileInput" accept="application/pdf,.pdf" aria-label="PDF 열기"><span class="n">1</span><span class="l">PDF 열기</span><span class="s" id="sOpen">동의서 파일</span></label>
       <button class="step" id="bCheck" type="button"><span class="n">2</span><span class="l">전체 체크</span><span class="s" id="sCheck">동의함 ✓</span></button>
       <button class="step" id="bSign" type="button"><span class="n">3</span><span class="l">사인하기</span><span class="s" id="sSign">고객 서명</span></button>
-      <button class="step" id="bSend" type="button"><span class="n">4</span><span class="l">팩스 발송</span><span class="s" id="sSend">공유하기</span></button>
+      <button class="step" id="bSend" type="button"><span class="n">4</span><span class="l">팩스 발송</span><span class="s" id="sSend">PDF · 이미지</span></button>
     </div>
     <div class="hint" id="hint">포탈에서 저장한 동의서 PDF를 여세요.</div>
     <div class="inapp" id="inapp" hidden><span class="grow" id="inappMsg">카카오톡 안의 브라우저에서는 PDF 저장이 안 됩니다. 크롬으로 열어 주세요.</span><a id="inappOpen" href="#" hidden>크롬으로 열기</a><button type="button" id="inappCopy">주소 복사</button></div>
@@ -122,7 +130,7 @@ input[type=text]{font:inherit;border:1px solid var(--line);border-radius:10px;pa
         <li><b>PDF 열기</b></li>
         <li><b>전체 체크</b> 동의함 칸 전체에 ✓</li>
         <li><b>사인하기</b> 고객 서명. 동의일자는 오늘 날짜로 자동 기입</li>
-        <li><b>팩스 발송</b> 공유하기 → 모바일팩스(또는 카카오톡) 선택 → 전송</li>
+        <li><b>팩스 발송</b> PDF 또는 이미지로 저장 → 모바일팩스·카카오톡으로 전송</li>
       </ol>
       <label class="big" for="fileInput">PDF 열기</label>
     </div>
@@ -146,16 +154,18 @@ input[type=text]{font:inherit;border:1px solid var(--line);border-radius:10px;pa
 
 <div class="sheet" id="doneModal" hidden>
   <div class="card">
-    <h3>팩스 발송</h3>
-    <div class="status" id="doneStatus">PDF를 만들고 있습니다…</div>
-    <div class="row">
-      <button class="btn primary" id="shareBtn" type="button" hidden>공유하기 · 모바일팩스 / 카카오톡</button>
-      <button class="btn" id="saveAgain" type="button">PDF 파일로 저장</button>
+    <h3>팩스 발송 · 저장 방식 선택</h3>
+    <div class="status" id="doneStatus">저장할 형식을 고르세요.</div>
+    <div class="choices">
+      <button class="choice" id="saveAsPdf" type="button"><b>1. PDF로 저장</b><span>전체 쪽이 파일 하나 · 팩스·포탈 업로드용</span></button>
+      <button class="choice" id="saveAsImg" type="button"><b>2. 이미지로 저장</b><span>쪽마다 JPG 한 장 · 카카오톡·사진첩용</span></button>
     </div>
+    <div class="row"><button class="btn primary" id="shareBtn" type="button" hidden>공유하기 · 모바일팩스 / 카카오톡</button></div>
     <div class="inapp" id="inapp2" hidden><span class="grow">카카오톡 안의 브라우저라 저장이 막혔습니다. 크롬으로 열어 같은 순서로 진행하세요.</span><a id="inappOpen2" href="#" hidden>크롬으로 열기</a></div>
     <div class="fax"><div class="grow"><span>수신 팩스번호</span><br><b id="faxShow">—</b></div><button class="btn" id="copyFax" type="button">복사</button></div>
     <ol class="steps-list" id="sendSteps">
-      <li><b>공유하기</b>를 누르고 뜨는 목록에서 <b>모바일팩스</b>를 고릅니다. 사무실로 보낼 때는 카카오톡을 골라도 됩니다.</li>
+      <li><b>PDF</b> 또는 <b>이미지</b>를 눌러 저장합니다. 휴대폰은 다운로드 폴더(이미지는 사진첩)에 들어갑니다.</li>
+      <li>저장 뒤 <b>공유하기</b>를 누르면 모바일팩스·카카오톡을 바로 고를 수 있습니다.</li>
       <li>모바일팩스에서 위 팩스번호를 넣고 전송합니다.</li>
     </ol>
     <div class="row"><span class="grow"></span><button class="btn" id="doneClose" type="button">닫기</button></div>
@@ -398,8 +408,8 @@ function checkPng(){ if(checkCache) return checkCache; var c=document.createElem
   g.strokeStyle=INK; g.lineWidth=11; g.lineCap='round'; g.lineJoin='round'; g.beginPath(); g.moveTo(16,50); g.lineTo(40,76); g.lineTo(82,22); g.stroke();
   checkCache=c.toDataURL('image/png'); return checkCache; }
 
-/* ---------- send ---------- */
-var lastOut=null;
+/* ---------- send: choose PDF or image ---------- */
+var outCache={pdf:null,img:null}, lastShare=null;
 async function buildPdf(){
   if(!window.PDFLib) throw new Error('PDF 생성 라이브러리를 불러오지 못했습니다');
   var doc=await PDFLib.PDFDocument.load(state.bytes,{ignoreEncryption:true}), pages=doc.getPages(), cache={};
@@ -408,48 +418,61 @@ async function buildPdf(){
     var cb=pg.getCropBox(); pg.drawImage(img,{x:cb.x+it.x, y:cb.y+cb.height-it.y-it.h, width:it.w, height:it.h}); }
   return await doc.save();
 }
+function loadImg(src){ return new Promise(function(res,rej){ var im=new Image(); im.onload=function(){res(im)}; im.onerror=rej; im.src=src; }); }
+/* each page rendered at about 180 dpi with the checks, signature and date drawn on top */
+async function buildImages(){
+  var base=outName().replace(/\.pdf$/,''), out=[], K=2.5;
+  for(var i=0;i<state.pages.length;i++){ var p=state.pages[i], vp=p.page.getViewport({scale:K}), c=document.createElement('canvas');
+    c.width=Math.floor(vp.width); c.height=Math.floor(vp.height); var g=c.getContext('2d'); g.fillStyle='#fff'; g.fillRect(0,0,c.width,c.height);
+    await p.page.render({canvasContext:g,viewport:vp}).promise;
+    var its=state.items.filter(function(it){return it.page===i});
+    for(var j=0;j<its.length;j++){ var it=its[j], im=await loadImg(it.png); g.drawImage(im,it.x*K,it.y*K,it.w*K,it.h*K); }
+    var blob=await new Promise(function(r){ c.toBlob(r,'image/jpeg',0.92) });
+    out.push({blob:blob,name:base+(state.pages.length>1?'_'+(i+1)+'쪽':'')+'.jpg',type:'image/jpeg'}); }
+  return out;
+}
 function outName(){ var n=(state.custName||'고객').replace(/[\\/:*?"<>|]/g,''), d=new Date(), p=function(v){return (v<10?'0':'')+v};
   return '개인정보동의서_'+n+'_'+String(d.getFullYear()).slice(2)+p(d.getMonth()+1)+p(d.getDate())+'.pdf'; }
 function setStatus(msg,cls){ var s=$('doneStatus'); s.textContent=msg; s.className='status'+(cls?' '+cls:''); }
-$('bSend').addEventListener('click',async function(){
+function itemsChanged(){ return JSON.stringify(state.items.map(function(i){return [i.page,Math.round(i.x),Math.round(i.y),Math.round(i.w),i.png.length]})); }
+var cacheKey='';
+$('bSend').addEventListener('click',function(){
   if(!state.pdf){ toast('먼저 PDF를 여세요'); pick(); return }
   if(!state.items.length){ toast('전체 체크와 사인을 먼저 하세요'); return }
   var hasSig=state.items.some(function(i){return i.type==='sig'}), hasDate=state.items.some(function(i){return i.type==='date'});
-  $('faxShow').textContent=state.fax||'서류에서 찾지 못함';
+  var k=itemsChanged(); if(k!==cacheKey){ outCache={pdf:null,img:null}; cacheKey=k; $('saveAsPdf').classList.remove('done'); $('saveAsImg').classList.remove('done'); }
+  $('faxShow').textContent=state.fax||'서류에서 찾지 못함'; $('shareBtn').hidden=true; $('inapp2').hidden=true;
   $('doneModal').hidden=false;
-  if(!hasSig||!hasDate) setStatus((!hasSig?'서명이 없습니다. ':'')+(!hasDate?'동의일자가 없습니다. ':'')+'3단계 사인하기를 먼저 하세요. 그래도 보내려면 아래 버튼을 누르세요.','err');
-  else setStatus('서명이 합쳐진 PDF를 만들고 있습니다…');
-  try{ lastOut={bytes:await buildPdf(),name:outName()}; }
-  catch(e){ console.error(e); setStatus('PDF를 만들지 못했습니다: '+(e&&e.message||e),'err'); return }
-  setupShare();
-  if(INAPP){ setStatus('카카오톡 안의 브라우저는 공유와 저장을 지원하지 않습니다. 크롬으로 열면 공유하기가 됩니다.','err'); $('inapp2').hidden=false; $('saveAgain').hidden=true; return }
-  if(hasSig&&hasDate){ if(!$('shareBtn').hidden) setStatus(lastOut.name+' 준비됨. "공유하기"를 누르고 모바일팩스를 고르세요.'); else { setStatus(lastOut.name+' 준비됨. 저장 창에서 확인을 누르세요.'); await saveOut(); } }
+  if(!hasSig||!hasDate) setStatus((!hasSig?'서명이 없습니다. ':'')+(!hasDate?'동의일자가 없습니다. ':'')+'3단계 사인하기를 먼저 하세요. 그래도 저장하려면 형식을 고르세요.','err');
+  else setStatus('저장할 형식을 고르세요. 팩스는 PDF, 카카오톡은 이미지가 편합니다.');
 });
-$('saveAgain').addEventListener('click',saveOut);
+$('saveAsPdf').addEventListener('click',function(){ saveAs('pdf') });
+$('saveAsImg').addEventListener('click',function(){ saveAs('img') });
 $('doneClose').addEventListener('click',function(){ $('doneModal').hidden=true; });
-async function saveOut(){
-  if(!lastOut) return;
-  var dl=null; try{ dl=window.claude&&window.claude.use?await window.claude.use('downloads'):null; }catch(e){ dl=null; }
-  if(dl){
-    try{ var r=await dl.save({filename:lastOut.name,data:new Blob([lastOut.bytes],{type:'application/pdf'})});
-      setStatus(r.status==='saved'?'저장했습니다. 모바일팩스 앱에서 이 파일을 첨부해 보내세요.':'파일을 전달했습니다.','ok'); setStep('bSend','done','저장됨'); }
-    catch(e){ var c=e&&e.code;
-      if(c==='declined') setStatus('저장을 취소했습니다. 다시 저장하려면 "PDF 저장"을 누르세요.');
-      else if(c==='rate_limited') setStatus('저장 창이 이미 열려 있습니다. 잠시 후 다시 눌러 주세요.','err');
-      else setStatus('이 화면에서는 저장할 수 없습니다. claude 앱이나 브라우저에서 로그인한 뒤 열어 주세요.','err'); }
-    return;
-  }
-  if(window.claude){ setStatus('이 화면에서는 저장할 수 없습니다. claude 앱이나 브라우저에서 로그인한 뒤 열어 주세요.','err'); return }
-  if(INAPP){ setStatus('카카오톡 안의 브라우저는 PDF 저장을 지원하지 않습니다.','err'); $('inapp2').hidden=false; return }
-  try{ var blob=new Blob([lastOut.bytes],{type:'application/pdf'}), url=URL.createObjectURL(blob), a=document.createElement('a');
-    a.href=url; a.download=lastOut.name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(function(){URL.revokeObjectURL(url)},4000);
-    setStatus('다운로드했습니다. 모바일팩스 앱에서 다운로드 폴더의 파일을 첨부하세요.','ok'); setStep('bSend','done','저장됨'); }
-  catch(e){ setStatus('저장에 실패했습니다: '+(e&&e.message||e),'err'); }
+async function saveAs(kind){
+  var btn=kind==='pdf'?$('saveAsPdf'):$('saveAsImg'); if(btn.disabled) return;
+  $('saveAsPdf').disabled=true; $('saveAsImg').disabled=true;
+  try{
+    if(!outCache[kind]){ setStatus(kind==='pdf'?'서명이 합쳐진 PDF를 만들고 있습니다…':'쪽마다 이미지를 만들고 있습니다…');
+      outCache[kind]= kind==='pdf' ? [{blob:new Blob([await buildPdf()],{type:'application/pdf'}),name:outName(),type:'application/pdf'}] : await buildImages(); }
+    var files=outCache[kind]; lastShare=files; setupShare(files);
+    if(INAPP){ setStatus('카카오톡 안의 브라우저는 파일 저장을 지원하지 않습니다. 크롬으로 열어 다시 저장하세요.','err'); $('inapp2').hidden=false; return }
+    for(var i=0;i<files.length;i++){ download(files[i]); if(i<files.length-1) await new Promise(function(r){setTimeout(r,450)}); }
+    btn.classList.add('done');
+    setStatus((kind==='pdf'?'PDF 1개를':'이미지 '+files.length+'장을')+' 저장했습니다'+(kind==='img'?' (사진첩·다운로드 폴더)':' (다운로드 폴더)')+'. '+(!$('shareBtn').hidden?'"공유하기"로 모바일팩스·카카오톡에 바로 보낼 수 있습니다.':'모바일팩스 앱에서 첨부해 보내세요.'),'ok');
+    setStep('bSend','done',kind==='pdf'?'PDF 저장됨':'이미지 저장됨');
+  }catch(e){ console.error(e); setStatus('저장하지 못했습니다: '+(e&&e.message||e),'err'); }
+  finally{ $('saveAsPdf').disabled=false; $('saveAsImg').disabled=false; }
 }
-function setupShare(){ var b=$('shareBtn'); b.hidden=true; $('saveAgain').hidden=false;
-  if(window.claude||!lastOut||!navigator.canShare) return;
-  try{ var f=new File([lastOut.bytes],lastOut.name,{type:'application/pdf'}); if(navigator.canShare({files:[f]})){ b.hidden=false; $('saveAgain').hidden=!!/Android|iPhone|iPad/i.test(UA);
-    b.onclick=function(){ navigator.share({files:[f],title:lastOut.name}).then(function(){setStatus('공유했습니다. 모바일팩스에서 수신번호를 넣고 전송을 마무리하세요.','ok'); setStep('bSend','done','공유됨')}).catch(function(){}) }; } }catch(e){}
+function download(f){
+  var url=URL.createObjectURL(f.blob), a=document.createElement('a');
+  a.href=url; a.download=f.name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(function(){URL.revokeObjectURL(url)},8000);
+}
+function setupShare(files){ var b=$('shareBtn'); b.hidden=true;
+  if(!navigator.canShare||!files||!files.length) return;
+  try{ var fs=files.map(function(f){ return new File([f.blob],f.name,{type:f.type}) }); if(!navigator.canShare({files:fs})) return;
+    b.hidden=false; b.onclick=function(){ navigator.share({files:fs,title:files[0].name}).then(function(){ setStatus('공유했습니다. 모바일팩스에서 수신번호를 넣고 전송을 마무리하세요.','ok'); setStep('bSend','done','공유됨') }).catch(function(){}) };
+  }catch(e){}
 }
 $('copyFax').addEventListener('click',function(){ var v=state.fax; if(!v){toast('팩스번호가 없습니다');return}
   var done=function(){toast('팩스번호를 복사했습니다')};
