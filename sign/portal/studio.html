@@ -443,8 +443,9 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("take").hidden)c
 /* 기획·편집·일정은 claude.ai 제작실에서, 여기는 촬영 당일 체크만 */
 const DEFAULT_API="https:\/\/script.google.com/macros/s/AKfycbyATdbsyJxqsp2X_wlQO5L5TvyYsTqF9RCIU26u6R_OBdTXWbXfuCe42NzoTJICpI5_/exec";
 const IN_GAS=/(^|\.)googleusercontent\.com$|(^|\.)script\.google\.com$/.test(location.hostname);
-const COL={episodes:"studio_eps",shots:"studio_shots"};
-const KEYOF={episodes:"eps",shots:"shots"};
+/* 저장 위치: 업무포탈 시트의 portal 탭에 에피소드마다 한 줄(id "shoot_e01"). 컷 목록은 그 줄의 shots 칸에 통째로 들어간다.
+   포탈이 이미 쓰는 탭과 기능(list · get · update)만 쓰므로 Apps Script를 고치거나 다시 배포할 필요가 없다 */
+const PRE="shoot_";
 const NUMS=["n","takes","min","max","lastLen"];
 const ls={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
 let API=ls.get("api")||DEFAULT_API, KEY=ls.get("key")||"";
@@ -461,9 +462,18 @@ function norm(d){const o={...d};
   ["title","detail","output","note","line","pd","dp","who","how","len","code","role","name"].forEach(k=>{if(o[k]!==undefined&&typeof o[k]!=="string")o[k]=typeof o[k]==="object"?JSON.stringify(o[k]):String(o[k])});
   return o}
 function apply(data){
-  Object.keys(KEYOF).forEach(c=>{const rows=Array.isArray(data[COL[c]])?data[COL[c]]:[];S[KEYOF[c]]=rows.map(norm);S.loaded[KEYOF[c]]=true});
-  Q.forEach(w=>{const k=KEYOF[w.c];const i=S[k].findIndex(x=>x.id===w.id);if(i>=0)S[k][i]={...S[k][i],...w.data}});
+  S.eps=(data.eps||[]).map(norm); S.shots=(data.shots||[]).map(norm); S.loaded.eps=S.loaded.shots=true;
+  Q.forEach(w=>{const i=S.shots.findIndex(x=>x.id===w.id);if(i>=0)S.shots[i]={...S.shots[i],...w.data}});
 }
+function arr(v){if(typeof v==="string"){try{v=JSON.parse(v)}catch(e){v=[]}}return Array.isArray(v)?v:[]}
+function unpack(docs){
+  const eps=[],shots=[];
+  (docs||[]).filter(d=>d&&String(d.id||"").startsWith(PRE)).forEach(d=>{const ep=String(d.id).slice(PRE.length);
+    eps.push({id:ep,code:d.code||ep.toUpperCase(),title:d.title||"",upload:d.upload||""});
+    arr(d.shots).forEach(x=>{if(x&&x.id)shots.push({...x,ep})})});
+  return {eps,shots};
+}
+async function fetchData(){const j=await get("list",{col:"portal"});return unpack(j.data)}
 function note(){
   const el=$("conn"); if(!el)return;
   if(Q.length) el.textContent=navigator.onLine===false?`신호가 없습니다. ${Q.length}건은 연결되면 저장됩니다.`:`저장하는 중… ${Q.length}건`;
@@ -472,19 +482,18 @@ function note(){
   $("imp-sum").textContent=empty?"촬영지시서가 없습니다 · 처음 넣기":"촬영지시서 가져오기";
   if(empty)$("imp").open=true;
 }
-async function get(action){const r=await fetch(API+"?"+new URLSearchParams({action,key:KEY}),{redirect:"follow"});const j=await r.json();if(!j.ok){const e=new Error(j.error||"error");e.code=j.error;throw e}return j}
+async function get(action,params){const r=await fetch(API+"?"+new URLSearchParams({action,key:KEY,...(params||{})}),{redirect:"follow"});const j=await r.json();if(!j.ok){const e=new Error(j.error||"error");e.code=j.error;throw e}return j}
 async function post(body){const r=await fetch(API,{method:"POST",redirect:"follow",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({key:KEY,...body})});const j=await r.json();if(!j.ok){const e=new Error(j.message||j.error||"error");e.code=j.error;throw e}return j}
 
 async function load(){
   if(!KEY)return;
   const seq=wSeq;
-  try{const j=await get("studio"); lastOk=true;
+  try{const d=await fetchData(); lastOk=true;
     if(seq!==wSeq||Q.length||flushing){note();return} /* 불러오는 사이에 누른 것이 있으면 버리고 다음에 다시 */
-    const txt=JSON.stringify(j.data||{}); const same=txt===lastJson&&S.loaded.shots; lastJson=txt;
-    if(!same){apply(j.data||{}); ls.set("studiocache",txt)} note(); if(!same)render()}
+    const txt=JSON.stringify(d); const same=txt===lastJson&&S.loaded.shots; lastJson=txt;
+    if(!same){apply(d); ls.set("studiocache",txt)} note(); if(!same)render()}
   catch(e){
     if(e.code==="unauthorized"){showGate("비밀번호가 맞지 않거나 바뀌었습니다. 다시 넣어 주세요.");return}
-    if(e.code==="unknown action"){$("conn").textContent="백엔드가 아직 촬영장을 모릅니다. Apps Script에 새 Code.gs를 넣고 새 버전으로 배포해 주세요.";return}
     $("conn").textContent=Q.length?`신호가 약합니다. ${Q.length}건은 연결되면 저장됩니다.`:(lastOk||S.loaded.shots?"신호가 약합니다. 마지막으로 불러온 내용을 보여 드립니다.":"촬영지시서를 불러오지 못했습니다. 신호를 확인해 주세요.");
   }
 }
@@ -492,17 +501,22 @@ async function load(){
 async function flush(){
   if(flushing||!KEY)return; flushing=true;
   while(Q.length){
-    const w=Q[0];
-    try{await post({action:"update",col:COL[w.c],id:w.id,data:w.data})}
-    catch(e){ if(e.code==="unauthorized")showGate("비밀번호가 맞지 않거나 바뀌었습니다. 다시 넣어 주세요."); flushing=false; note(); return }
-    Q.shift(); ls.set("studioq",JSON.stringify(Q)); note();
+    const ep=Q[0].ep;
+    try{
+      /* 다른 기기가 바꾼 것을 덮지 않도록, 서버의 최신 컷 목록을 받아 내가 누른 것만 얹어서 저장한다 */
+      const cur=(await get("get",{col:"portal",id:PRE+ep})).data;
+      const mine=Q.filter(w=>w.ep===ep);
+      if(cur){const shots=arr(cur.shots); mine.forEach(w=>{const i=shots.findIndex(x=>x.id===w.id);if(i>=0)shots[i]={...shots[i],...w.data}});
+        await post({action:"update",col:"portal",id:PRE+ep,data:{shots}})}
+      Q=Q.filter(w=>!mine.includes(w)); ls.set("studioq",JSON.stringify(Q)); note();
+    }catch(e){ if(e.code==="unauthorized")showGate("비밀번호가 맞지 않거나 바뀌었습니다. 다시 넣어 주세요."); flushing=false; note(); return }
   }
   flushing=false; note(); load();
 }
-DB={doc(path){const [c,id]=path.split("/");return {async update(patch){
-  const k=KEYOF[c], i=S[k].findIndex(x=>x.id===id); if(i<0)throw new Error("not found");
-  S[k][i]={...S[k][i],...patch}; wSeq++; lastJson="";
-  Q.push({c,id,data:patch}); ls.set("studioq",JSON.stringify(Q));
+DB={doc(path){const id=path.split("/")[1];return {async update(patch){
+  const i=S.shots.findIndex(x=>x.id===id); if(i<0)throw new Error("not found");
+  S.shots[i]={...S.shots[i],...patch}; wSeq++; lastJson="";
+  Q.push({ep:S.shots[i].ep,id,data:patch}); ls.set("studioq",JSON.stringify(Q));
   note(); render(); flush();
 }}}};
 
@@ -514,9 +528,9 @@ function showGate(msg){
 $("gate-form").addEventListener("submit",async ev=>{
   ev.preventDefault(); const k=$("gate-key").value.trim(); if(!k)return;
   KEY=k; $("gate-note").textContent="확인 중…";
-  try{const j=await get("studio"); ls.set("key",KEY); ls.set("api",API); lastOk=true; apply(j.data||{}); ls.set("studiocache",JSON.stringify(j.data||{}));
+  try{const d=await fetchData(); ls.set("key",KEY); ls.set("api",API); lastOk=true; apply(d); ls.set("studiocache",JSON.stringify(d));
     $("gate").hidden=true; $("v-shoot").hidden=false; document.querySelector(".tabs").hidden=false; $("gate-key").value=""; route(); note(); render(); start()}
-  catch(e){KEY=""; $("gate-note").textContent=e.code==="unauthorized"?"비밀번호가 맞지 않습니다. (5번 틀리면 15분 동안 잠깁니다)":e.code==="unknown action"?"백엔드가 아직 촬영장을 모릅니다. Apps Script에 새 Code.gs를 넣고 새 버전으로 배포해 주세요.":"연결하지 못했습니다. 신호를 확인하고 다시 눌러 주세요."}
+  catch(e){KEY=""; $("gate-note").textContent=e.code==="unauthorized"?"비밀번호가 맞지 않습니다. (5번 틀리면 15분 동안 잠깁니다)":"연결하지 못했습니다. 신호를 확인하고 다시 눌러 주세요."}
 });
 function start(){
   clearInterval(pollT);
@@ -531,18 +545,25 @@ window.addEventListener("offline",note);
 let impData=null;
 $("imp-file").addEventListener("change",async ev=>{
   impData=null; $("imp-go").disabled=true; const f=ev.target.files[0]; if(!f)return;
-  try{const j=JSON.parse(await f.text()); const cnt=Object.keys(COL).map(c=>Array.isArray(j[c])?j[c].filter(d=>d&&d.id).length:0);
-    if(!cnt.some(Boolean))throw new Error("empty");
-    if(!cnt[1])throw new Error("empty");
-    impData=j; $("imp-note").textContent=`에피소드 ${cnt[0]} · 촬영 컷 ${cnt[1]}건을 넣습니다.`; $("imp-go").disabled=false}
+  try{const j=JSON.parse(await f.text()); const shots=(Array.isArray(j.shots)?j.shots:[]).filter(d=>d&&d.id&&d.ep);
+    if(!shots.length)throw new Error("empty");
+    const eps=[...new Set(shots.map(x=>String(x.ep)))];
+    impData={eps:eps.map(id=>({id,...((j.episodes||[]).find(e=>e&&String(e.id)===id)||{})})),shots};
+    $("imp-note").textContent=`에피소드 ${eps.length} · 촬영 컷 ${shots.length}건을 넣습니다.`; $("imp-go").disabled=false}
   catch(e){$("imp-note").textContent="촬영지시서 파일이 아닙니다. Claude 제작팀이 준 JSON 파일을 골라 주세요."}
 });
 $("imp-go").addEventListener("click",async()=>{
   if(!impData||!KEY)return; $("imp-go").disabled=true;
-  const writes=[]; Object.keys(COL).forEach(c=>(impData[c]||[]).forEach(d=>{if(!d||!d.id)return;const {id,...data}=d;writes.push({op:"update",col:COL[c],id:String(id),data})}));
+  const KEEP=["status","takes","doneAt","lastLen","updatedAt"]; let n=0;
   try{
-    for(let i=0;i<writes.length;i+=20){$("imp-note").textContent=`저장하는 중… ${Math.min(i+20,writes.length)}/${writes.length}`;await post({action:"batch",writes:writes.slice(i,i+20)})}
-    impData=null; $("imp-file").value=""; await load(); $("imp").open=false; $("imp-note").textContent=`${writes.length}건을 넣었습니다.`;
+    for(const e of impData.eps){
+      $("imp-note").textContent=`저장하는 중… ${e.code||e.id}`;
+      const old=arr(((await get("get",{col:"portal",id:PRE+e.id})).data||{}).shots);
+      /* 이미 찍은 기록이 있는 컷은 기록을 남기고 내용만 바꾼다 */
+      const shots=impData.shots.filter(x=>String(x.ep)===e.id).map(x=>{const {ep,...d}=x; const o=old.find(y=>y.id===d.id); if(o)KEEP.forEach(k=>{if(o[k]!==undefined)d[k]=o[k]}); return d});
+      await post({action:"update",col:"portal",id:PRE+e.id,data:{code:e.code||e.id.toUpperCase(),title:e.title||"",upload:e.upload||"",shots}}); n+=shots.length;
+    }
+    impData=null; $("imp-file").value=""; lastJson=""; await load(); $("imp").open=false; $("imp-note").textContent=`${n}컷을 넣었습니다.`;
   }catch(e){$("imp-note").textContent="중간에 멈췄습니다. 다시 눌러 주세요. 이미 들어간 컷은 그대로 둡니다."; $("imp-go").disabled=false}
 });
 

@@ -10,7 +10,7 @@
 - 화면: `sign/portal/studio.html` (원본이자 Apps Script에 올릴 파일)
   - GitHub: https://hd979796.github.io/hd979796/portal/studio.html
   - Apps Script: `…/exec?page=studio`
-- 데이터: 업무포탈 데이터 시트의 탭 2개 `studio_eps`(에피소드 이름) `studio_shots`(촬영 컷). 처음 저장할 때 자동 생성.
+- 데이터: 업무포탈 데이터 시트의 `portal` 탭에 에피소드마다 한 줄(id `shoot_e01`). 컷 목록은 그 줄의 `shots` 칸에 통째로 들어간다. 포탈이 이미 쓰는 탭과 기능(list · get · update)만 쓰므로 **Apps Script를 고치거나 다시 배포할 필요가 없다.**
 - 포탈에 로그인돼 있으면 비밀번호를 다시 묻지 않는다. 왼쪽 위 「← 업무포탈」로 돌아온다.
 
 ## 둘 사이를 오가는 것
@@ -26,49 +26,15 @@ frame: wide · medium · close · car · walk · hand / cam: oz · gp · both ·
 
 ## 촬영장의 저장 방식
 - 누르면 화면에 바로 반영하고 서버에는 뒤에서 순서대로 보낸다. 신호가 끊기면 기기에 두었다가 연결되면 저장한다(위쪽에 「n건은 연결되면 저장됩니다」).
-- 다른 기기에서 바꾼 내용은 20초마다 불러온다.
+- 다른 기기에서 바꾼 내용은 20초마다 불러온다. 저장할 때는 서버의 최신 컷 목록을 받아 내가 누른 컷만 얹으므로 다른 기기의 체크를 덮지 않는다.
 - 스태프 목소리는 휴대폰 기기 음성(한국어).
 
-## 설치 (Claude용 지시문 — 사무실 크롬, 구글 로그인된 상태. 아이디·비밀번호 입력 금지)
-업무포탈 데이터 시트 > 확장 프로그램 > Apps Script.
+## 설치
+없음. main에 올리면 GitHub 주소에서 바로 동작한다.
+- Apps Script 주소(`…/exec?page=studio`)로도 열고 싶을 때만: Code.gs의 `PAGES`에 `studio: "여보어디가TV 촬영장"`을 넣고, HTML 파일 `studio`를 만들어 `studio.html`을 붙여넣은 뒤 새 버전으로 배포한다. (배포된 Code.gs를 통째로 바꾸지 않는다.)
 
-### 1. Code.gs 네 군데 고치기
-**통째로 바꾸지 않는다.** 배포된 Code.gs에는 저장소의 `Code.gs.txt`에 없는 내용(사용 기록 `log` 등)이 있을 수 있다. 아래 네 곳만 고친다.
-
-1. `var JSON_FIELDS =` 줄 바로 위에 한 줄 추가
-   ```
-   var STUDIO_COLS = ["studio_eps", "studio_shots"];
-   ```
-2. doGet 안 `var PAGES = { … game: "우당탕탕 요절복통" };` 를
-   ```
-   var PAGES = { portal: "박문철보험대리점 업무포탈", sign: "동의서 서명", game: "우당탕탕 요절복통", studio: "여보어디가TV 촬영장" };
-   ```
-3. doGet 안 `if (p.action === "all") {` 바로 위에 추가
-   ```
-   if (p.action === "studio") {
-     var st = {};
-     STUDIO_COLS.forEach(function (c) { st[c] = readAll(c); });
-     return out({ ok: true, data: st, time: new Date().toISOString() });
-   }
-   ```
-4. `function sheet(col)` 첫 줄의 `if (COLS.indexOf(col) < 0) throw` 를
-   ```
-   if (COLS.indexOf(col) < 0 && STUDIO_COLS.indexOf(col) < 0) throw
-   ```
-
-### 2. 화면 파일 (Apps Script 주소로도 열려면. GitHub 주소만 쓰면 생략 가능)
-왼쪽 「파일」 옆 + → HTML → 이름 `studio` → 내용을 지우고 `studio.html` 전체를 붙여넣기.
-
-### 3. 배포
-Ctrl+S → 배포 > 배포 관리 > 연필 > 버전 「새 버전」 > 배포. (새 배포 금지: 주소가 바뀜)
-
-### 4. 확인
-- `…/exec?action=ping` 이 그대로 `{"ok":true…}`.
-- 업무포탈 > 대표 업무 > 🎬 촬영장 → 「촬영지시서가 없습니다 · 처음 넣기」가 보이면 정상.
-- 「백엔드가 아직 촬영장을 모릅니다」가 보이면 1번·3번이 안 된 것.
-
-### 5. 첫 촬영지시서 넣기
-받은 `촬영지시서_E01.json`(E01 출고기 13컷, 2026-11-12 claude.ai 제작실에서 꺼냄)을 「촬영지시서 가져오기」에서 고르고 「가져오기」.
+## 첫 촬영지시서 넣기
+업무포탈 > 🎬 촬영장 > 맨 아래 「촬영지시서 가져오기」에서 `촬영지시서_E01.json`(드라이브 「업무포탈_AppsScript」 폴더)을 고르고 「가져오기」.
 촬영지시서 파일은 저장소에 올리지 않는다(공개 저장소).
 
 ## 화면을 고칠 때
