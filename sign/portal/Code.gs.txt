@@ -10,8 +10,6 @@
  */
 
 var COLS = ["cases", "requests", "templates", "notes", "calls", "todos", "profiles", "customers", "customers_meta", "portal"];
-/* 여보어디가TV 촬영장(?page=studio) 탭: 에피소드 이름과 촬영 컷. action=all(포탈)에는 싣지 않고 action=studio로만 내준다 */
-var STUDIO_COLS = ["studio_eps", "studio_shots"];
 var JSON_FIELDS = ["family", "todos", "support", "contracts", "renewal", "missing"]; // 배열·객체로 다루는 칸
 var NUM_FIELDS = ["premium", "prevPremium", "order", "portalNo", "all", "long", "gen", "transfer", "count", "total"]; // 숫자로 되돌릴 칸 (customers.car 건수 포함)
 
@@ -30,11 +28,6 @@ function doGet(e) {
   if (!auth(p.key)) return out({ ok: false, error: "unauthorized" });
   if (p.action === "recs") return out({ ok: true, data: listRecs(Number(p.days) || 7) });
   if (p.action === "rec") return out(recFile(p.id));
-  if (p.action === "studio") {
-    var st = {};
-    STUDIO_COLS.forEach(function (c) { st[c] = readAll(c); });
-    return out({ ok: true, data: st, time: new Date().toISOString() });
-  }
   if (p.action === "all") {
     var res = {};
     COLS.forEach(function (c) { if (c !== "customers") res[c] = readAll(c); });
@@ -88,7 +81,7 @@ function auth(key) {
 function out(obj) { return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON); }
 
 function sheet(col) {
-  if (COLS.indexOf(col) < 0 && STUDIO_COLS.indexOf(col) < 0) throw new Error("없는 컬렉션: " + col);
+  if (COLS.indexOf(col) < 0) throw new Error("없는 컬렉션: " + col);
   var sh = ss().getSheetByName(col);
   if (!sh) { sh = ss().insertSheet(col); textFormat(sh); sh.appendRow(["id", "updatedAt"]); sh.setFrozenRows(1); }
   return sh;
