@@ -184,6 +184,7 @@ h2{font-family:var(--display);font-weight:400;font-size:22px;margin:0 0 10px;tex
     </div>
     <label class="sel"><span>에피소드</span><select id="sh-ep"></select></label>
   </header>
+  <section class="imp" id="sh-new" hidden></section>
   <section class="prog" id="sh-prog"></section>
   <details class="rules" id="sh-rules">
     <summary>조감독 기본 규칙 7가지</summary>
@@ -209,7 +210,7 @@ h2{font-family:var(--display);font-weight:400;font-size:22px;margin:0 0 10px;tex
     <div><button class="link" type="button" id="sh-copy">촬영 결과 복사</button> <span class="takes" id="sh-copynote" aria-live="polite"></span></div>
   </section>
   <details class="imp" id="imp">
-    <summary id="imp-sum">촬영지시서 가져오기</summary>
+    <summary id="imp-sum">파일로 촬영지시서 가져오기</summary>
     <p class="sub" id="imp-help" style="margin:0">Claude 제작팀이 만든 촬영지시서 파일(JSON)을 고르면 그 에피소드의 컷이 들어옵니다. 이미 있는 컷은 내용만 바뀌고 찍은 기록은 남습니다.</p>
     <div class="rowb"><input type="file" id="imp-file" accept=".json,application/json" aria-label="촬영지시서 파일"><button type="button" id="imp-go" disabled>가져오기</button></div>
     <div class="status-note" id="imp-note" aria-live="polite"></div>
@@ -241,7 +242,7 @@ let DB=null;
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function fmtTime(iso){if(!iso)return "";const x=new Date(iso);if(isNaN(x))return "";return `${x.getMonth()+1}/${x.getDate()} ${String(x.getHours()).padStart(2,"0")}:${String(x.getMinutes()).padStart(2,"0")}`}
-function render(){renderShoot()}
+function render(){renderShoot(); if(typeof renderNew==="function")renderNew()}
 
 /* ---------- 촬영장 조감독 ---------- */
 const shotsOf=ep=>S.shots.filter(s=>s.ep===ep).sort((a,b)=>(a.n||0)-(b.n||0));
@@ -251,7 +252,7 @@ function renderShoot(){
   if(!SH.ep||!eps.some(e=>e.id===SH.ep)) SH.ep=eps[0]?.id||null;
   $("sh-ep").innerHTML=eps.map(e=>`<option value="${esc(e.id)}"${e.id===SH.ep?" selected":""}>${esc(e.code)} ${esc(e.title)}</option>`).join("")||`<option>촬영 컷이 있는 에피소드가 없습니다</option>`;
   const list=shotsOf(SH.ep);
-  if(!list.length){$("sh-result").hidden=true;$("sh-prog").innerHTML="";$("sh-cur").innerHTML=`<div class="finish">${S.loaded.shots?"아직 촬영지시서가 없습니다. Claude 제작팀에게 받은 파일을 아래 「촬영지시서 가져오기」로 넣어 주세요.":"불러오는 중…"}</div>`;$("sh-list").innerHTML="";return}
+  if(!list.length){$("sh-result").hidden=true;$("sh-prog").innerHTML="";$("sh-cur").innerHTML=`<div class="finish">${S.loaded.shots?"아직 촬영지시서가 없습니다. Claude 제작팀이 올리면 위에 「가져오기」 버튼이 나타납니다.":"불러오는 중…"}</div>`;$("sh-list").innerHTML="";return}
   if(!SH.cur||!list.some(s=>s.id===SH.cur)) SH.cur=(firstOpen(list)||list[0]).id;
   const cur=list.find(s=>s.id===SH.cur);
   const must=list.filter(s=>s.must), mustDone=must.filter(s=>s.status==="done").length, retake=list.filter(s=>s.status==="retake").length, opt=list.filter(s=>!s.must&&s.status==="done").length;
@@ -479,8 +480,7 @@ function note(){
   if(Q.length) el.textContent=navigator.onLine===false?`신호가 없습니다. ${Q.length}건은 연결되면 저장됩니다.`:`저장하는 중… ${Q.length}건`;
   else el.textContent=lastOk?"":"불러오는 중…";
   const empty=lastOk&&!S.shots.length;
-  $("imp-sum").textContent=empty?"촬영지시서가 없습니다 · 처음 넣기":"촬영지시서 가져오기";
-  if(empty)$("imp").open=true;
+  $("imp-sum").textContent=empty?"파일로 촬영지시서 가져오기":"파일로 촬영지시서 가져오기";
 }
 async function get(action,params){const r=await fetch(API+"?"+new URLSearchParams({action,key:KEY,...(params||{})}),{redirect:"follow"});const j=await r.json();if(!j.ok){const e=new Error(j.error||"error");e.code=j.error;throw e}return j}
 async function post(body){const r=await fetch(API,{method:"POST",redirect:"follow",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({key:KEY,...body})});const j=await r.json();if(!j.ok){const e=new Error(j.message||j.error||"error");e.code=j.error;throw e}return j}
@@ -529,7 +529,7 @@ $("gate-form").addEventListener("submit",async ev=>{
   ev.preventDefault(); const k=$("gate-key").value.trim(); if(!k)return;
   KEY=k; $("gate-note").textContent="확인 중…";
   try{const d=await fetchData(); ls.set("key",KEY); ls.set("api",API); lastOk=true; apply(d); ls.set("studiocache",JSON.stringify(d));
-    $("gate").hidden=true; $("v-shoot").hidden=false; document.querySelector(".tabs").hidden=false; $("gate-key").value=""; route(); note(); render(); start()}
+    $("gate").hidden=true; $("v-shoot").hidden=false; document.querySelector(".tabs").hidden=false; $("gate-key").value=""; route(); note(); render(); start(); loadPub()}
   catch(e){KEY=""; $("gate-note").textContent=e.code==="unauthorized"?"비밀번호가 맞지 않습니다. (5번 틀리면 15분 동안 잠깁니다)":"연결하지 못했습니다. 신호를 확인하고 다시 눌러 주세요."}
 });
 function start(){
@@ -552,19 +552,42 @@ $("imp-file").addEventListener("change",async ev=>{
     $("imp-note").textContent=`에피소드 ${eps.length} · 촬영 컷 ${shots.length}건을 넣습니다.`; $("imp-go").disabled=false}
   catch(e){$("imp-note").textContent="촬영지시서 파일이 아닙니다. Claude 제작팀이 준 JSON 파일을 골라 주세요."}
 });
+/* 촬영지시서 넣기: 이미 찍은 기록이 있는 컷은 기록을 남기고 내용만 바꾼다 */
+async function importShoot(data,say){
+  const KEEP=["status","takes","doneAt","lastLen","updatedAt"]; let n=0;
+  for(const e of data.eps){
+    say(`저장하는 중… ${e.code||e.id}`);
+    const old=arr(((await get("get",{col:"portal",id:PRE+e.id})).data||{}).shots);
+    const shots=data.shots.filter(x=>String(x.ep)===e.id).map(x=>{const {ep,...d}=x; const o=old.find(y=>y.id===d.id); if(o)KEEP.forEach(k=>{if(o[k]!==undefined)d[k]=o[k]}); return d});
+    await post({action:"update",col:"portal",id:PRE+e.id,data:{code:e.code||e.id.toUpperCase(),title:e.title||"",upload:e.upload||"",shots}}); n+=shots.length;
+  }
+  lastJson=""; await load(); return n;
+}
 $("imp-go").addEventListener("click",async()=>{
   if(!impData||!KEY)return; $("imp-go").disabled=true;
-  const KEEP=["status","takes","doneAt","lastLen","updatedAt"]; let n=0;
-  try{
-    for(const e of impData.eps){
-      $("imp-note").textContent=`저장하는 중… ${e.code||e.id}`;
-      const old=arr(((await get("get",{col:"portal",id:PRE+e.id})).data||{}).shots);
-      /* 이미 찍은 기록이 있는 컷은 기록을 남기고 내용만 바꾼다 */
-      const shots=impData.shots.filter(x=>String(x.ep)===e.id).map(x=>{const {ep,...d}=x; const o=old.find(y=>y.id===d.id); if(o)KEEP.forEach(k=>{if(o[k]!==undefined)d[k]=o[k]}); return d});
-      await post({action:"update",col:"portal",id:PRE+e.id,data:{code:e.code||e.id.toUpperCase(),title:e.title||"",upload:e.upload||"",shots}}); n+=shots.length;
-    }
-    impData=null; $("imp-file").value=""; lastJson=""; await load(); $("imp").open=false; $("imp-note").textContent=`${n}컷을 넣었습니다.`;
+  try{const n=await importShoot(impData,t=>{$("imp-note").textContent=t});
+    impData=null; $("imp-file").value=""; $("imp").open=false; $("imp-note").textContent=`${n}컷을 넣었습니다.`;
   }catch(e){$("imp-note").textContent="중간에 멈췄습니다. 다시 눌러 주세요. 이미 들어간 컷은 그대로 둡니다."; $("imp-go").disabled=false}
+});
+
+/* ---------- 새 촬영지시서 (Claude 제작팀이 shoots.json에 올린 것) : 버튼 한 번으로 가져오기 ---------- */
+const SHOOTS_URL=IN_GAS?"https:\/\/hd979796.github.io/hd979796/portal/shoots.json":"shoots.json";
+let PUB=null;
+function pending(){
+  if(!PUB||!S.loaded.shots)return [];
+  const have=new Set(S.shots.map(x=>x.id));
+  return (PUB.episodes||[]).filter(e=>e&&e.id).map(e=>({e:{...e,id:String(e.id)},shots:(PUB.shots||[]).filter(x=>x&&x.id&&String(x.ep)===String(e.id))})).filter(p=>p.shots.some(x=>!have.has(x.id)));
+}
+function renderNew(){
+  const el=$("sh-new"), l=pending(); el.hidden=!l.length; if(!l.length)return;
+  el.innerHTML=`<b>새 촬영지시서가 있습니다</b>`+l.map(p=>`<div class="rowb"><span>${esc(p.e.code||"")} ${esc(p.e.title||"")} · ${p.shots.length}컷</span><button type="button" data-pub="${esc(p.e.id)}">가져오기</button></div>`).join("")+`<div class="status-note" id="new-note" aria-live="polite"></div>`;
+}
+async function loadPub(){try{const r=await fetch(SHOOTS_URL+"?t="+Date.now(),{cache:"no-store"}); if(r.ok){PUB=await r.json(); renderNew()}}catch(e){}}
+$("sh-new").addEventListener("click",async ev=>{
+  const b=ev.target.closest("[data-pub]"); if(!b||!KEY)return;
+  const p=pending().find(x=>x.e.id===b.dataset.pub); if(!p)return; b.disabled=true;
+  try{await importShoot({eps:[p.e],shots:p.shots},t=>{const n=$("new-note"); if(n)n.textContent=t}); SH.ep=p.e.id; SH.cur=null; render(); window.scrollTo({top:0,behavior:"smooth"})}
+  catch(e){b.disabled=false; const n=$("new-note"); if(n)n.textContent="가져오지 못했습니다. 신호를 확인하고 다시 눌러 주세요."}
 });
 
 $("tk-voicenote").textContent="speechSynthesis" in window?"기기 음성으로 말합니다":"이 기기에서는 소리 대신 화면과 신호음만 나옵니다";
@@ -572,7 +595,7 @@ route();
 if(!KEY){render(); showGate("")}
 else{
   try{const c=JSON.parse(ls.get("studiocache")||"null"); if(c)apply(c)}catch(e){}
-  note(); render(); load().then(start);
+  note(); render(); load().then(start); loadPub();
 }
 </script>
 </body>
