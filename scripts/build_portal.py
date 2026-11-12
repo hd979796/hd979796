@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Apps Script에 올릴 한 파일짜리 페이지들을 만든다: portal.html(업무포탈), sign.html(동의서 서명), game.html(우당탕탕).
+studio.html(여보어디가TV 제작실)은 그 파일이 원본이자 올릴 파일이라 만들지 않고 검사만 한다.
 
 sign/portal/index.html(편집용 원본)에 아이콘·가족사진을 안에 넣어 sign/portal/portal.html로 저장한다.
 만든 portal.html을 Apps Script 프로젝트의 portal 파일에 붙여넣고 「배포 관리 > 새 버전」으로 배포한다.
@@ -29,6 +30,14 @@ s = s.replace('src="family.jpg"', 'src="' + uri("family.jpg", "image/jpeg") + '"
 assert "family.jpg" not in s, "가족사진이 안에 들어가지 않았습니다"
 (D / "portal.html").write_text(safe_scripts(s), encoding="utf-8")
 print("portal.html", len(s), "bytes")
+
+
+# 제작실: 원본 그대로 Apps Script에 붙여넣는다. 스크립트 안에 // 가 있으면 Apps Script가 그 뒤를 잘라 버리므로 막는다(주석은 /* */, 주소는 :\/\/).
+st = (D / "studio.html").read_text(encoding="utf-8")
+for m in re.finditer(r"<script[^>]*>(.*?)</script>", st, flags=re.S):
+    assert "//" not in m.group(1), "studio.html 스크립트 안에 // 가 있습니다"
+assert not re.search(r'(src|href)="(?!https?:|data:|#|\./"|mailto:|tel:|sms:|\$\{)[^"]+"', st), "studio.html"
+print("studio.html", len(st), "bytes (검사만)")
 
 
 R = D.parent.parent
