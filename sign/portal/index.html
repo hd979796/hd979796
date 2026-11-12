@@ -685,7 +685,7 @@ const STUDY_TOOLS=[
 const CLAIM_LOG_KINDS=["배상책임접수","상해질병접수"];
 const NAV_ALL=[["home","현황"],["long","장기"],["cases","자동차"],["gen","일반"],["claims","보상·청구"],["ship","발송"],["customers","고객"],["requests","요청함"],["pay","카드결제"],["calls","통화"],["todo","할 일"],["templates","멘트"],["study","보험상담"]];
 /* 역할별 상단 메뉴. 대표: 상담·관리 5개만. 실장: 현황 · 보험(자동차·일반·장기 폴더) · 발송 · 고객 · 요청함 · 카드결제 */
-const ROLES={"대표":{nav:[["calls","통화"],["todo","할 일"],["customers","고객"],["claims","보상·청구"],["area","배상면적"],["study","보험상담"],["templates","멘트"],["studio","🎬 제작실"]],home:"calls",lines:[]},
+const ROLES={"대표":{nav:[["calls","통화"],["todo","할 일"],["customers","고객"],["claims","보상·청구"],["area","배상면적"],["study","보험상담"],["templates","멘트"],["studio","🎬 촬영장"]],home:"calls",lines:[]},
   "실장":{nav:[["home","현황"],["ins","보험"],["ship","발송"],["customers","고객"],["requests","요청함"],["pay","카드결제"]],home:"home",lines:["자동차","일반","장기"]}};
 const INS_VIEWS=["cases","gen","long"];let lastIns="cases";
 const NAV_N={long:"n-long",cases:"n-cases",gen:"n-gen",claims:"n-claims",ship:"n-ship",requests:"n-req",pay:"n-pay",todo:"n-todo"};
@@ -706,7 +706,7 @@ async function copy(txt){try{await navigator.clipboard.writeText(txt);toast("복
 try{who=localStorage.getItem("who")||"대표"}catch(e){}
 $$("#who button[data-w]").forEach(b=>{b.setAttribute("aria-pressed",String(b.dataset.w===who));b.onclick=()=>{who=b.dataset.w;$$("#who button[data-w]").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));try{localStorage.setItem("who",who)}catch(e){}const cv=location.hash.replace("#","").split(":")[0];if(!roleViews().includes(cv))location.hash=ROLES[who].home;else{buildNav();render()}toast((who==="대표"?"박문철 대표":"황혜정 실장")+" 업무 화면으로 바꿨습니다")}});
 /* 상단 2단 메뉴: 현황 · 보험(장기·자동차·일반) · 업무(통화·할 일 등). 역할(대표/실장)에 따라 업무 순서만 달라진다 */
-/* 포탈 밖 화면으로 가는 메뉴. 제작실: GitHub에서는 같은 폴더의 studio.html, Apps Script 화면에서는 ?page=studio */
+/* 포탈 밖 화면으로 가는 메뉴. 여보어디가TV 촬영장: GitHub에서는 같은 폴더의 studio.html, Apps Script 화면에서는 ?page=studio */
 const NAV_EXT={studio:/(^|\.)googleusercontent\.com$|(^|\.)script\.google\.com$/.test(location.hostname)?{u:"https://script.google.com/macros/s/AKfycbyATdbsyJxqsp2X_wlQO5L5TvyYsTqF9RCIU26u6R_OBdTXWbXfuCe42NzoTJICpI5_/exec?page=studio",top:true}:{u:"studio.html"}};
 function roleViews(){const v=[];ROLES[who].nav.forEach(([k])=>{if(k==="ins")v.push(...INS_VIEWS);else v.push(k)});return v}
 function buildNav(){const R=ROLES[who];const cur=location.hash.replace("#","").split(":")[0]||R.home;if(INS_VIEWS.includes(cur))lastIns=cur;
