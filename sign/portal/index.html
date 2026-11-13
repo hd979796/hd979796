@@ -923,12 +923,12 @@ $("#cl-form").onsubmit=async e=>{e.preventDefault();if(!db)return toast("데이�
 /* ---- 제작실 ---- */
 const MAKE={ybtv:[
   {t:"여보어디가TV 제작실",d:"기획·자막 컷·제목·썸네일·쇼츠 — 편집 작업실",u:"https://claude.ai/artifact/NkLFVdcgk3X2iGz2WRhp6p",i:"🎞️",big:true},
-  {t:"촬영장",d:"촬영 지시서 가져오기 · 촬영 체크 · 결과 복사",u:()=>NAV_EXT.studio.u,top:()=>!!NAV_EXT.studio.top,i:"🎥"},
+  {t:"여보어디가TV 촬영장",d:"촬영 지시서 가져오기 · 촬영 체크 · 결과 복사",u:()=>NAV_EXT.studio.u,top:()=>!!NAV_EXT.studio.top,i:"🎥"},
   {t:"채널 꾸미기",d:"배너·프로필·채널 소개",u:"https://claude.ai/artifact/Wd3FRpfbEpgsdW3qDQbwuG",i:"🎨"},
   {t:"채널 진단과 10만 성장 계획",d:"현재 지표·시리즈 계획",u:"https://claude.ai/artifact/HKmUeQaf3kunbC2686AAEF",i:"📈"}],
  wdtt:[
   {t:"우당탕탕 영상제작팀 제작실",d:"블랙박스 시리즈 기획·편집 작업실",u:"https://claude.ai/artifact/71XHUeJceE9M4HyfMg182Q",i:"🏸",big:true},
-  {t:"자체대회·송년회 촬영 지시서",d:"11/14 촬영 순서·컷 목록",u:"https://claude.ai/artifact/QBErHaH2jYuGtj73agdxQP",i:"📋"},
+  {t:"우당탕탕 촬영장",d:"대회·모임 촬영 지시서 · 순서 · 컷 목록",u:"https://claude.ai/artifact/QBErHaH2jYuGtj73agdxQP",i:"🎥"},
   {t:"대진표 · 비용 정산",d:"자체대회 대진표·패배 비용 보드",u:"https://hd979796.github.io/hd979796/game/",i:"🏆"},
   {t:"우당탕탕 앱 안내",d:"회원용 앱 사용법",u:"https://claude.ai/artifact/A3qFcvNSisf5ryFAR1q7yH",i:"📱"}]};
 function renderMake(){if(view!=="make")return;const h=list=>list.map(t=>{const u=typeof t.u==="function"?t.u():t.u,top=typeof t.top==="function"?t.top():false;
