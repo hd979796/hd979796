@@ -81,7 +81,7 @@ svg{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:2;stroke-lin
 .act{display:flex;align-items:center;gap:10px;background:none;border:0;padding:6px 0;color:#fff;font:inherit;font-weight:900;font-size:16px;text-decoration:none;cursor:pointer}
 .act i{width:40px;height:40px;border-radius:12px;display:grid;place-items:center}
 .act i svg{width:21px;height:21px}
-.act:first-child span{color:var(--gold2)}
+.act:last-child span{color:var(--gold2)}
 .ic-gold{background:var(--gold);color:#17130B}
 .ic-red{background:var(--red);color:#fff}
 .ic-kakao{background:#FEE500;color:#191919}
@@ -177,7 +177,8 @@ svg{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:2;stroke-lin
   .dock a,.dock button{display:grid;justify-items:center;gap:4px;background:none;border:0;padding:4px 2px;color:#fff;font:inherit;font-weight:900;font-size:13.5px;text-decoration:none;cursor:pointer;border-radius:12px}
   .dock i{width:40px;height:40px;border-radius:12px;display:grid;place-items:center}
   .dock i svg{width:21px;height:21px}
-  .dock > :first-child span{color:var(--gold2)}
+  .dock > :last-child span{color:var(--gold2)}
+  .dock span{line-height:1.2;text-align:center;font-size:13px}
 }
 
 /* dialogs */
@@ -284,10 +285,10 @@ svg{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:2;stroke-lin
         <li>2024 연도대상 동상 · 2025 10년 근속 연도대상</li>
       </ul>
       <div class="acts">
-        <button class="act" type="button" data-open="consult"><i class="ic-gold"><svg><use href="#i-doc"/></svg></i><span>상담 신청</span></button>
-        <a class="act" href="https://script.google.com/macros/s/AKfycbwYo0OB6Z9ZlXPbNTyTeTdlbWuEoV4mRVbvV3fExseqeVQyhJuD7js_aM2mKDs-0xn4/exec" target="_blank" rel="noopener"><i class="ic-red"><svg><use href="#i-alert"/></svg></i><span>사고접수</span></a>
+        <a class="act num" href="tel:1588-5656"><i class="ic-red"><svg><use href="#i-alert"/></svg></i><span>고장출동/사고접수</span></a>
         <a class="act num" href="tel:010-8796-3959"><i class="ic-line"><svg><use href="#i-phone"/></svg></i><span>전화하기</span></a>
-        <a class="act" href="sms:01087963959" data-chat><i class="ic-kakao"><svg><use href="#i-msg"/></svg></i><span data-chat-lbl>오픈채팅</span></a>
+        <a class="act" href="sms:01087963959" data-chat><i class="ic-kakao"><svg><use href="#i-msg"/></svg></i><span data-chat-lbl>카카오톡</span></a>
+        <button class="act" type="button" data-open="consult"><i class="ic-gold"><svg><use href="#i-doc"/></svg></i><span>상담 신청</span></button>
       </div>
     </div>
     <span class="scroll" aria-hidden="true">SCROLL</span>
@@ -381,10 +382,10 @@ svg{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:2;stroke-lin
 </footer>
 
 <nav class="dock" aria-label="빠른 연락">
-  <button type="button" data-open="consult"><i class="ic-gold"><svg><use href="#i-doc"/></svg></i><span>상담신청</span></button>
-  <a href="https://script.google.com/macros/s/AKfycbwYo0OB6Z9ZlXPbNTyTeTdlbWuEoV4mRVbvV3fExseqeVQyhJuD7js_aM2mKDs-0xn4/exec" target="_blank" rel="noopener"><i class="ic-red"><svg><use href="#i-alert"/></svg></i><span>사고접수</span></a>
+  <a class="num" href="tel:1588-5656"><i class="ic-red"><svg><use href="#i-alert"/></svg></i><span>고장출동<br>사고접수</span></a>
   <a href="tel:010-8796-3959"><i class="ic-line"><svg><use href="#i-phone"/></svg></i><span>전화하기</span></a>
-  <a href="sms:01087963959" data-chat><i class="ic-kakao"><svg><use href="#i-msg"/></svg></i><span data-chat-lbl>오픈채팅</span></a>
+  <a href="sms:01087963959" data-chat><i class="ic-kakao"><svg><use href="#i-msg"/></svg></i><span data-chat-lbl>카카오톡</span></a>
+  <button type="button" data-open="consult"><i class="ic-gold"><svg><use href="#i-doc"/></svg></i><span>상담신청</span></button>
 </nav>
 
 <dialog class="dlg" id="dlg-consult" aria-labelledby="cTitle">
