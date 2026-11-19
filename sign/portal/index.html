@@ -370,6 +370,19 @@ tr.over td:first-child{box-shadow:inset 4px 0 var(--bad)}
 .ar-total b{font-size:28px;color:var(--accent);font-variant-numeric:tabular-nums}
 .ar-total small{font-size:13px;color:var(--mute)}
 
+
+/* 장기고객 관리 */
+.lt-form{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.lt-form label{display:grid;gap:4px}
+.lt-form textarea{resize:vertical;font-family:inherit;line-height:1.5}
+@media (max-width:760px){.lt-form,.lt-grid{grid-template-columns:1fr}}
+.lt-tag{display:inline-block;font-size:11.5px;font-weight:800;border-radius:999px;padding:2px 9px;white-space:nowrap}
+.lt-tag.open{background:var(--good-soft);color:var(--good)}
+.lt-tag.wait{background:var(--accent-soft);color:var(--gold2)}
+.lt-tag.yr{background:var(--info-soft);color:var(--info)}
+.lt-msg{width:100%;margin-top:8px;font-size:13px;line-height:1.5}
+.bk-run{margin-top:12px;border:1px solid var(--accent);border-radius:var(--r-tile);padding:14px;background:var(--accent-soft)}
+.bk-run .big{font-family:var(--f-serif);font-size:22px;font-weight:800}
 /* 홈페이지 톤 맞춤: 명조 제목, 금색 포인트 */
 h1,h2,h3,.dw h3{font-family:var(--f-serif);font-weight:800;letter-spacing:.01em}
 h2 em,h3 em{font-family:var(--f-body)}
@@ -648,6 +661,51 @@ nav .tops a.on{border-color:transparent}
   </div>
 </section>
 
+<section class="view" id="v-care" hidden>
+  <div class="card">
+    <h2>오늘 보낼 안내 <em id="lt-sub"></em></h2>
+    <ul class="list" id="lt-due"></ul>
+  </div>
+  <div class="grid2 lt-grid">
+    <div class="card">
+      <h2>새 장기계약 등록 <em>청약일 + 면책기간 → 보장 개시일 자동 계산</em></h2>
+      <form id="lt-form" class="lt-form" autocomplete="off">
+        <label class="note">고객 이름<input class="in" name="name" required placeholder="홍길동" list="lt-names"></label>
+        <label class="note">휴대폰<input class="in" name="phone" inputmode="tel" placeholder="010-0000-0000"></label>
+        <label class="note">상품<select class="in" name="product">
+          <option data-w="90">암보험</option><option data-w="90">퍼펙트종합보험</option><option data-w="90">유병자보험</option><option data-w="90">간편보험</option><option data-w="0">운전자보험</option><option data-w="0">실손보험</option><option data-w="90">기타</option></select></label>
+        <label class="note">면책(대기)기간<span class="row" style="gap:6px"><input class="in" name="wait" type="number" min="0" max="730" value="90" style="width:90px"><span>일</span></span></label>
+        <label class="note">청약일<input class="in" name="start" type="date" required></label>
+        <label class="note">메모<input class="in" name="memo" placeholder="예) 암 진단비 3천, 월 5만원"></label>
+        <p class="note" id="lt-calc" style="grid-column:1/-1;margin:0"></p>
+        <div class="row" style="grid-column:1/-1"><button class="btn pri" type="submit">등록</button></div>
+      </form>
+      <datalist id="lt-names"></datalist>
+    </div>
+    <div class="card">
+      <h2>단체 인사 보내기 <em>명절·계절 · 내 휴대폰 문자로 무료</em></h2>
+      <div class="lt-form">
+        <label class="note">받는 사람<select class="in" id="bk-to"><option value="lt">장기계약 고객</option><option value="all">전화번호 있는 모든 고객</option></select></label>
+        <label class="note">문구<select class="in" id="bk-tpl"></select></label>
+        <label class="note" style="grid-column:1/-1">보낼 내용 <small>{이름}은 고객 이름으로 바뀝니다</small><textarea class="in" id="bk-msg" rows="5"></textarea></label>
+      </div>
+      <div class="row" style="margin-top:8px"><button class="btn pri" type="button" id="bk-start">한 명씩 보내기 시작</button><button class="btn" type="button" id="bk-group">20명씩 묶어 보내기</button><span class="note" id="bk-n"></span></div>
+      <div id="bk-run" hidden class="bk-run"></div>
+      <details class="note" style="margin-top:10px"><summary>보내기 전에 확인</summary>
+        <ul style="margin:6px 0 0;padding-left:18px">
+          <li><b>한 명씩 보내기</b>: 이름이 들어간 문자가 열리면 전송 → 다시 이 화면으로 돌아오면 다음 사람이 바로 준비됩니다.</li>
+          <li><b>20명씩 묶어 보내기</b>: 이름 없이 같은 문구가 갑니다. 삼성 메시지 설정 → 추가 설정 → 멀티미디어 메시지 → <b>그룹 대화 끄기</b>를 해야 각자 따로 받습니다.</li>
+          <li>밤 9시~아침 8시에는 보내지 마세요. 상품 홍보가 들어가면 맨 앞에 (광고)를 붙여야 합니다. 인사만 하는 문자는 괜찮습니다.</li>
+          <li>통신사가 하루에 보낼 수 있는 문자 수를 제한합니다. 많으면 이틀에 나눠 보내세요.</li>
+        </ul></details>
+    </div>
+  </div>
+  <div class="card">
+    <h2>장기계약 고객 <em id="lt-cnt"></em></h2>
+    <div class="filters"><input class="in" id="lt-q" type="search" placeholder="이름 · 상품 검색" aria-label="장기계약 검색"></div>
+    <ul class="list" id="lt-list" style="margin-top:10px"></ul>
+  </div>
+</section>
 <section class="view" id="v-make" hidden>
   <div class="card">
     <h2>🎬 제작실 <em>여보어디가TV · 우당탕탕 영상 기획·촬영·편집</em></h2>
@@ -713,10 +771,10 @@ const STUDY_TOOLS=[
   {t:"자동차 갱신설계 매뉴얼",d:"만기명세 → 가설계 → 청약서 순서와 특약 규칙",u:"https://claude.ai/artifact/ShBURvuEzjhAwe6RpjPsJS",i:"🚗"},
   {t:"하이 영업포탈",d:"담보 조회 · 설계",u:"https://sp.hi.co.kr",i:"🏢"}];
 const CLAIM_LOG_KINDS=["배상책임접수","상해질병접수"];
-const NAV_ALL=[["home","현황"],["long","장기"],["cases","자동차"],["gen","일반"],["claims","보상·청구"],["ship","발송"],["customers","고객"],["requests","요청함"],["pay","카드결제"],["calls","통화"],["todo","할 일"],["templates","멘트"],["study","보험상담"]];
+const NAV_ALL=[["home","현황"],["long","장기"],["cases","자동차"],["gen","일반"],["claims","보상·청구"],["ship","발송"],["customers","고객"],["care","장기고객"],["requests","요청함"],["pay","카드결제"],["calls","통화"],["todo","할 일"],["templates","멘트"],["study","보험상담"]];
 /* 역할별 상단 메뉴. 대표: 상담·관리 5개만. 실장: 현황 · 보험(자동차·일반·장기 폴더) · 발송 · 고객 · 요청함 · 카드결제 */
-const ROLES={"대표":{nav:[["calls","통화"],["todo","할 일"],["customers","고객"],["claims","보상·청구"],["area","배상면적"],["study","보험상담"],["templates","멘트"],["make","🎬 제작실"]],home:"calls",lines:[]},
-  "실장":{nav:[["home","현황"],["ins","보험"],["ship","발송"],["customers","고객"],["requests","요청함"],["pay","카드결제"]],home:"home",lines:["자동차","일반","장기"]}};
+const ROLES={"대표":{nav:[["calls","통화"],["todo","할 일"],["customers","고객"],["care","장기고객"],["claims","보상·청구"],["area","배상면적"],["study","보험상담"],["templates","멘트"],["make","🎬 제작실"]],home:"calls",lines:[]},
+  "실장":{nav:[["home","현황"],["ins","보험"],["ship","발송"],["customers","고객"],["care","장기고객"],["requests","요청함"],["pay","카드결제"]],home:"home",lines:["자동차","일반","장기"]}};
 const INS_VIEWS=["cases","gen","long"];let lastIns="cases";
 const NAV_N={long:"n-long",cases:"n-cases",gen:"n-gen",claims:"n-claims",ship:"n-ship",requests:"n-req",pay:"n-pay",todo:"n-todo"};
 const GIFT_MIN=400000; const SOON_DAYS=10;
@@ -783,7 +841,7 @@ function lineCols(line){const L=LINES[line];const base=[{h:L.dateLabel},{h:L.nam
 Object.keys(LINES).forEach(l=>{$("#v-"+LINES[l].key).innerHTML=lineSection(l)});
 
 /* ---- routing ---- */
-const VIEWS=["home","long","cases","gen","claims","area","ship","pay","requests","customers","calls","todo","templates","study","make"];
+const VIEWS=["home","long","cases","gen","claims","area","ship","pay","requests","customers","care","calls","todo","templates","study","make"];
 function go(){let h=location.hash.replace("#","");let arg="";if(h.includes(":")){[h,arg]=h.split(":")}if(!VIEWS.includes(h))h=ROLES[who].home;if(who==="대표"&&h==="home")h="calls";view=h;
   const stage=INS_VIEWS.includes(h);$(".wrap").classList.toggle("stage-on",stage);if(stage){lastIns=h;renderRail()}
   VIEWS.forEach(v=>{$("#v-"+v).hidden=v!==h});$$("#nav a").forEach(a=>{if(a.dataset.v===h)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current")});
@@ -836,7 +894,7 @@ function callsOf(name){const n=norm(name);if(!n)return[];return allCalls().filte
 function enrichCases(){const multi=new Set();const seen={};custRows.forEach(r=>{const k=norm(r.name);if(seen[k])multi.add(k);seen[k]=1});
   cases.forEach(c=>{if(c.address&&c.phone&&c.zip)return;if(multi.has(norm(c.name))&&!(profiles[pkey(c.name)]||{}).addr)return;const I=custInfo(c.name);
     if(!c.address&&I.addr){c.address=I.addr;c._autoAddr=1}if(!c.phone&&I.phone)c.phone=I.phone;if(!c.zip&&I.zip)c.zip=I.zip})}
-const VIEW_R={home:()=>{renderHome();Object.keys(LINES).forEach(renderLine)},claims:()=>renderClaims(),ship:()=>renderShip(),pay:()=>renderPay(),requests:()=>renderReqs(),templates:()=>renderTpls(),study:()=>renderNotes(),customers:()=>renderCust(),calls:()=>renderCalls(),todo:()=>renderTodos()};
+const VIEW_R={home:()=>{renderHome();Object.keys(LINES).forEach(renderLine)},claims:()=>renderClaims(),ship:()=>renderShip(),pay:()=>renderPay(),requests:()=>renderReqs(),templates:()=>renderTpls(),study:()=>renderNotes(),customers:()=>renderCust(),calls:()=>renderCalls(),todo:()=>renderTodos(),care:()=>{if(typeof renderCare==="function")renderCare()}};
 function render(){enrichCases();renderMake();if(INS_VIEWS.includes(view)){renderRail();renderLine(LINE_KEYS[view])}const f=VIEW_R[view];if(f)f();renderNav()}
 function renderNav(){const open=reqs.filter(r=>r.status==="new"||r.status==="working");const n=$("#n-req");n.textContent=open.length||"";n.classList.toggle("hot",open.length>0);
   Object.keys(LINES).forEach(l=>{const k=LINES[l].key;const cs=cases.filter(c=>lineOf(c)===l);const hot=cs.filter(c=>isSoon(c)||isOver(c)||needPolicy(c)).length;const n2=cs.filter(c=>inMonth(c)&&!isDone(c)&&!isFail(c)).length;const el=$("#n-"+k);el.textContent=(hot||n2)||"";el.classList.toggle("hot",hot>0)});
@@ -1427,6 +1485,90 @@ go();
   g("ar-ex").onclick=()=>{[81.42,267.14,322,174.28].forEach((v,k)=>g(ids[k]).value=v);calc()};
   g("ar-reset").onclick=()=>{ids.forEach(i=>g(i).value="");calc();g(ids[0]).focus()};
   g("ar-copy").onclick=()=>{if(!txt){toast("먼저 4개 값을 넣으세요");return}copy(txt)};calc()})();
+</script>
+<script>
+/* ===== 장기고객 관리: 면책기간 개시 안내 · 가입 기념 감사 · 단체 인사 ===== */
+const LT_ME="010-8796-3959", LT_THANKS="https://hd979796.github.io/hd979796/pmc/thanks.html";
+const ltAll=()=>(portalDocs||[]).filter(d=>d.type==="lt");
+const ltAdd=(d,n)=>{const x=new Date(d+"T00:00:00");x.setDate(x.getDate()+n);return x.toISOString().slice(0,10)};
+const ltYear=(d,y)=>{const x=new Date(d+"T00:00:00");x.setFullYear(x.getFullYear()+y);return x.toISOString().slice(0,10)};
+const ltDiff=(a,b)=>Math.round((new Date(a+"T00:00:00")-new Date(b+"T00:00:00"))/864e5);
+const ltOpen=t=>ltAdd(t.start,Number(t.wait)||0); /* 청약일을 1일째로 세면 '면책일수+1'일째 = 청약일+면책일수 */
+const ltDot=d=>d?d.slice(2).replace(/-/g,"."):"";
+const ltKdate=d=>{const x=new Date(d+"T00:00:00");return `${x.getMonth()+1}월 ${x.getDate()}일`};
+const ltPhone=t=>{const p=(t.phone||"").trim()||(typeof custInfo==="function"?(custInfo(t.name).phone||""):"");return p};
+const ltSms=(phone,body)=>"sms:"+phone.replace(/[^\d]/g,"")+(/iPhone|iPad/.test(navigator.userAgent)?"&":"?")+"body="+encodeURIComponent(body);
+function ltMsgOpen(t){return `[현대해상 박문철] ${t.name} 고객님, 안녕하세요.\n${ltDot(t.start)} 가입하신 ${t.product}가 오늘(${ltKdate(ltOpen(t))})부터 보장이 시작됩니다. (면책기간 ${t.wait}일 종료)\n오늘부터 진단·치료가 있으면 바로 연락 주세요. 청구까지 챙겨드리겠습니다.\n☎ ${LT_ME}`}
+function ltMsgYear(t,y){return `[현대해상 박문철] ${t.name} 고객님, 저와 함께하신 지 벌써 ${y}년이 되었습니다.\n늘 믿고 맡겨주셔서 진심으로 감사드립니다. 작은 감사장 보내드려요.\n${LT_THANKS}?to=${encodeURIComponent(t.name)}&y=${y}\n☎ ${LT_ME}`}
+function ltDue(){const td=today(),out=[];ltAll().forEach(t=>{if(!t.start)return;const sent=t.sent||{};
+  const o=ltOpen(t),dd=ltDiff(o,td);if(Number(t.wait)>0&&!sent.open&&dd<=3&&dd>=-14)out.push({t,k:"open",when:o,dd,msg:ltMsgOpen(t)});
+  for(let y=1;y<=30;y++){const a=ltYear(t.start,y),d2=ltDiff(a,td);if(d2>7)break;if(d2>=-14&&!sent["y"+y])out.push({t,k:"y"+y,y,when:a,dd:d2,msg:ltMsgYear(t,y)})}});
+  return out.sort((a,b)=>a.when.localeCompare(b.when))}
+function renderCare(){const td=today(),due=ltDue(),all=ltAll();
+  $("#lt-sub").textContent=due.length?`${due.length}건 · 보장 개시 3일 전부터, 가입 기념일 7일 전부터 표시`:"보낼 안내가 없습니다";
+  $("#lt-due").innerHTML=due.length?due.map((x,i)=>{const ph=ltPhone(x.t);const dl=x.dd===0?"오늘":x.dd>0?`D-${x.dd}`:`${-x.dd}일 지남`;
+    return `<li style="grid-template-columns:minmax(0,1fr)"><div><span class="lt-tag ${x.k==="open"?"open":"yr"}">${x.k==="open"?"보장 개시":"가입 "+x.y+"주년"}</span> <b>${esc(x.t.name)}</b> <span class="w">${esc(x.t.product)} · ${ltDot(x.when)} (${dl})${ph?" · "+esc(ph):" · 번호 없음"}</span>
+      <textarea class="in lt-msg" rows="4" data-ltm="${i}">${esc(x.msg)}</textarea>
+      <div class="row" style="margin-top:6px">${ph?`<a class="btn pri" href="#" data-ltsend="${i}">문자 보내기</a>`:""}<button class="btn" type="button" data-ltcopy="${i}">복사</button><button class="btn" type="button" data-ltdone="${i}">보냄 표시</button>${x.k!=="open"?`<a class="btn" href="${LT_THANKS}?to=${encodeURIComponent(x.t.name)}&y=${x.y}" target="_blank" rel="noopener">감사장 미리보기</a>`:""}</div></div></li>`}).join(""):`<li class="w" style="grid-template-columns:1fr">오늘 보낼 안내가 없습니다. 장기계약을 등록하면 보장 개시일·가입 기념일에 맞춰 여기에 뜹니다.</li>`;
+  window.__ltDue=due;
+  const q=norm($("#lt-q").value||"");const L=all.filter(t=>!q||norm(t.name+" "+t.product+" "+(t.memo||"")).includes(q)).sort((a,b)=>(b.start||"").localeCompare(a.start||""));
+  $("#lt-cnt").textContent=`${all.length}명`;
+  $("#lt-list").innerHTML=L.length?L.map(t=>{const o=ltOpen(t),dd=ltDiff(o,td),yrs=Math.floor(ltDiff(td,t.start)/365.25);const st=Number(t.wait)>0&&dd>0?`<span class="lt-tag wait">개시 D-${dd} · ${ltDot(o)}</span>`:`<span class="lt-tag open">보장 중</span>`;
+    return `<li><span class="chip" style="background:var(--panel);border:1px solid var(--line)">${yrs>=1?yrs+"년차":"신규"}</span><span><b>${esc(t.name)}</b> ${st}<div class="w" style="white-space:normal">${esc(t.product)} · 청약 ${ltDot(t.start)} · 면책 ${esc(t.wait)}일${t.memo?" · "+esc(t.memo):""}${ltPhone(t)?" · "+esc(ltPhone(t)):""}</div></span><span><button class="btn danger sm" type="button" data-ltdel="${t.id}">삭제</button></span></li>`}).join(""):`<li class="w" style="grid-template-columns:1fr">등록된 장기계약이 없습니다.</li>`;
+  const nm=new Set();(cases||[]).forEach(c=>c.name&&nm.add(c.name));$("#lt-names").innerHTML=[...nm].slice(0,400).map(n=>`<option value="${esc(n)}">`).join("");
+  bkCount();ltCalc()}
+function ltCalc(){const f=$("#lt-form");if(!f)return;if(!f.start.value)f.start.value=today();const w=Number(f.wait.value)||0;const o=ltAdd(f.start.value,w);
+  $("#lt-calc").innerHTML=w>0?`보장 개시일: <b style="color:var(--gold2)">${ltDot(o)} (${ltKdate(o)})</b> · 청약일 포함 ${w+1}일째 · 이날 안내 문자가 ‘오늘 보낼 안내’에 뜹니다`:`면책기간 없음 · 가입 1주년부터 감사 인사가 뜹니다`}
+(function(){const f=$("#lt-form");if(!f)return;
+  f.product.onchange=()=>{const o=f.product.selectedOptions[0];f.wait.value=o.dataset.w;ltCalc()};
+  f.wait.oninput=ltCalc;f.start.onchange=ltCalc;
+  f.name.onchange=()=>{if(!f.phone.value&&typeof custInfo==="function"){const p=custInfo(f.name.value.trim()).phone;if(p)f.phone.value=p}};
+  f.onsubmit=async e=>{e.preventDefault();if(!db)return toast("데이터 연결이 안 됐습니다");const d={type:"lt",name:f.name.value.trim(),phone:f.phone.value.trim(),product:f.product.value,wait:Number(f.wait.value)||0,start:f.start.value,memo:f.memo.value.trim(),sent:{},by:who,createdAt:new Date().toISOString()};
+    if(!d.name||!d.start)return toast("이름과 청약일을 넣어 주세요");
+    try{await db.doc("portal/lt"+Date.now()).set(d);toast(`${d.name} ${d.product} 등록 · 보장 개시 ${ltDot(ltOpen(d))}`);f.name.value="";f.phone.value="";f.memo.value="";render()}catch(err){toast("저장 실패")}};
+  $("#lt-q").oninput=()=>renderCare();
+  $("#v-care").addEventListener("click",async e=>{const b=e.target.closest("[data-ltsend],[data-ltcopy],[data-ltdone],[data-ltdel]");if(!b)return;
+    if(b.dataset.ltdel){if(b.dataset.sure!=="1"){b.dataset.sure="1";b.textContent="정말 삭제";return}try{await db.doc("portal/"+b.dataset.ltdel).delete();render()}catch(err){toast("삭제 실패")}return}
+    const i=Number(b.dataset.ltsend??b.dataset.ltcopy??b.dataset.ltdone),x=(window.__ltDue||[])[i];if(!x)return;const msg=($(`[data-ltm="${i}"]`)||{}).value||x.msg;
+    const mark=async()=>{try{await db.doc("portal/"+x.t.id).update({sent:{...(x.t.sent||{}),[x.k]:today()}});render()}catch(err){toast("기록 실패")}};
+    if(b.dataset.ltsend!=null){e.preventDefault();location.href=ltSms(ltPhone(x.t),msg);setTimeout(mark,800)}
+    else if(b.dataset.ltcopy!=null){try{await navigator.clipboard.writeText(msg);toast("복사했습니다")}catch(err){toast("복사 실패")}}
+    else mark()});
+})();
+/* ----- 단체 인사 ----- */
+const BK_TPL={"설날":"[현대해상 박문철] {이름}님, 새해 복 많이 받으세요.\n가족 모두 건강하고 웃음 가득한 설 보내시길 바랍니다.\n귀성길 사고·고장은 1588-5656, 무엇이든 저에게 연락 주세요.\n☎ 010-8796-3959",
+ "추석":"[현대해상 박문철] {이름}님, 풍성하고 넉넉한 한가위 보내세요.\n먼 길 오가시는 동안 안전운전 하시고, 급한 일은 언제든 연락 주세요.\n긴급출동 1588-5656 / ☎ 010-8796-3959",
+ "새해":"[현대해상 박문철] {이름}님, 새해 복 많이 받으세요.\n올 한 해도 건강하시고 하시는 일 모두 잘 되시길 바랍니다.\n☎ 010-8796-3959",
+ "봄":"[현대해상 박문철] {이름}님, 따뜻한 봄이 왔습니다.\n환절기 건강 잘 챙기시고, 나들이 길 안전운전 하세요.\n☎ 010-8796-3959",
+ "여름":"[현대해상 박문철] {이름}님, 무더위에 건강 조심하세요.\n장마철 빗길은 평소보다 천천히, 휴가길 사고·고장은 1588-5656으로 연락 주세요.\n☎ 010-8796-3959",
+ "가을":"[현대해상 박문철] {이름}님, 선선한 가을입니다.\n일교차가 큰 요즘 감기 조심하시고 행복한 계절 보내세요.\n☎ 010-8796-3959",
+ "겨울":"[현대해상 박문철] {이름}님, 추운 날씨에 건강 조심하세요.\n눈길·빙판길 안전운전 하시고, 배터리 방전·견인은 1588-5656으로 부르세요.\n☎ 010-8796-3959",
+ "직접 쓰기":"[현대해상 박문철] {이름}님, \n☎ 010-8796-3959"};
+let BK={list:[],i:0,run:false};
+function bkList(){const to=$("#bk-to").value,m=new Map();const add=(name,ph)=>{const d=(ph||"").replace(/\D/g,"");if(!/^01\d{8,9}$/.test(d)||m.has(d))return;m.set(d,{name:(name||"").replace(/\s*\(.*$/,"").trim(),phone:d})};
+  ltAll().forEach(t=>add(t.name,ltPhone(t)));
+  if(to==="all"){(cases||[]).forEach(c=>add(c.name,c.phone||c.hp||c.mobile||(typeof custInfo==="function"?custInfo(c.name).phone:"")))}
+  return [...m.values()]}
+function bkCount(){const n=bkList().length;$("#bk-n").textContent=`받는 사람 ${n}명`}
+function bkKey(){return "bk:"+$("#bk-tpl").value+":"+new Date().getFullYear()}
+function bkSent(){try{return new Set(JSON.parse(localStorage.getItem(bkKey())||"[]"))}catch(e){return new Set()}}
+function bkMark(p){const s=bkSent();s.add(p);try{localStorage.setItem(bkKey(),JSON.stringify([...s]))}catch(e){}}
+function bkShow(){const r=$("#bk-run"),L=BK.list,sent=bkSent();while(BK.i<L.length&&sent.has(L[BK.i].phone))BK.i++;
+  if(BK.i>=L.length){r.innerHTML=`<div class="big">모두 보냈습니다 🎉</div><p class="note">${L.length}명 완료. 같은 문구로 다시 보내려면 이 휴대폰의 기록을 지우세요.</p><button class="btn" type="button" id="bk-reset">기록 지우기</button>`;r.hidden=false;$("#bk-reset").onclick=()=>{try{localStorage.removeItem(bkKey())}catch(e){}BK.i=0;bkShow()};return}
+  const x=L[BK.i],msg=$("#bk-msg").value.replace(/\{이름\}/g,x.name||"고객");
+  r.innerHTML=`<div class="note">${BK.i+1} / ${L.length} · 이미 보낸 ${sent.size}명은 건너뜁니다</div><div class="big">${esc(x.name||"이름 없음")}님</div><div class="w">${x.phone.replace(/^(\d{3})(\d{3,4})(\d{4})$/,"$1-$2-$3")}</div>
+   <div class="row" style="margin-top:10px"><a class="btn pri" href="${ltSms(x.phone,msg)}" id="bk-go">문자 열기</a><button class="btn" type="button" id="bk-skip">건너뛰기</button><button class="btn" type="button" id="bk-stop">그만</button></div>`;r.hidden=false;
+  $("#bk-go").onclick=()=>{bkMark(x.phone);BK.i++;BK.wait=true};$("#bk-skip").onclick=()=>{BK.i++;bkShow()};$("#bk-stop").onclick=()=>{BK.run=false;r.hidden=true}}
+(function(){const t=$("#bk-tpl");if(!t)return;const mo=new Date().getMonth()+1;const def=mo===1||mo===2?"설날":mo===9||mo===10?"추석":mo<=5?"봄":mo<=8?"여름":mo===11?"가을":"겨울";
+  t.innerHTML=Object.keys(BK_TPL).map(k=>`<option${k===def?" selected":""}>${k}</option>`).join("");$("#bk-msg").value=BK_TPL[def];
+  t.onchange=()=>{$("#bk-msg").value=BK_TPL[t.value]};$("#bk-to").onchange=bkCount;
+  $("#bk-start").onclick=()=>{BK.list=bkList();BK.i=0;BK.run=true;if(!BK.list.length)return toast("전화번호가 있는 고객이 없습니다");bkShow()};
+  $("#bk-group").onclick=()=>{const L=bkList();if(!L.length)return toast("전화번호가 있는 고객이 없습니다");const body=$("#bk-msg").value.replace(/\{이름\}님?,?\s*/g,"고객님, ").replace(/고객님, 님/g,"고객님");
+    const r=$("#bk-run");const ch=[];for(let i=0;i<L.length;i+=20)ch.push(L.slice(i,i+20));
+    r.innerHTML=`<div class="note">이름 대신 ‘고객님’으로 바뀌어 갑니다. 묶음을 하나씩 눌러 보내세요. (그룹 대화 꺼짐 확인)</div><div class="row" style="margin-top:8px">${ch.map((c,i)=>`<a class="btn" href="sms:${c.map(x=>x.phone).join(",")}${/iPhone|iPad/.test(navigator.userAgent)?"&":"?"}body=${encodeURIComponent(body)}">${i+1}묶음 (${c.length}명)</a>`).join("")}</div>`;r.hidden=false};
+  document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&BK.run&&BK.wait){BK.wait=false;setTimeout(bkShow,300)}});
+})();
+if(typeof view!=="undefined"&&view==="care")renderCare();
 </script>
 </body>
 </html>
