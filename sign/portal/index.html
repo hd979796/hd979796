@@ -402,6 +402,16 @@ tr.over td:first-child{box-shadow:inset 4px 0 var(--bad)}
 .dz-t .h b{font-size:13px;padding:2px 10px;border-radius:999px;background:var(--panel);color:var(--dim);border:1px solid var(--line)}
 .dz-t.yes .h b{background:linear-gradient(180deg,var(--gold2),var(--accent));color:var(--accent-ink);border-color:transparent}
 .dz-t p{margin:6px 0 0;font-size:13.5px;color:var(--mute);line-height:1.55}
+
+/* 주요 바로가기 */
+.ql-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:6px}
+@media (max-width:900px){.ql-grid{grid-template-columns:1fr}}
+.ql{position:relative;display:grid;gap:8px;align-content:start}
+.ql::before{content:"";position:absolute;left:24px;top:-1px;width:34px;height:3px;background:var(--accent);border-radius:2px}
+.ql h3{margin:4px 0 8px;font-size:17px}
+.ql a{display:flex;align-items:center;gap:10px;min-height:48px;padding:0 14px;border:1px solid var(--line);border-radius:12px;background:var(--panel2);color:var(--fg);text-decoration:none;font-weight:700;font-size:14.5px}
+.ql a span{width:22px;text-align:center;color:var(--accent)}
+.ql a:hover{border-color:var(--accent);color:var(--gold2)}
 /* 홈페이지 톤 맞춤: 명조 제목, 금색 포인트 */
 h1,h2,h3,.dw h3{font-family:var(--f-serif);font-weight:800;letter-spacing:.01em}
 h2 em,h3 em{font-family:var(--f-body)}
@@ -750,6 +760,31 @@ nav .tops a.on{border-color:transparent}
     </ul>
   </div>
 </section>
+<section class="view" id="v-links" hidden>
+  <div class="card" style="background:transparent;border:0;box-shadow:none;padding:4px 2px 0">
+    <span class="w" style="letter-spacing:.24em;font-weight:900;color:var(--accent)">QUICK LINKS</span>
+    <h2 style="font-size:28px;margin-top:6px">주요 바로가기</h2>
+  </div>
+  <div class="ql-grid">
+    <div class="card ql"><h3>정부 · 공공기관</h3>
+      <a href="https://www.credit4u.or.kr" target="_blank" rel="noopener"><span>👁</span>내보험 다보여 (신용정보원)</a>
+      <a href="https://cont.insure.or.kr" target="_blank" rel="noopener"><span>🔍</span>내보험 찾아줌 (보험협회)</a>
+      <a href="https://www.silson24.or.kr" target="_blank" rel="noopener"><span>♡</span>실손24</a>
+      <a href="https://www.hira.or.kr" target="_blank" rel="noopener"><span>🏷</span>비급여 진료비 정보 (심평원)</a>
+    </div>
+    <div class="card ql"><h3>의료기관 정보</h3>
+      <a href="https://insurdesignlab.com/tools/c_hospital_info_search.html" target="_blank" rel="noopener"><span>🏥</span>의료기관 찾기</a>
+      <a href="https://insurdesignlab.com/tools/c_hospital_search.html" target="_blank" rel="noopener"><span>🛏</span>간호간병 병원 찾기</a>
+      <a href="https://insurdesignlab.com/tools/c_body_map.html" target="_blank" rel="noopener"><span>📄</span>KCD 질병코드 찾기</a>
+      <a href="#surg"><span>🔎</span>수술검색 (1~5종 · 120대)</a>
+    </div>
+    <div class="card ql"><h3>보험회사</h3>
+      <a href="https://www.hi.co.kr/serviceAction.do?view=bin/SP/08/HHSP0801M" target="_blank" rel="noopener"><span>📑</span>현대해상 공시실</a>
+      <a href="https://www.hi.co.kr" target="_blank" rel="noopener"><span>🏠</span>현대해상 홈페이지</a>
+      <a href="https://sp.hi.co.kr" target="_blank" rel="noopener"><span>🏢</span>하이 영업포탈</a>
+    </div>
+  </div>
+</section>
 <section class="view" id="v-make" hidden>
   <div class="card">
     <h2>🎬 제작실 <em>여보어디가TV · 우당탕탕 영상 기획·촬영·편집</em></h2>
@@ -815,10 +850,10 @@ const STUDY_TOOLS=[
   {t:"자동차 갱신설계 매뉴얼",d:"만기명세 → 가설계 → 청약서 순서와 특약 규칙",u:"https://claude.ai/artifact/ShBURvuEzjhAwe6RpjPsJS",i:"🚗"},
   {t:"하이 영업포탈",d:"담보 조회 · 설계",u:"https://sp.hi.co.kr",i:"🏢"}];
 const CLAIM_LOG_KINDS=["배상책임접수","상해질병접수"];
-const NAV_ALL=[["home","현황"],["long","장기"],["cases","자동차"],["gen","일반"],["claims","보상·청구"],["ship","발송"],["customers","고객"],["care","장기고객"],["requests","요청함"],["pay","카드결제"],["calls","통화"],["todo","할 일"],["templates","멘트"],["surg","수술검색"],["study","보험상담"]];
+const NAV_ALL=[["home","현황"],["long","장기"],["cases","자동차"],["gen","일반"],["claims","보상·청구"],["ship","발송"],["customers","고객"],["care","장기고객"],["requests","요청함"],["pay","카드결제"],["calls","통화"],["todo","할 일"],["templates","멘트"],["surg","수술검색"],["links","바로가기"],["study","보험상담"]];
 /* 역할별 상단 메뉴. 대표: 상담·관리 5개만. 실장: 현황 · 보험(자동차·일반·장기 폴더) · 발송 · 고객 · 요청함 · 카드결제 */
-const ROLES={"대표":{nav:[["calls","통화"],["todo","할 일"],["customers","고객"],["care","장기고객"],["claims","보상·청구"],["area","배상면적"],["surg","수술검색"],["study","보험상담"],["templates","멘트"],["make","🎬 제작실"]],home:"calls",lines:[]},
-  "실장":{nav:[["home","현황"],["ins","보험"],["ship","발송"],["customers","고객"],["care","장기고객"],["surg","수술검색"],["requests","요청함"],["pay","카드결제"]],home:"home",lines:["자동차","일반","장기"]}};
+const ROLES={"대표":{nav:[["calls","통화"],["todo","할 일"],["customers","고객"],["care","장기고객"],["claims","보상·청구"],["area","배상면적"],["surg","수술검색"],["links","바로가기"],["study","보험상담"],["templates","멘트"],["make","🎬 제작실"]],home:"calls",lines:[]},
+  "실장":{nav:[["home","현황"],["ins","보험"],["ship","발송"],["customers","고객"],["care","장기고객"],["surg","수술검색"],["links","바로가기"],["requests","요청함"],["pay","카드결제"]],home:"home",lines:["자동차","일반","장기"]}};
 const INS_VIEWS=["cases","gen","long"];let lastIns="cases";
 const NAV_N={long:"n-long",cases:"n-cases",gen:"n-gen",claims:"n-claims",ship:"n-ship",requests:"n-req",pay:"n-pay",todo:"n-todo"};
 const GIFT_MIN=400000; const SOON_DAYS=10;
@@ -885,7 +920,7 @@ function lineCols(line){const L=LINES[line];const base=[{h:L.dateLabel},{h:L.nam
 Object.keys(LINES).forEach(l=>{$("#v-"+LINES[l].key).innerHTML=lineSection(l)});
 
 /* ---- routing ---- */
-const VIEWS=["home","long","cases","gen","claims","area","ship","pay","requests","customers","care","surg","calls","todo","templates","study","make"];
+const VIEWS=["home","long","cases","gen","claims","area","ship","pay","requests","customers","care","surg","links","calls","todo","templates","study","make"];
 function go(){let h=location.hash.replace("#","");let arg="";if(h.includes(":")){[h,arg]=h.split(":")}if(!VIEWS.includes(h))h=ROLES[who].home;if(who==="대표"&&h==="home")h="calls";view=h;
   const stage=INS_VIEWS.includes(h);$(".wrap").classList.toggle("stage-on",stage);if(stage){lastIns=h;renderRail()}
   VIEWS.forEach(v=>{$("#v-"+v).hidden=v!==h});$$("#nav a").forEach(a=>{if(a.dataset.v===h)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current")});
