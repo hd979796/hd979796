@@ -2,7 +2,7 @@
   "name": "박문철보험대리점",
   "short_name": "박문철보험",
   "description": "현대해상 박문철보험대리점 · 전화·문자·사고접수·보험사 전화번호",
-  "start_url": "./?app=1#quick",
+  "start_url": "./?app=1",
   "scope": "./",
   "display": "standalone",
   "background_color": "#0D1A3D",
