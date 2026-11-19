@@ -383,6 +383,17 @@ tr.over td:first-child{box-shadow:inset 4px 0 var(--bad)}
 .lt-msg{width:100%;margin-top:8px;font-size:13px;line-height:1.5}
 .bk-run{margin-top:12px;border:1px solid var(--accent);border-radius:var(--r-tile);padding:14px;background:var(--accent-soft)}
 .bk-run .big{font-family:var(--f-serif);font-size:22px;font-weight:800}
+
+/* 수술 검색 */
+.sg-hit{border:1px solid var(--line);border-radius:var(--r-tile);padding:14px 16px;background:var(--panel2);margin-bottom:10px}
+.sg-hit .nm{font-family:var(--f-serif);font-size:19px;font-weight:800}
+.sg-kind{display:inline-grid;place-items:center;min-width:64px;padding:4px 12px;border-radius:999px;font-weight:900;font-size:15px;margin-left:8px;vertical-align:2px;background:linear-gradient(180deg,var(--gold2),var(--accent));color:var(--accent-ink)}
+.sg-kind.k1,.sg-kind.k2{background:var(--panel);color:var(--gold2);border:1px solid var(--accent)}
+.sg-hit p{margin:8px 0 0;color:var(--mute);font-size:14px;line-height:1.65}
+.sg-say{margin-top:10px;padding:10px 12px;border-radius:10px;background:rgba(0,0,0,.25);font-size:14px}
+.sg-rules{margin:0;padding-left:18px;display:grid;gap:8px;font-size:14px;color:var(--mute)}
+.sg-rules b{color:var(--fg)}
+.sg-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 /* 홈페이지 톤 맞춤: 명조 제목, 금색 포인트 */
 h1,h2,h3,.dw h3{font-family:var(--f-serif);font-weight:800;letter-spacing:.01em}
 h2 em,h3 em{font-family:var(--f-body)}
@@ -706,6 +717,25 @@ nav .tops a.on{border-color:transparent}
     <ul class="list" id="lt-list" style="margin-top:10px"></ul>
   </div>
 </section>
+<section class="view" id="v-surg" hidden>
+  <div class="card">
+    <h2>1~5종 수술 검색 <em>질병수술: 퍼펙트플러스(Hi2610) [별표92-1] 기준 · 상해수술은 [별표36] 별도</em></h2>
+    <div class="filters"><input class="in" id="sg-q" type="search" placeholder="예) 맹장, 암수술, 대장용종, 디스크, 백내장" aria-label="수술 이름 검색" autocomplete="off"></div>
+    <div id="sg-out" style="margin-top:12px"></div>
+    <p class="note" id="sg-data" style="margin-top:10px"></p>
+  </div>
+  <div class="card">
+    <h2>꼭 같이 보는 규칙 <em>약관 2-170 질병수술Ⅳ(1-5종)</em></h2>
+    <ul class="sg-rules">
+      <li><b>수술할 때마다</b> 지급합니다(횟수 제한 없음). 같은 질병으로 <b>동시에 두 수술</b>을 받으면 가장 높은 종 하나만 지급합니다. 부위가 다르고 치료 목적이 다른 독립 수술이면 각각 지급합니다.</li>
+      <li><b>60일 안에 반복한 수술은 1회</b>로 봅니다: 내시경·카테터 수술, 레이저 안구수술, 망막박리, 체외충격파쇄석술, 유방절제술(맘모톰), 자궁·난소 경질적 수술, 암 내시경·방사선 근치 등.</li>
+      <li>눈 질환은 레이저 수술도 포함합니다(다래끼·선천성 제외).</li>
+      <li><b>보상 제외</b>: 흡인·천자·신경차단, 미용성형, 피임, 검사·생검 목적 수술, 치과질환(K00~K08), 비만, 선천기형, 임신·출산(제왕절개는 보상), 단순포경, 시력교정술 등.</li>
+      <li>건강검진 자체는 제외지만, <b>검진 중 이상 소견으로 받은 수술</b>(예: 검진 중 대장용종 제거)은 보상합니다.</li>
+      <li>상해로 인한 수술은 별도 담보 <b>상해수술Ⅲ(1-5종), [별표36]</b>입니다.</li>
+    </ul>
+  </div>
+</section>
 <section class="view" id="v-make" hidden>
   <div class="card">
     <h2>🎬 제작실 <em>여보어디가TV · 우당탕탕 영상 기획·촬영·편집</em></h2>
@@ -771,10 +801,10 @@ const STUDY_TOOLS=[
   {t:"자동차 갱신설계 매뉴얼",d:"만기명세 → 가설계 → 청약서 순서와 특약 규칙",u:"https://claude.ai/artifact/ShBURvuEzjhAwe6RpjPsJS",i:"🚗"},
   {t:"하이 영업포탈",d:"담보 조회 · 설계",u:"https://sp.hi.co.kr",i:"🏢"}];
 const CLAIM_LOG_KINDS=["배상책임접수","상해질병접수"];
-const NAV_ALL=[["home","현황"],["long","장기"],["cases","자동차"],["gen","일반"],["claims","보상·청구"],["ship","발송"],["customers","고객"],["care","장기고객"],["requests","요청함"],["pay","카드결제"],["calls","통화"],["todo","할 일"],["templates","멘트"],["study","보험상담"]];
+const NAV_ALL=[["home","현황"],["long","장기"],["cases","자동차"],["gen","일반"],["claims","보상·청구"],["ship","발송"],["customers","고객"],["care","장기고객"],["requests","요청함"],["pay","카드결제"],["calls","통화"],["todo","할 일"],["templates","멘트"],["surg","수술검색"],["study","보험상담"]];
 /* 역할별 상단 메뉴. 대표: 상담·관리 5개만. 실장: 현황 · 보험(자동차·일반·장기 폴더) · 발송 · 고객 · 요청함 · 카드결제 */
-const ROLES={"대표":{nav:[["calls","통화"],["todo","할 일"],["customers","고객"],["care","장기고객"],["claims","보상·청구"],["area","배상면적"],["study","보험상담"],["templates","멘트"],["make","🎬 제작실"]],home:"calls",lines:[]},
-  "실장":{nav:[["home","현황"],["ins","보험"],["ship","발송"],["customers","고객"],["care","장기고객"],["requests","요청함"],["pay","카드결제"]],home:"home",lines:["자동차","일반","장기"]}};
+const ROLES={"대표":{nav:[["calls","통화"],["todo","할 일"],["customers","고객"],["care","장기고객"],["claims","보상·청구"],["area","배상면적"],["surg","수술검색"],["study","보험상담"],["templates","멘트"],["make","🎬 제작실"]],home:"calls",lines:[]},
+  "실장":{nav:[["home","현황"],["ins","보험"],["ship","발송"],["customers","고객"],["care","장기고객"],["surg","수술검색"],["requests","요청함"],["pay","카드결제"]],home:"home",lines:["자동차","일반","장기"]}};
 const INS_VIEWS=["cases","gen","long"];let lastIns="cases";
 const NAV_N={long:"n-long",cases:"n-cases",gen:"n-gen",claims:"n-claims",ship:"n-ship",requests:"n-req",pay:"n-pay",todo:"n-todo"};
 const GIFT_MIN=400000; const SOON_DAYS=10;
@@ -841,7 +871,7 @@ function lineCols(line){const L=LINES[line];const base=[{h:L.dateLabel},{h:L.nam
 Object.keys(LINES).forEach(l=>{$("#v-"+LINES[l].key).innerHTML=lineSection(l)});
 
 /* ---- routing ---- */
-const VIEWS=["home","long","cases","gen","claims","area","ship","pay","requests","customers","care","calls","todo","templates","study","make"];
+const VIEWS=["home","long","cases","gen","claims","area","ship","pay","requests","customers","care","surg","calls","todo","templates","study","make"];
 function go(){let h=location.hash.replace("#","");let arg="";if(h.includes(":")){[h,arg]=h.split(":")}if(!VIEWS.includes(h))h=ROLES[who].home;if(who==="대표"&&h==="home")h="calls";view=h;
   const stage=INS_VIEWS.includes(h);$(".wrap").classList.toggle("stage-on",stage);if(stage){lastIns=h;renderRail()}
   VIEWS.forEach(v=>{$("#v-"+v).hidden=v!==h});$$("#nav a").forEach(a=>{if(a.dataset.v===h)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current")});
@@ -894,7 +924,7 @@ function callsOf(name){const n=norm(name);if(!n)return[];return allCalls().filte
 function enrichCases(){const multi=new Set();const seen={};custRows.forEach(r=>{const k=norm(r.name);if(seen[k])multi.add(k);seen[k]=1});
   cases.forEach(c=>{if(c.address&&c.phone&&c.zip)return;if(multi.has(norm(c.name))&&!(profiles[pkey(c.name)]||{}).addr)return;const I=custInfo(c.name);
     if(!c.address&&I.addr){c.address=I.addr;c._autoAddr=1}if(!c.phone&&I.phone)c.phone=I.phone;if(!c.zip&&I.zip)c.zip=I.zip})}
-const VIEW_R={home:()=>{renderHome();Object.keys(LINES).forEach(renderLine)},claims:()=>renderClaims(),ship:()=>renderShip(),pay:()=>renderPay(),requests:()=>renderReqs(),templates:()=>renderTpls(),study:()=>renderNotes(),customers:()=>renderCust(),calls:()=>renderCalls(),todo:()=>renderTodos(),care:()=>{if(typeof renderCare==="function")renderCare()}};
+const VIEW_R={home:()=>{renderHome();Object.keys(LINES).forEach(renderLine)},claims:()=>renderClaims(),ship:()=>renderShip(),pay:()=>renderPay(),requests:()=>renderReqs(),templates:()=>renderTpls(),study:()=>renderNotes(),customers:()=>renderCust(),calls:()=>renderCalls(),todo:()=>renderTodos(),care:()=>{if(typeof renderCare==="function")renderCare()},surg:()=>{if(typeof renderSurg==="function")renderSurg()}};
 function render(){enrichCases();renderMake();if(INS_VIEWS.includes(view)){renderRail();renderLine(LINE_KEYS[view])}const f=VIEW_R[view];if(f)f();renderNav()}
 function renderNav(){const open=reqs.filter(r=>r.status==="new"||r.status==="working");const n=$("#n-req");n.textContent=open.length||"";n.classList.toggle("hot",open.length>0);
   Object.keys(LINES).forEach(l=>{const k=LINES[l].key;const cs=cases.filter(c=>lineOf(c)===l);const hot=cs.filter(c=>isSoon(c)||isOver(c)||needPolicy(c)).length;const n2=cs.filter(c=>inMonth(c)&&!isDone(c)&&!isFail(c)).length;const el=$("#n-"+k);el.textContent=(hot||n2)||"";el.classList.toggle("hot",hot>0)});
@@ -1569,6 +1599,43 @@ function bkShow(){const r=$("#bk-run"),L=BK.list,sent=bkSent();while(BK.i<L.leng
   document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&BK.run&&BK.wait){BK.wait=false;setTimeout(bkShow,300)}});
 })();
 if(typeof view!=="undefined"&&view==="care")renderCare();
+</script>
+<script>
+/* ===== 1~5종 수술 검색 =====
+   SURG: 약관에서 확인한 항목만 넣는다. n=분류표 이름, k=종, kw=검색어(별칭), d=쉬운 설명.
+   전체 분류표는 약관 PDF([별표92-1], 1364쪽~)를 받아서 채운다. */
+const SURG_SRC="퍼펙트플러스(Hi2610) [별표92-1] 1-5종수술Ⅳ 분류표";
+const SURG=[
+ {n:"피부이식술 (25㎠ 미만)",k:1,kw:["피부이식","화상 피부이식","식피술"],d:"다친 부위에 다른 곳의 피부를 옮겨 붙이는 수술 중 면적이 25㎠ 미만인 경우입니다."},
+ {n:"기타 유방수술",k:1,kw:["유방","유방종양","유방 혹"],d:"분류표에 따로 적힌 유방절제술 등을 제외한 그 밖의 유방 수술입니다."},
+ {n:"편도·아데노이드 절제술",k:1,kw:["편도","편도선","아데노이드","편도절제"],d:"목 안쪽 편도나 코 뒤 아데노이드를 떼어내는 수술입니다."},
+ {n:"안검하수증 수술",k:1,kw:["안검하수","눈꺼풀 처짐","눈꺼풀"],d:"처진 윗눈꺼풀을 올려 주는 치료 목적 수술입니다(미용 목적 쌍꺼풀은 제외)."},
+ {n:"골 이식술",k:2,kw:["뼈이식","골이식"],d:"부족하거나 손상된 뼈 자리에 다른 뼈를 옮겨 심는 수술입니다."},
+ {n:"쇄골·견갑골·늑골·흉골 관혈수술",k:2,kw:["쇄골","견갑골","어깨뼈","늑골","갈비뼈","흉골","가슴뼈"],d:"쇄골·어깨뼈·갈비뼈·가슴뼈를 절개해서 하는 수술(관혈수술)입니다."},
+ {n:"누낭비강 관혈수술",k:2,kw:["누낭","눈물길","코눈물관","누관"],d:"막힌 눈물길(누낭)과 코 사이에 새 길을 내는 절개 수술입니다."},
+ {n:"피부이식술 (25㎠ 이상)",k:3,kw:["피부이식","화상 피부이식","식피술"],d:"피부이식 면적이 25㎠ 이상인 경우입니다."},
+ {n:"척추·골반·추간판 관혈수술",k:3,kw:["척추","골반","추간판","디스크","허리디스크","목디스크","척추수술"],d:"척추뼈·골반·디스크(추간판)를 절개해서 하는 수술입니다. 시술(주사·고주파 등)은 수술이 아닐 수 있으니 수술명을 확인하세요."},
+ {n:"비장 절제술",k:3,kw:["비장","지라"],d:"비장(지라)을 떼어내는 수술입니다."},
+ {n:"인공심박조율기 매입술",k:3,kw:["심박조율기","페이스메이커","부정맥 기계"],d:"심장 박동을 돕는 기계를 몸 안에 넣는 수술입니다."},
+ {n:"폐·흉막 관혈수술 (개흉술)",k:4,kw:["폐수술","흉막","개흉","기흉"],d:"가슴을 열어 폐나 흉막을 수술하는 경우입니다."},
+ {n:"심장내 관혈수술",k:4,kw:["심장수술","판막"],d:"심장을 열어 안쪽을 수술하는 경우입니다."},
+ {n:"관혈적 척수종양 절제술",k:4,kw:["척수종양","척수"],d:"척수에 생긴 종양을 절개해서 떼어내는 수술입니다."},
+ {n:"부신 절제술",k:4,kw:["부신"],d:"부신을 떼어내는 수술입니다."},
+ {n:"악성신생물(암) 근치수술",k:5,kw:["암","암수술","악성종양","악성신생물","근치","위암","대장암","갑상선암","유방암","폐암","간암"],d:"암을 완전히 없애려는 목적의 수술입니다. 내시경·방사선 근치는 60일 안에 반복하면 1회로 봅니다. 상품에 따라 별도 암수술비 담보가 따로 나갈 수 있습니다."},
+ {n:"폐·심장·간 이식술 (수용자)",k:5,kw:["이식","장기이식","간이식","심장이식","폐이식"],d:"폐·심장·간을 이식받는 사람의 수술입니다."},
+ {n:"관동맥 관혈수술",k:5,kw:["관상동맥","관동맥","심장혈관","바이패스","우회술"],d:"심장 혈관(관상동맥)을 절개해서 하는 수술입니다(스텐트 같은 카테터 시술과 구분)."},
+ {n:"뇌하수체종양 절제술",k:5,kw:["뇌하수체","뇌종양"],d:"뇌하수체에 생긴 종양을 떼어내는 수술입니다."}
+];
+const SURG_HINT={"맹장":"맹장(충수) 수술","충수":"충수 절제술","대장용종":"대장용종 내시경 절제","용종":"용종 절제","백내장":"백내장 수술","치핵":"치핵(치질) 수술","치질":"치핵(치질) 수술","담낭":"담낭(쓸개) 절제","쓸개":"담낭(쓸개) 절제","탈장":"탈장 수술","갑상선":"갑상선 수술","자궁근종":"자궁근종 수술","제왕절개":"제왕절개","무릎":"무릎 관절 수술","연골":"연골 수술","인공관절":"인공관절 수술","손목터널":"손목터널증후군 수술","녹내장":"녹내장 수술","망막":"망막 수술","스텐트":"관상동맥 스텐트 시술","부비동":"부비동(축농증) 수술","축농증":"부비동(축농증) 수술"};
+function renderSurg(){const q=$("#sg-q"),out=$("#sg-out");if(!q)return;
+  $("#sg-data").innerHTML=`지금 들어 있는 항목: <b>${SURG.length}개</b> (약관에서 확인된 것만). 전체 분류표는 약관 PDF를 받으면 채웁니다. 근거: ${SURG_SRC}`;
+  const k=norm(q.value);if(!k){out.innerHTML=`<div class="sg-chips">${["맹장","암수술","대장용종","디스크","백내장","편도","골이식","심장"].map(w=>`<button class="btn sm" type="button" data-sgq="${w}">${w}</button>`).join("")}</div>`;return}
+  const hits=SURG.filter(x=>norm(x.n).includes(k)||x.kw.some(w=>norm(w).includes(k)||k.includes(norm(w))));
+  if(hits.length){out.innerHTML=hits.sort((a,b)=>b.k-a.k).map(x=>`<div class="sg-hit"><span class="nm">${esc(x.n)}</span><span class="sg-kind k${x.k}">${x.k}종 수술</span><p>${esc(x.d)}</p><div class="sg-say">고객 안내: “${esc(x.n.replace(/\s*\(.*\)$/,""))}은(는) 질병수술비 <b>${x.k}종</b>에 해당합니다. 수술확인서(수술명·수술코드)를 받아 주시면 정확히 확인해 드릴게요.”</div><p class="w" style="margin-top:6px">근거: ${SURG_SRC}</p></div>`).join("");return}
+  const hint=Object.keys(SURG_HINT).find(w=>k.includes(norm(w)));
+  out.innerHTML=`<div class="sg-hit"><span class="nm">${esc(hint?SURG_HINT[hint]:q.value)}</span><span class="sg-kind" style="background:var(--panel);color:var(--mute);border:1px solid var(--line)">확인 필요</span><p>아직 약관에서 확인해 넣지 않은 수술입니다. 추측으로 종을 알려 드리지 않습니다.</p><p>확인 방법: 병원 <b>수술확인서의 수술명·수술코드</b>를 받아 약관 [별표92-1]과 대조하거나, 현대해상 보상과(1588-5656)에 수술코드로 문의하세요.${/대장용종|용종/.test(k)?"<br>※ 건강검진 중 이상 소견으로 대장용종을 뗐다면 검진 목적이 아니므로 보상 대상입니다. 60일 안에 다시 떼면 1회로 봅니다.":""}</p></div>`}
+(function(){const q=$("#sg-q");if(!q)return;q.addEventListener("input",renderSurg);$("#sg-out").addEventListener("click",e=>{const b=e.target.closest("[data-sgq]");if(b){q.value=b.dataset.sgq;renderSurg()}});})();
+if(typeof view!=="undefined"&&view==="surg")renderSurg();
 </script>
 </body>
 </html>
