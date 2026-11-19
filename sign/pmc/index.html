@@ -140,6 +140,13 @@ svg{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:2;stroke-lin
 .tile i svg{width:22px;height:22px}
 .tile b{font-size:17px}
 .tile small{color:var(--muted);font-size:13.5px;line-height:1.5}
+.save{display:inline-flex;align-items:center;gap:12px;margin-top:22px;padding:8px 18px 8px 8px;border-radius:999px;border:1px solid rgba(242,209,147,.55);background:rgba(217,174,98,.14);color:#fff;font:inherit;text-align:left;cursor:pointer;align-self:flex-start;animation:glow 2.6s ease-out 1s 3}
+.save i{width:38px;height:38px;border-radius:50%;background:var(--gold);color:#17130B;display:grid;place-items:center;flex:none}
+.save i svg{width:20px;height:20px}
+.save b{display:block;font-size:15px;line-height:1.3}
+.save small{display:block;font-size:12.5px;color:var(--gold2);line-height:1.3}
+.save:hover{background:rgba(217,174,98,.22)}
+@keyframes glow{0%{box-shadow:0 0 0 0 rgba(217,174,98,.55)}100%{box-shadow:0 0 0 14px rgba(217,174,98,0)}}
 .install{margin-top:22px;display:flex;flex-wrap:wrap;align-items:center;gap:12px 18px;padding:18px 20px;border-radius:18px;border:1px dashed rgba(217,174,98,.45)}
 .install p{margin:0;color:#CFC7BA;font-size:15px;flex:1 1 260px}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 20px;border-radius:999px;border:0;background:var(--gold);color:#17130B;font:inherit;font-weight:900;font-size:15px;text-decoration:none;cursor:pointer}
@@ -280,6 +287,7 @@ svg{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:2;stroke-lin
       <p class="role">현대해상 박문철보험대리점 대표</p>
       <div class="bar" aria-hidden="true"></div>
       <p class="slogan"><em>설계</em>부터 <em>보상</em>까지,<br>끝까지 책임지는 보험.</p>
+      <button class="save" type="button" id="installBtn"><i><svg><use href="#i-plus"/></svg></i><span><b>휴대폰 홈 화면에 저장</b><small>필요하면 언제든 찾아주세요</small></span></button>
       <ul class="awards">
         <li>현대해상 우수인증대리점 2018 ~ 현재</li>
         <li>2024 연도대상 동상 · 2025 10년 근속 연도대상</li>
@@ -337,10 +345,6 @@ svg{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:2;stroke-lin
         <a class="tile" href="tel:1588-5656"><i class="ic-red"><svg><use href="#i-car"/></svg></i><b>현대해상 긴급출동</b><small class="num">1588-5656 · 견인 · 배터리 · 타이어</small></a>
         <button class="tile" type="button" data-open="ins"><i class="ic-gold"><svg><use href="#i-search"/></svg></i><b>보험사 전화번호</b><small>모든 보험사 · 누르면 바로 전화</small></button>
         <a class="tile" href="full.html#booking"><i class="ic-line"><svg><use href="#i-cal"/></svg></i><b>상담 날짜 예약</b><small>달력에서 편한 날 고르기</small></a>
-      </div>
-      <div class="install" id="installBox">
-        <p><b style="color:#fff">휴대폰 홈 화면에 저장해 두세요.</b><br>사고 났을 때 앱처럼 바로 열립니다.</p>
-        <button class="btn" type="button" id="installBtn"><svg><use href="#i-plus"/></svg>바로가기 만들기</button>
       </div>
     </div>
   </section>
@@ -500,9 +504,9 @@ svg{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:2;stroke-lin
 
   /* 홈 화면에 추가 */
   var deferred=null, ib=$('#installBtn');
-  if(window.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true) $('#installBox').hidden=true;
+  if(window.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true) $('#installBtn').hidden=true;
   window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferred=e;});
-  window.addEventListener('appinstalled',function(){$('#installBox').hidden=true;});
+  window.addEventListener('appinstalled',function(){$('#installBtn').hidden=true;});
   var ua=navigator.userAgent, ios=/iPhone|iPad|iPod/.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1), kakao=/KAKAOTALK/i.test(ua), naver=/NAVER\(inapp/i.test(ua), samsung=/SamsungBrowser/i.test(ua);
   ib.addEventListener('click',function(){
     if(deferred){deferred.prompt();deferred.userChoice.finally(function(){deferred=null;});return;}
