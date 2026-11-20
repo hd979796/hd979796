@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>박문철 · 현대해상 박문철보험대리점</title>
-<meta name="description" content="현대해상 박문철보험대리점 대표 박문철. 설계부터 보상까지 끝까지 책임지는 보험 파트너. 상담 신청 · 사고접수 · 보험사 전화번호.">
+<title>박문철 모바일 명함 · 현대해상 박문철보험대리점</title>
+<meta name="description" content="현대해상 박문철보험대리점 박문철 모바일 명함. 사고접수·보상청구부터 보험 상담, 보험사 전화번호, 주요 보험 정보 사이트까지 이 명함 하나로 바로 연결됩니다.">
 <meta property="og:type" content="website">
-<meta property="og:title" content="박문철 · 현대해상 박문철보험대리점">
-<meta property="og:description" content="설계부터 보상까지, 끝까지 책임지는 보험 파트너">
+<meta property="og:title" content="박문철 모바일 명함 · 현대해상 박문철보험대리점">
+<meta property="og:description" content="사고접수·보상청구부터 보험 상담까지, 이 명함 하나로 바로 연결됩니다.">
 <meta property="og:image" content="https://hd979796.github.io/hd979796/pmc/og2.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -126,6 +126,25 @@ svg{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:2;stroke-lin
 .tl li:last-child{padding-bottom:0}
 @media (max-width:860px){.prof{grid-template-columns:1fr;gap:32px}.prof-card{max-width:420px;aspect-ratio:1/1}}
 
+/* book */
+.book{position:relative;overflow:hidden;background:radial-gradient(60% 70% at 25% 50%,rgba(242,209,147,.16),transparent 70%),var(--bg)}
+.bk{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:56px;align-items:center}
+.bk-art{display:grid;place-items:center;perspective:1400px;padding:10px 0}
+.bk-3d{position:relative;width:min(300px,70vw);transform:rotateY(-18deg) rotateX(3deg);transform-style:preserve-3d;transition:transform .5s ease}
+.bk-3d img{display:block;width:100%;height:auto;border-radius:3px 8px 8px 3px;box-shadow:28px 34px 60px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.06)}
+.bk-3d::before{content:"";position:absolute;left:0;top:0;bottom:0;width:16px;transform:translateX(-15px) rotateY(-90deg);transform-origin:right;background:linear-gradient(90deg,#c9a668,#e9d3a3);border-radius:3px 0 0 3px}
+.bk-3d::after{content:"";position:absolute;inset:0;border-radius:3px 8px 8px 3px;background:linear-gradient(100deg,rgba(0,0,0,.18) 0,rgba(255,255,255,.12) 4%,rgba(255,255,255,0) 12%,rgba(255,255,255,0) 70%,rgba(255,255,255,.08) 100%);pointer-events:none}
+.bk-art:hover .bk-3d{transform:rotateY(-6deg) rotateX(1deg)}
+.bk-txt h2{font-size:clamp(30px,3.6vw,42px)}
+.bk-sub{margin:8px 0 0;color:#CFC7BA;font-size:17px}.bk-sub b{color:var(--gold2)}
+.bk-txt blockquote{margin:24px 0 0;padding:18px 20px;border-left:3px solid var(--gold);background:rgba(255,255,255,.04);border-radius:0 14px 14px 0;font-family:var(--serif);font-weight:700;font-size:17px;line-height:1.85;color:#EDE5D6}
+.bk-txt blockquote em{font-style:normal;color:var(--gold2)}
+.bk-cat{margin-top:22px}.bk-cat .lb{font-size:13px;font-weight:700;color:var(--muted)}
+.bk-cat ul{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.bk-cat li{min-width:62px;text-align:center;padding:7px 14px;border-radius:999px;border:1px solid rgba(217,174,98,.45);color:#F1E6CF;font-weight:700;font-size:14px;background:rgba(217,174,98,.08)}
+.bk-by{margin:18px 0 16px;color:var(--muted);font-size:13.5px}
+@media (max-width:860px){.bk{grid-template-columns:1fr;gap:34px}.bk-3d{width:min(240px,62vw);transform:rotateY(-12deg)}}
+@media (prefers-reduced-motion:reduce){.bk-3d{transition:none}}
 /* team */
 .team{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
 .mem{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px;display:grid;grid-template-columns:72px minmax(0,1fr);gap:16px;align-items:center}
@@ -284,6 +303,7 @@ svg{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:2;stroke-lin
   <nav class="mmenu" id="mmenu" hidden aria-label="모바일 메뉴">
     <div class="in">
       <a href="#profile">소개 · 경력</a>
+      <a href="#book">저서 『좋은 보험 백과사전』</a>
       <a href="#team">함께하는 전문가</a>
       <a href="#help">사고접수 · 보험사 전화번호</a>
       <a href="#links">주요 바로가기</a>
@@ -322,7 +342,7 @@ svg{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:2;stroke-lin
     <div class="in prof">
       <div class="prof-card">
         <img src="hero-park2.jpg" alt="" width="1000" height="1361" loading="lazy">
-        <div class="tag"><b>『좋은보험백과사전』</b>2023 집필</div>
+        <a class="tag" href="#book" style="text-decoration:none;color:inherit"><b>『좋은 보험 백과사전』</b>2023 집필 →</a>
       </div>
       <div>
         <span class="eyebrow">PROFILE</span>
@@ -338,6 +358,24 @@ svg{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:2;stroke-lin
           <li><span class="y">2024</span><span>Core-MBA 1기</span></li>
           <li class="hl"><span class="y">2025</span><b>현대해상 10년 근속 연도대상</b></li>
         </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec book" id="book" aria-labelledby="bookTitle">
+    <div class="in bk">
+      <div class="bk-art">
+        <div class="bk-3d"><img src="book-cover.jpg" alt="좋은 보험 백과사전 표지 — 명장 박문철이 전하는, 박문철·주활·김병민 지음" width="600" height="855" loading="lazy"></div>
+      </div>
+      <div class="bk-txt">
+        <span class="eyebrow">BOOK · 2023</span>
+        <h2 id="bookTitle">『좋은 보험 백과사전』</h2>
+        <p class="bk-sub">명장 박문철이 전하는 <b>보험 바로보기 지침서</b></p>
+        <blockquote>보험료를 고려하면 모든 위험을 완벽하게 대비하기는 어렵습니다. 개인의 상황에 <em>가장 필요한 보장</em>을, <em>가장 필요한 시기</em>에 준비하는 것이 현명한 컨설팅입니다.</blockquote>
+        <div class="bk-cat"><span class="lb">이 책의 기준으로 상담합니다</span>
+          <ul><li>질병</li><li>상해</li><li>어린이</li><li>연금</li><li>운전자</li><li>자동차</li><li>배상</li><li>화재</li><li>해상</li><li>특종</li></ul></div>
+        <p class="bk-by">박문철 · 주활 · 김병민 지음 · 리딩&amp;리딩</p>
+        <button class="btn" type="button" data-open="consult">책 내용으로 내 보험 점검 받기</button>
       </div>
     </div>
   </section>
