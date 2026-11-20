@@ -117,6 +117,9 @@ svg{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:2;stroke-lin
 .prof-card img{width:100%;height:100%;object-fit:cover;object-position:50% 10%}
 .prof-card .tag{position:absolute;left:16px;bottom:16px;background:rgba(16,17,20,.86);border:1px solid var(--line);border-radius:12px;padding:10px 14px;font-size:13.5px}
 .prof-card .tag b{display:block;color:var(--gold2);font-family:var(--serif);font-size:17px}
+.prof-card .bkt{right:16px;max-width:400px;display:grid;grid-template-columns:52px minmax(0,1fr);gap:12px;align-items:center;color:#E6DECF;line-height:1.55}
+.bkt img{display:block;width:52px;height:auto;border-radius:2px 4px 4px 2px;box-shadow:4px 6px 12px rgba(0,0,0,.45)}
+.bkt b{margin-bottom:3px}
 .tl{list-style:none;margin:28px 0 0;padding:0;border-left:1px solid var(--line)}
 .tl li{position:relative;padding:0 0 18px 26px;display:grid;grid-template-columns:64px minmax(0,1fr);gap:6px}
 .tl li::before{content:"";position:absolute;left:-5px;top:9px;width:9px;height:9px;border-radius:50%;background:var(--bg2);border:2px solid var(--gold)}
@@ -126,15 +129,6 @@ svg{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:2;stroke-lin
 .tl li:last-child{padding-bottom:0}
 @media (max-width:860px){.prof{grid-template-columns:1fr;gap:32px}.prof-card{max-width:420px;aspect-ratio:1/1}}
 
-/* book: 공저라 작고 담백한 카드 한 줄 */
-.sec.book{padding-top:8px;padding-bottom:8px}
-.bk{display:grid;grid-template-columns:76px minmax(0,1fr);gap:20px;align-items:center;max-width:720px;margin:0 auto;padding:18px 22px;border-radius:18px;background:var(--card);border:1px solid var(--line)}
-.bk-cv{display:block;width:76px;height:auto;border-radius:2px 5px 5px 2px;box-shadow:6px 8px 18px rgba(0,0,0,.45)}
-.bk-eb{display:block;font-size:12px;font-weight:700;letter-spacing:.12em;color:var(--gold)}
-.bk-t{display:block;margin-top:2px;font-family:var(--serif);font-size:20px;line-height:1.35}
-.bk-q{margin:6px 0 0;color:#CFC7BA;font-size:14.5px;line-height:1.6}
-.bk-by{margin:6px 0 0;color:var(--muted);font-size:12.5px}
-@media (max-width:560px){.bk{grid-template-columns:60px minmax(0,1fr);gap:14px;padding:14px 16px}.bk-cv{width:60px}.bk-t{font-size:18px}.bk-q{font-size:13.5px}}
 /* team */
 .team{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
 .mem{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px;display:grid;grid-template-columns:72px minmax(0,1fr);gap:16px;align-items:center}
@@ -293,7 +287,7 @@ svg{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:2;stroke-lin
   <nav class="mmenu" id="mmenu" hidden aria-label="모바일 메뉴">
     <div class="in">
       <a href="#profile">소개 · 경력</a>
-      <a href="#book">공동 저서</a>
+      
       <a href="#team">함께하는 전문가</a>
       <a href="#help">사고접수 · 보험사 전화번호</a>
       <a href="#links">주요 바로가기</a>
@@ -332,7 +326,7 @@ svg{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:2;stroke-lin
     <div class="in prof">
       <div class="prof-card">
         <img src="hero-park2.jpg" alt="" width="1000" height="1361" loading="lazy">
-        <a class="tag" href="#book" style="text-decoration:none;color:inherit"><b>『좋은 보험 백과사전』</b>2023 공저 →</a>
+        <div class="tag bkt"><img src="book-cover.jpg" alt="좋은 보험 백과사전 표지" width="600" height="855" loading="lazy"><span><b>『좋은 보험 백과사전』</b>“가장 필요한 보장을, 가장 필요한 시기에 준비하는 것이 현명한 컨설팅입니다.”</span></div>
       </div>
       <div>
         <span class="eyebrow">PROFILE</span>
@@ -352,19 +346,6 @@ svg{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:2;stroke-lin
     </div>
   </section>
 
-  <section class="sec book" id="book" aria-label="공동 저서">
-    <div class="in">
-      <div class="bk">
-        <img class="bk-cv" src="book-cover.jpg" alt="좋은 보험 백과사전 표지" width="600" height="855" loading="lazy">
-        <div class="bk-txt">
-          <span class="bk-eb">공동 저서 · 2023</span>
-          <b class="bk-t">『좋은 보험 백과사전』</b>
-          <p class="bk-q">“가장 필요한 보장을, 가장 필요한 시기에 준비하는 것이 현명한 컨설팅입니다.”</p>
-          <p class="bk-by">박문철 · 주활 · 김병민 공저 · 리딩&amp;리딩</p>
-        </div>
-      </div>
-    </div>
-  </section>
 
   <section class="sec" id="team" aria-labelledby="teamTitle">
     <div class="in">
