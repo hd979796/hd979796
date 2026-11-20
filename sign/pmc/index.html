@@ -159,6 +159,15 @@ svg{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:2;stroke-lin
 .btn svg{width:18px;height:18px}
 @media (max-width:860px){.help{grid-template-columns:1fr 1fr}.tile{min-height:132px;padding:16px}}
 
+/* quick links */
+.ql{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.qlc{position:relative;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px 20px 20px;display:grid;gap:8px;align-content:start}
+.qlc::before{content:"";position:absolute;left:20px;top:-1px;width:34px;height:3px;background:var(--gold);border-radius:2px}
+.qlc h3{margin:0 0 6px;font-family:var(--serif);font-size:18px}
+.qlc a{display:flex;align-items:center;min-height:46px;padding:0 14px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.03);color:var(--ink);text-decoration:none;font-weight:700;font-size:14.5px}
+.qlc a::before{content:"›";color:var(--gold);font-weight:900;margin-right:10px}
+.qlc a:hover{border-color:rgba(217,174,98,.6);color:var(--gold2)}
+@media (max-width:860px){.ql{grid-template-columns:1fr}}
 /* contact */
 .contact{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
 .ci{list-style:none;margin:0;padding:0;display:grid;gap:10px}
@@ -276,6 +285,7 @@ svg{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:2;stroke-lin
       <a href="#profile">소개 · 경력</a>
       <a href="#team">함께하는 전문가</a>
       <a href="#help">사고접수 · 보험사 전화번호</a>
+      <a href="#links">주요 바로가기</a>
       <a href="#contact">오시는 길</a>
       <a href="full.html#booking">상담 날짜 예약</a>
       <a class="staff" href="../portal/" rel="nofollow">직원 로그인</a>
@@ -350,6 +360,30 @@ svg{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:2;stroke-lin
         <a class="tile" href="tel:1588-5656"><i class="ic-red"><svg><use href="#i-car"/></svg></i><b>현대해상 긴급출동</b><small class="num">1588-5656 · 견인 · 배터리 · 타이어</small></a>
         <button class="tile" type="button" data-open="ins"><i class="ic-gold"><svg><use href="#i-search"/></svg></i><b>보험사 전화번호</b><small>모든 보험사 · 누르면 바로 전화</small></button>
         <a class="tile" href="full.html#booking"><i class="ic-line"><svg><use href="#i-cal"/></svg></i><b>상담 날짜 예약</b><small>달력에서 편한 날 고르기</small></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec alt" id="links" aria-labelledby="linksTitle">
+    <div class="in">
+      <div class="head"><span class="eyebrow">QUICK LINKS</span><h2 id="linksTitle">주요 바로가기</h2></div>
+      <div class="ql">
+        <div class="qlc"><h3>정부 · 공공기관</h3>
+          <a href="https://www.credit4u.or.kr" target="_blank" rel="noopener">내보험 다보여 (신용정보원)</a>
+          <a href="https://cont.insure.or.kr" target="_blank" rel="noopener">내보험 찾아줌 (보험협회)</a>
+          <a href="https://www.silson24.or.kr" target="_blank" rel="noopener">실손24</a>
+          <a href="https://www.hira.or.kr" target="_blank" rel="noopener">비급여 진료비 정보 (심평원)</a>
+        </div>
+        <div class="qlc"><h3>의료기관 정보</h3>
+          <a href="https://insurdesignlab.com/tools/c_hospital_info_search.html" target="_blank" rel="noopener">의료기관 찾기</a>
+          <a href="https://insurdesignlab.com/tools/c_hospital_search.html" target="_blank" rel="noopener">간호간병 병원 찾기</a>
+          <a href="https://insurdesignlab.com/tools/c_body_map.html" target="_blank" rel="noopener">KCD 질병코드 찾기</a>
+        </div>
+        <div class="qlc"><h3>보험회사</h3>
+          <a href="https://www.hi.co.kr/serviceAction.do?view=bin/SP/08/HHSP0801M" target="_blank" rel="noopener">현대해상 공시실</a>
+          <a href="https://www.hi.co.kr" target="_blank" rel="noopener">현대해상 홈페이지</a>
+          <a href="tel:1588-5656">현대해상 고장출동 · 사고접수 1588-5656</a>
+        </div>
       </div>
     </div>
   </section>
