@@ -326,6 +326,17 @@ tr.over td:first-child{box-shadow:inset 4px 0 var(--bad)}
 /* 보험 폴더: 스테이지 매니저처럼 왼쪽에 접힌 폴더, 가운데에 열린 폴더 */
 .sm-rail{display:none}
 .wrap.stage-on{display:grid;grid-template-columns:200px minmax(0,1fr);gap:22px;align-items:start}
+/* 보험(장기·자동차·일반): 진행 현황 칸·업무 대기 칩은 숨기고 명단만 */
+.lhead .tiles,.lhead .work{display:none!important}
+.wrap.stage-on>.view{min-width:0}
+.tw{max-width:100%}
+@media (max-width:760px){
+  .tw table{font-size:12.5px}
+  .lhead~.card .filters>.row{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;width:100%;padding-bottom:2px}
+  .lhead~.card .filters>.row .fchip{flex:none}
+  .tw th:nth-child(1),.tw td:nth-child(1){position:sticky;left:0;z-index:1;background:var(--panel);min-width:84px}
+  .tw th:nth-child(2),.tw td:nth-child(2){position:sticky;left:84px;z-index:1;background:var(--panel);box-shadow:4px 0 6px -4px rgba(0,0,0,.6)}
+}
 .wrap.stage-on>.view{grid-column:2;grid-row:1}
 .wrap.stage-on>.sm-rail{display:flex;flex-direction:column;gap:14px;grid-column:1;grid-row:1;position:sticky;top:120px;perspective:900px;padding-top:6px}
 .sm-head{font-size:12px;font-weight:700;color:var(--dim);letter-spacing:.06em;padding-left:4px}
@@ -350,7 +361,7 @@ tr.over td:first-child{box-shadow:inset 4px 0 var(--bad)}
 .wrap.stage-on>#v-long>.card:first-child::before{content:"장기"}
 @keyframes smOpen{from{opacity:.4;transform:translateX(-28px) scale(.97)}to{opacity:1;transform:none}}
 @media (max-width:860px){
-  .wrap.stage-on{grid-template-columns:1fr;gap:10px}
+  .wrap.stage-on{grid-template-columns:minmax(0,1fr);gap:10px}
   .wrap.stage-on>.view{grid-column:1;grid-row:2}
   .wrap.stage-on>.sm-rail{position:static;flex-direction:row;gap:8px;overflow-x:auto;padding:2px 2px 8px;perspective:none}
   .sm-head{display:none}
