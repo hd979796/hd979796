@@ -120,6 +120,8 @@ svg{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:2;stroke-lin
 .prof-card .bkt{right:16px;max-width:400px;display:grid;grid-template-columns:52px minmax(0,1fr);gap:12px;align-items:center;color:#E6DECF;line-height:1.55}
 .bkt img{display:block;width:52px;height:auto;border-radius:2px 4px 4px 2px;box-shadow:4px 6px 12px rgba(0,0,0,.45)}
 .bkt b{margin-bottom:3px}
+.bkt q{quotes:"“" "”"}
+@media (max-width:860px){.prof-card .bkt{right:auto;left:12px;bottom:12px;grid-template-columns:30px auto;gap:10px;padding:8px 14px 8px 8px;border-radius:10px}.bkt img{width:30px}.bkt b{margin:0;font-size:15px}.bkt q{display:none}}
 .tl{list-style:none;margin:28px 0 0;padding:0;border-left:1px solid var(--line)}
 .tl li{position:relative;padding:0 0 18px 26px;display:grid;grid-template-columns:64px minmax(0,1fr);gap:6px}
 .tl li::before{content:"";position:absolute;left:-5px;top:9px;width:9px;height:9px;border-radius:50%;background:var(--bg2);border:2px solid var(--gold)}
@@ -326,7 +328,7 @@ svg{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:2;stroke-lin
     <div class="in prof">
       <div class="prof-card">
         <img src="hero-park2.jpg" alt="" width="1000" height="1361" loading="lazy">
-        <div class="tag bkt"><img src="book-cover.jpg" alt="좋은 보험 백과사전 표지" width="600" height="855" loading="lazy"><span><b>『좋은 보험 백과사전』</b>“가장 필요한 보장을, 가장 필요한 시기에 준비하는 것이 현명한 컨설팅입니다.”</span></div>
+        <div class="tag bkt"><img src="book-cover.jpg" alt="좋은 보험 백과사전 표지" width="600" height="855" loading="lazy"><span><b>『좋은 보험 백과사전』</b><q>가장 필요한 보장을, 가장 필요한 시기에 준비하는 것이 현명한 컨설팅입니다.</q></span></div>
       </div>
       <div>
         <span class="eyebrow">PROFILE</span>
