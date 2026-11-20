@@ -59,8 +59,9 @@ svg{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:2;stroke-lin
 .mbtn svg{width:14px;height:14px;transition:transform .2s}
 .mbtn[aria-expanded="true"] svg{transform:rotate(180deg)}
 .mmenu{border-top:1px solid var(--line);background:var(--bg)}
-.mmenu .in{display:grid;padding-block:6px 14px}
-.mmenu a,.mmenu button{display:block;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);color:var(--ink);font:inherit;font-size:15.5px;padding:14px 2px;text-decoration:none;cursor:pointer}
+.mmenu .in{display:grid;height:auto;align-items:stretch;gap:0;padding-block:6px 16px}
+.mmenu{background:#14161B;box-shadow:0 18px 40px rgba(0,0,0,.55);max-height:calc(100svh - 64px);overflow-y:auto}
+.mmenu a,.mmenu button{display:block;font-weight:700;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);color:var(--ink);font:inherit;font-size:15.5px;padding:14px 2px;text-decoration:none;cursor:pointer}
 .mmenu .staff{color:var(--muted);font-size:14px;border-bottom:0}
 @media (max-width:860px){.gnb{display:none}.mbtn{display:flex}}
 
@@ -493,6 +494,7 @@ svg{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:2;stroke-lin
   var mb=$('#mbtn'), mm=$('#mmenu');
   mb.addEventListener('click',function(){var o=mm.hidden;mm.hidden=!o;mb.setAttribute('aria-expanded',String(o));});
   $$('#mmenu a').forEach(function(a){a.addEventListener('click',function(){mm.hidden=true;mb.setAttribute('aria-expanded','false');});});
+  document.addEventListener('click',function(e){if(!mm.hidden&&!mm.contains(e.target)&&!mb.contains(e.target)){mm.hidden=true;mb.setAttribute('aria-expanded','false');}});
 
   /* 창 열기·닫기 */
   $$('[data-open]').forEach(function(b){b.addEventListener('click',function(){var d=$('#dlg-'+b.dataset.open); if(b.dataset.open==='ins'){$('#insQ').value='';draw();} open(d);});});
