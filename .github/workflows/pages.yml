@@ -11,11 +11,8 @@ concurrency:
   group: pages
   cancel-in-progress: true
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
       - name: 배포 폴더 구성
@@ -23,10 +20,17 @@ jobs:
           mkdir -p _site
           rsync -a --exclude .git --exclude .github --exclude README.md ./ _site/
       - uses: actions/configure-pages@v5
-        with:
-          enablement: true
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: 업로드 반영 대기
+        run: sleep 20
       - id: deployment
         uses: actions/deploy-pages@v4
