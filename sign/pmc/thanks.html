@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>감사합니다 · 현대해상 박문철</title>
+<meta name="description" content="늘 믿고 맡겨주셔서 감사합니다. 현대해상 박문철보험대리점 박문철 드림">
+<meta property="og:type" content="website">
+<meta property="og:title" content="고객님께 드리는 감사장 · 현대해상 박문철">
+<meta property="og:description" content="늘 믿고 맡겨주셔서 진심으로 감사드립니다.">
+<meta property="og:image" content="https://hd979796.github.io/hd979796/pmc/thanks-og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#101114">
+<link rel="icon" href="h-mark.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Nanum+Myeongjo:wght@700;800&display=swap">
+<style>
+/* 감사장: 어두운 바탕 위 크림색 편지 카드 한 장. 이름·연차는 주소의 ?to=이름&y=연차 로 채운다 */
+:root{color-scheme:dark;--bg:#101114;--ink:#2A241B;--paper:#FBF6EC;--gold:#D9AE62;--gold2:#F2D193;--deep:#B8873A;--muted:#7A705F;--serif:"Nanum Myeongjo",serif;--sans:"Noto Sans KR",system-ui,-apple-system,"Apple SD Gothic Neo",sans-serif}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{min-height:100svh;background:radial-gradient(90% 60% at 50% 0%,rgba(217,174,98,.18),transparent 60%),var(--bg);color:#F1ECE3;font-family:var(--sans);display:flex;flex-direction:column;align-items:center;padding:max(28px,env(safe-area-inset-top)) 16px calc(28px + env(safe-area-inset-bottom));overflow-x:hidden;word-break:keep-all}
+.spark{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+.spark i{position:absolute;top:-10px;width:6px;height:6px;border-radius:50%;background:var(--gold2);opacity:.0;animation:fall linear forwards}
+@keyframes fall{0%{transform:translateY(0) rotate(0);opacity:0}10%{opacity:.9}100%{transform:translateY(105vh) rotate(260deg);opacity:0}}
+.card{position:relative;width:min(440px,100%);background:var(--paper);color:var(--ink);border-radius:26px;padding:34px 26px 28px;box-shadow:0 30px 80px rgba(0,0,0,.55);text-align:center;animation:up .9s cubic-bezier(.2,.8,.2,1) both}
+.card::before{content:"";position:absolute;inset:10px;border:1px solid rgba(184,135,58,.45);border-radius:18px;pointer-events:none}
+@keyframes up{from{opacity:0;transform:translateY(24px) scale(.98)}to{opacity:1;transform:none}}
+.badge{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:900;letter-spacing:.24em;color:var(--deep)}
+.badge::before,.badge::after{content:"";width:26px;height:1px;background:var(--gold)}
+.photo{width:118px;height:118px;margin:20px auto 0;border-radius:50%;padding:4px;background:linear-gradient(140deg,var(--gold2),var(--deep));box-shadow:0 10px 26px rgba(184,135,58,.35)}
+.photo img{width:100%;height:100%;border-radius:50%;object-fit:cover;object-position:50% 20%;display:block;border:3px solid var(--paper)}
+.to{margin:22px 0 0;font-family:var(--serif);font-weight:800;font-size:27px;line-height:1.35}
+.to b{color:var(--deep)}
+.yr{display:inline-block;margin-top:12px;padding:6px 16px;border-radius:999px;background:#F2E5CB;color:#6E4F1D;font-weight:900;font-size:14.5px}
+.msg{margin:20px 0 0;font-family:var(--serif);font-weight:700;font-size:16.5px;line-height:1.95;color:#3A3226}
+.sign{margin-top:22px;display:flex;align-items:center;justify-content:center;gap:10px;font-size:14px;color:var(--muted)}
+.sign b{font-family:var(--serif);font-size:20px;color:var(--ink)}
+.sign img{width:22px;height:auto;background:#fff;border-radius:5px;padding:2px}
+.acts{width:min(440px,100%);display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:18px;animation:up .9s .25s cubic-bezier(.2,.8,.2,1) both}
+.acts a{display:grid;justify-items:center;gap:6px;padding:14px 4px 12px;border-radius:16px;background:#1C1F26;border:1px solid rgba(255,255,255,.1);color:#fff;text-decoration:none;font-weight:900;font-size:13.5px}
+.acts i{width:40px;height:40px;border-radius:12px;display:grid;place-items:center}
+.acts svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.r{background:#E5533D;color:#fff}.g{background:var(--gold);color:#17130B}.k{background:#FEE500;color:#191919}
+.home{margin-top:16px;color:#A9A398;font-size:13.5px}
+.home a{color:var(--gold2)}
+@media (prefers-reduced-motion:reduce){.card,.acts{animation:none}.spark{display:none}}
+</style>
+</head>
+<body>
+<div class="spark" id="spark" aria-hidden="true"></div>
+<main class="card">
+  <span class="badge">THANK YOU</span>
+  <div class="photo"><img src="card-park.jpg" alt="박문철 대표" width="360" height="360"></div>
+  <h1 class="to" id="to">고객님께<br>감사의 마음을 전합니다</h1>
+  <span class="yr" id="yr" hidden></span>
+  <p class="msg" id="msg">늘 믿고 맡겨주셔서 진심으로 감사드립니다.<br>가입할 때보다 필요할 때 더 든든한 사람이 되겠습니다.<br>사고가 나거나 궁금한 일이 생기면<br>언제든 가장 먼저 연락 주세요.</p>
+  <div class="sign"><img src="h-mark.png" alt="">현대해상 박문철보험대리점 <b>박문철 드림</b></div>
+</main>
+<nav class="acts" aria-label="연락">
+  <a href="tel:1588-5656"><i class="r"><svg viewBox="0 0 24 24"><path d="M12 3 2 20h20z"/><path d="M12 10v4M12 17h.01"/></svg></i>고장출동·사고</a>
+  <a href="tel:010-8796-3959"><i class="g"><svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg></i>전화하기</a>
+  <a href="https://open.kakao.com/o/sCLX4JXi" target="_blank" rel="noopener"><i class="k"><svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1.1-4.6A8 8 0 1 1 21 12z"/></svg></i>카카오톡</a>
+</nav>
+<p class="home"><a href="./">박문철보험대리점 홈페이지 →</a></p>
+<script>
+(function(){
+  var q=new URLSearchParams(location.search), name=(q.get('to')||'').replace(/[<>]/g,'').trim().slice(0,20), y=parseInt(q.get('y'),10);
+  var to=document.getElementById('to'), yr=document.getElementById('yr'), msg=document.getElementById('msg');
+  if(name){ to.textContent=''; var b=document.createElement('b'); b.textContent=name; to.appendChild(b); to.appendChild(document.createTextNode(' 고객님,')); to.appendChild(document.createElement('br')); to.appendChild(document.createTextNode('진심으로 감사드립니다')); document.title=name+' 고객님께 · 감사장'; }
+  if(y>0&&y<60){ yr.hidden=false; yr.textContent='함께한 지 '+y+'년'; msg.innerHTML=(y===1?'저와 인연을 맺으신 지 꼭 1년이 되었습니다.':'저와 함께하신 지 벌써 '+y+'년이 되었습니다.')+'<br>그동안 믿고 맡겨주셔서 진심으로 감사드립니다.<br>앞으로도 사고가 나거나 궁금한 일이 생기면<br>언제든 가장 먼저 연락 주세요.'; }
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var sp=document.getElementById('spark');
+  for(var i=0;i<26;i++){ var e=document.createElement('i'); e.style.left=(Math.random()*100)+'%'; e.style.animationDuration=(4+Math.random()*4)+'s'; e.style.animationDelay=(Math.random()*2.5)+'s'; var s=3+Math.random()*5; e.style.width=e.style.height=s+'px'; if(Math.random()<.4){e.style.borderRadius='1px';} sp.appendChild(e); }
+})();
+</script>
+</body>
+</html>

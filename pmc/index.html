@@ -1,0 +1,593 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>박문철 모바일 명함 · 현대해상 박문철보험대리점</title>
+<meta name="description" content="현대해상 박문철보험대리점 박문철 모바일 명함. 사고접수·보상청구부터 보험 상담, 보험사 전화번호, 주요 보험 정보 사이트까지 이 명함 하나로 바로 연결됩니다.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="현대해상 박문철 모바일 명함">
+<meta property="og:description" content="사고접수·보상청구부터 보험 상담까지, 이 명함 하나로 바로 연결됩니다.">
+<meta property="og:image" content="https://hd979796.github.io/hd979796/pmc/og2.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta property="og:url" content="https://hd979796.github.io/hd979796/pmc/">
+<meta name="theme-color" content="#101114">
+<link rel="icon" href="h-mark.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<script>window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();window.__bip=e;});</script>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="박문철보험">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Nanum+Myeongjo:wght@700;800&display=swap">
+<style>
+/* 한 화면 명함형 홈페이지: 어두운 바탕 + 금색 포인트. 첫 화면에 사진·이름·한 줄 소개·4버튼, 그 아래 소개 → 전문가 → 도움 → 오시는 길. */
+:root{
+  color-scheme:dark;
+  --bg:#101114; --bg2:#16181D; --card:#1C1F26; --line:rgba(255,255,255,.10);
+  --ink:#F1ECE3; --muted:#A9A398; --gold:#D9AE62; --gold2:#F2D193; --red:#E5533D; --h:#F08300;
+  --serif:"Nanum Myeongjo",serif; --sans:"Noto Sans KR",system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth;scroll-padding-top:72px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.7;word-break:keep-all;overflow-wrap:break-word;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+img{max-width:100%;display:block}
+svg{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.in{max-width:1120px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left));padding-right:max(20px,env(safe-area-inset-right))}
+.num{font-variant-numeric:tabular-nums}
+:focus-visible{outline:2px solid var(--gold2);outline-offset:3px;border-radius:6px}
+
+/* header */
+.hd{position:fixed;top:0;left:0;right:0;z-index:50;background:rgba(16,17,20,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top)}
+.hd .in{display:flex;align-items:center;gap:16px;height:64px}
+.who{display:flex;align-items:center;gap:10px;text-decoration:none;min-width:0}
+.who img{width:38px;height:38px;border-radius:50%;object-fit:cover;object-position:50% 18%;border:1.5px solid var(--gold)}
+.who b{display:block;font-size:16px;line-height:1.2}
+.who small{display:block;font-size:11.5px;color:var(--muted);line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gnb{margin-left:auto;display:flex;align-items:center;gap:4px}
+.gnb a,.gnb button{background:none;border:0;color:#DCD5C9;font:inherit;font-size:14.5px;font-weight:700;padding:8px 12px;border-radius:8px;text-decoration:none;cursor:pointer}
+.gnb a:hover,.gnb button:hover{color:#fff;background:rgba(255,255,255,.06)}
+.gnb .staff{border:1px solid var(--line);border-radius:999px;display:flex;align-items:center;gap:6px;margin-left:8px;font-size:13.5px}
+.mbtn{margin-left:auto;display:none;align-items:center;gap:4px;background:none;border:0;color:#fff;font:inherit;font-weight:900;font-size:15px;padding:10px 4px;cursor:pointer}
+.mbtn svg{width:14px;height:14px;transition:transform .2s}
+.mbtn[aria-expanded="true"] svg{transform:rotate(180deg)}
+.mmenu{border-top:1px solid var(--line);background:var(--bg)}
+.mmenu .in{display:grid;height:auto;align-items:stretch;gap:0;padding-block:6px 16px}
+.mmenu{background:#14161B;box-shadow:0 18px 40px rgba(0,0,0,.55);max-height:calc(100svh - 64px);overflow-y:auto}
+.mmenu a,.mmenu button{display:block;font-weight:700;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);color:var(--ink);font:inherit;font-size:15.5px;padding:14px 2px;text-decoration:none;cursor:pointer}
+.mmenu .staff{color:var(--muted);font-size:14px;border-bottom:0}
+@media (max-width:860px){.gnb{display:none}.mbtn{display:flex}}
+
+/* hero */
+.hero{position:relative;min-height:100svh;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);padding-top:64px;overflow:hidden;background:var(--bg)}
+.hero-photo{position:relative;background:#F7DCC0}
+.hero-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 12%}
+.hero-photo::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(16,17,20,0) 40%,rgba(16,17,20,.55) 70%,rgba(16,17,20,.92) 90%,var(--bg) 100%)}
+.hero-txt{display:flex;flex-direction:column;justify-content:center;padding:56px max(24px,6vw) 64px 32px}
+.brand{display:flex;align-items:center;gap:10px;font-size:14px;color:#CFC7BA}
+.brand .hm{display:inline-grid;place-items:center;width:24px;height:24px;background:#fff;border-radius:6px}
+.brand .hm img{width:16px;height:auto}
+.brand b{color:#fff;font-size:16px;letter-spacing:.02em}
+.name{font-family:var(--serif);font-weight:800;font-size:clamp(64px,8vw,104px);line-height:1.05;letter-spacing:.06em;margin:18px 0 8px}
+.role{color:#CFC7BA;font-size:17px;margin:0}
+.bar{width:56px;height:2px;background:var(--gold);margin:30px 0 28px}
+.slogan{font-family:var(--serif);font-weight:700;font-size:clamp(26px,2.9vw,38px);line-height:1.5;margin:0}
+.slogan em{font-style:normal;color:var(--gold2);font-size:1.18em}
+.awards{margin:22px 0 0;padding:0;list-style:none;color:#CFC7BA;font-size:15.5px;display:grid;gap:4px}
+.awards li::before{content:"";display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--gold);margin:0 10px 3px 0}
+.acts{display:flex;flex-wrap:wrap;gap:8px 26px;margin-top:40px}
+.act{display:flex;align-items:center;gap:10px;background:none;border:0;padding:6px 0;color:#fff;font:inherit;font-weight:900;font-size:16px;text-decoration:none;cursor:pointer}
+.act i{width:40px;height:40px;border-radius:12px;display:grid;place-items:center}
+.act i svg{width:21px;height:21px}
+.act:last-child span{color:var(--gold2)}
+.ic-gold{background:var(--gold);color:#17130B}
+.ic-red{background:var(--red);color:#fff}
+.ic-kakao{background:#FEE500;color:#191919}
+.ic-line{background:rgba(255,255,255,.08);color:var(--gold2);border:1px solid var(--line)}
+.scroll{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);font-size:11px;letter-spacing:.3em;color:#7B776F}
+@media (max-width:860px){
+  .hero{grid-template-columns:1fr;min-height:0;padding-top:calc(64px + env(safe-area-inset-top))}
+  .hero-photo{height:78svh;min-height:460px;max-height:720px}
+  .hero-photo::after{background:linear-gradient(180deg,rgba(16,17,20,0) 50%,rgba(16,17,20,.75) 80%,var(--bg) 100%)}
+  .hero-txt{margin-top:-210px;position:relative;z-index:1;padding:0 22px 40px}
+  .name{font-size:68px;margin-top:12px}
+  .acts{display:none}
+  .scroll{display:none}
+}
+
+/* sections */
+.sec{padding-block:96px}
+.sec.alt{background:var(--bg2)}
+.eyebrow{font-size:12.5px;font-weight:900;letter-spacing:.24em;color:var(--gold)}
+.sec h2{font-family:var(--serif);font-weight:800;font-size:clamp(26px,3.2vw,36px);line-height:1.4;margin:10px 0 0}
+.sec .lead{color:var(--muted);margin:12px 0 0;font-size:16.5px}
+.head{margin-bottom:40px}
+@media (max-width:860px){.sec{padding-block:68px}}
+
+/* profile */
+.prof{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:56px;align-items:center}
+.prof-card{border-radius:22px;overflow:hidden;background:#F7DCC0;aspect-ratio:4/5;position:relative}
+.prof-card img{width:100%;height:100%;object-fit:cover;object-position:50% 10%}
+.prof-card .tag{position:absolute;left:16px;bottom:16px;background:rgba(16,17,20,.86);border:1px solid var(--line);border-radius:12px;padding:10px 14px;font-size:13.5px}
+.prof-card .tag b{display:block;color:var(--gold2);font-family:var(--serif);font-size:17px}
+.prof-card .bkt{right:16px;max-width:400px;display:grid;grid-template-columns:52px minmax(0,1fr);gap:12px;align-items:center;color:#E6DECF;line-height:1.55}
+.bkt img{display:block;width:52px;height:auto;border-radius:2px 4px 4px 2px;box-shadow:4px 6px 12px rgba(0,0,0,.45)}
+.bkt b{margin-bottom:3px}
+.bkt q{quotes:"“" "”"}
+@media (max-width:860px){.prof-card .bkt{right:auto;left:12px;bottom:12px;grid-template-columns:30px auto;gap:10px;padding:8px 14px 8px 8px;border-radius:10px}.bkt img{width:30px}.bkt b{margin:0;font-size:15px}.bkt q{display:none}}
+.tl{list-style:none;margin:28px 0 0;padding:0;border-left:1px solid var(--line)}
+.tl li{position:relative;padding:0 0 18px 26px;display:grid;grid-template-columns:64px minmax(0,1fr);gap:6px}
+.tl li::before{content:"";position:absolute;left:-5px;top:9px;width:9px;height:9px;border-radius:50%;background:var(--bg2);border:2px solid var(--gold)}
+.tl li.hl::before{background:var(--gold)}
+.tl .y{color:var(--gold);font-weight:900;font-size:14.5px}
+.tl b{font-weight:700}
+.tl li:last-child{padding-bottom:0}
+@media (max-width:860px){.prof{grid-template-columns:1fr;gap:32px}.prof-card{max-width:420px;aspect-ratio:1/1}}
+
+/* team */
+.team{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.mem{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px;display:grid;grid-template-columns:72px minmax(0,1fr);gap:16px;align-items:center}
+.mem img{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:50% 12%;background:#ddd}
+.mem small{display:block;color:var(--gold);font-size:12.5px;font-weight:700}
+.mem b{display:block;font-family:var(--serif);font-size:21px;line-height:1.3}
+.mem p{grid-column:1/-1;margin:0;color:var(--muted);font-size:14.5px}
+.mem a{grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:8px;min-height:46px;border-radius:12px;border:1px solid var(--line);text-decoration:none;font-weight:900}
+.mem a:hover{border-color:var(--gold);color:var(--gold2)}
+@media (max-width:860px){.team{grid-template-columns:1fr}}
+
+/* help */
+.help{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.tile{display:grid;gap:8px;align-content:start;min-height:150px;padding:20px;border-radius:18px;background:var(--card);border:1px solid var(--line);text-decoration:none;color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.tile:hover{border-color:rgba(217,174,98,.6)}
+.tile i{width:44px;height:44px;border-radius:12px;display:grid;place-items:center}
+.tile i svg{width:22px;height:22px}
+.tile b{font-size:17px}
+.tile small{color:var(--muted);font-size:13.5px;line-height:1.5}
+.save{display:inline-flex;align-items:center;gap:12px;margin-top:22px;padding:8px 18px 8px 8px;border-radius:999px;border:1px solid rgba(242,209,147,.55);background:rgba(217,174,98,.14);color:#fff;font:inherit;text-align:left;cursor:pointer;align-self:flex-start;animation:glow 2.6s ease-out 1s 3}
+.save i{width:38px;height:38px;border-radius:50%;background:var(--gold);color:#17130B;display:grid;place-items:center;flex:none}
+.save i svg{width:20px;height:20px}
+.save b{display:block;font-size:15px;line-height:1.3}
+.save small{display:block;font-size:12.5px;color:var(--gold2);line-height:1.3}
+.save:hover{background:rgba(217,174,98,.22)}
+.save-tip{display:block;margin-top:10px;color:var(--gold2);font-weight:900;font-size:14.5px}
+@keyframes glow{0%{box-shadow:0 0 0 0 rgba(217,174,98,.55)}100%{box-shadow:0 0 0 14px rgba(217,174,98,0)}}
+.install{margin-top:22px;display:flex;flex-wrap:wrap;align-items:center;gap:12px 18px;padding:18px 20px;border-radius:18px;border:1px dashed rgba(217,174,98,.45)}
+.install p{margin:0;color:#CFC7BA;font-size:15px;flex:1 1 260px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 20px;border-radius:999px;border:0;background:var(--gold);color:#17130B;font:inherit;font-weight:900;font-size:15px;text-decoration:none;cursor:pointer}
+.btn.ghost{background:none;color:var(--ink);border:1px solid var(--line)}
+.btn svg{width:18px;height:18px}
+@media (max-width:860px){.help{grid-template-columns:1fr 1fr}.tile{min-height:132px;padding:16px}}
+
+/* quick links */
+.ql{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.qlc{position:relative;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px 20px 20px;display:grid;gap:8px;align-content:start}
+.qlc::before{content:"";position:absolute;left:20px;top:-1px;width:34px;height:3px;background:var(--gold);border-radius:2px}
+.qlc h3{margin:0 0 6px;font-family:var(--serif);font-size:18px}
+.qlc a{display:flex;align-items:center;min-height:46px;padding:0 14px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.03);color:var(--ink);text-decoration:none;font-weight:700;font-size:14.5px}
+.qlc a::before{content:"›";color:var(--gold);font-weight:900;margin-right:10px}
+.qlc a:hover{border-color:rgba(217,174,98,.6);color:var(--gold2)}
+@media (max-width:860px){.ql{grid-template-columns:1fr}}
+/* contact */
+.contact{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+.ci{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.ci li a,.ci li div{display:grid;grid-template-columns:22px 76px minmax(0,1fr);gap:10px;align-items:center;padding:16px 18px;border-radius:14px;background:var(--card);border:1px solid var(--line);text-decoration:none}
+.ci svg{width:19px;height:19px;color:var(--gold)}
+.ci span{color:var(--muted);font-size:13.5px;font-weight:700}
+.ci b{font-weight:700}
+.cta{border-radius:20px;padding:28px;background:linear-gradient(150deg,#2A2216,#17140F);border:1px solid rgba(217,174,98,.35);display:flex;flex-direction:column;justify-content:center;gap:12px}
+.cta h3{font-family:var(--serif);font-size:24px;margin:0;line-height:1.45}
+.cta p{margin:0;color:#CFC7BA}
+.cta .row{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+@media (max-width:860px){.contact{grid-template-columns:1fr}}
+
+/* footer */
+.ft{border-top:1px solid var(--line);padding:36px 0 calc(110px + env(safe-area-inset-bottom));font-size:13px;color:#837E75}
+.ft .links{display:flex;flex-wrap:wrap;gap:6px 18px;margin-bottom:12px}
+.ft .links a{text-decoration:none;color:#BDB6AA;font-weight:700}
+.ft p{margin:4px 0}
+.ft details{margin:14px 0}
+.ft summary{cursor:pointer;color:#BDB6AA;font-weight:700}
+@media (min-width:861px){.ft{padding-bottom:40px}}
+
+/* mobile dock */
+.dock{display:none}
+@media (max-width:860px){
+  .dock{display:grid;grid-template-columns:repeat(4,1fr);position:fixed;left:0;right:0;bottom:0;z-index:45;background:rgba(16,17,20,.96);backdrop-filter:blur(10px);border-top:1px solid var(--line);
+    padding:8px max(6px,env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) max(6px,env(safe-area-inset-left))}
+  .dock a,.dock button{display:grid;justify-items:center;gap:4px;background:none;border:0;padding:4px 2px;color:#fff;font:inherit;font-weight:900;font-size:13.5px;text-decoration:none;cursor:pointer;border-radius:12px}
+  .dock i{width:40px;height:40px;border-radius:12px;display:grid;place-items:center}
+  .dock i svg{width:21px;height:21px}
+  .dock > :last-child span{color:var(--gold2)}
+  .dock span{line-height:1.2;text-align:center;font-size:13px}
+}
+
+/* dialogs */
+.dlg{color-scheme:light;border:0;padding:0;border-radius:22px;width:min(520px,calc(100vw - 24px));max-height:min(90vh,860px);background:#FBF7F0;color:#1C1A17;box-shadow:0 30px 80px rgba(0,0,0,.5)}
+.dlg::backdrop{background:rgba(0,0,0,.6)}
+.dlg-in{padding:24px 24px 26px;border-top:4px solid var(--gold)}
+.dlg-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.pill{display:inline-flex;align-items:center;gap:6px;background:#F1E4CC;color:#7A5A22;font-weight:900;font-size:13px;border-radius:999px;padding:5px 12px}
+.dlg h3{font-family:var(--serif);font-size:25px;margin:12px 0 4px}
+.dlg .sub{color:#6B6458;margin:0 0 16px;font-size:14.5px}
+.x{width:44px;height:44px;border-radius:50%;border:0;background:#EFE8DC;color:#3A352D;cursor:pointer;display:grid;place-items:center;flex:none}
+.x svg{width:18px;height:18px}
+.f{display:grid;gap:6px;margin-bottom:14px}
+.f label,.f .lb{font-weight:900;font-size:14.5px;color:#3A352D}
+.f label i,.f .lb i{font-style:normal;color:#C0392B}
+.f input,.f select,.f textarea{width:100%;min-height:50px;border:1px solid #DED5C6;border-radius:14px;background:#fff;padding:0 14px;font:inherit;font-size:16px;color:#1C1A17}
+.f textarea{min-height:96px;padding:12px 14px;resize:vertical}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips label{position:relative}
+.chips input{position:absolute;opacity:0;pointer-events:none}
+.chips span{display:inline-flex;min-height:40px;align-items:center;padding:0 14px;border-radius:999px;border:1px solid #DED5C6;background:#fff;font-weight:700;font-size:14px;cursor:pointer}
+.chips input:checked+span{background:#1C1A17;color:#fff;border-color:#1C1A17}
+.chips input:focus-visible+span{outline:2px solid var(--gold);outline-offset:2px}
+.agree{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;color:#4D473E;margin:4px 0 16px}
+.agree input{width:20px;height:20px;margin-top:2px;accent-color:#1C1A17;flex:none}
+.submit{width:100%;min-height:54px;border-radius:14px;border:0;background:#1C1A17;color:#fff;font:inherit;font-weight:900;font-size:16.5px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+.submit svg{width:19px;height:19px}
+.err{color:#B3261E;font-size:14px;margin:0 0 10px;font-weight:700}
+.alt-link{display:block;text-align:center;margin-top:12px;color:#6B6458;font-size:14px}
+.ins-tabs{display:flex;gap:6px;margin:10px 0 4px}
+.ins-tabs button{flex:1;min-height:40px;border-radius:10px;border:1px solid #DED5C6;background:#fff;font:inherit;font-weight:700;font-size:13.5px;cursor:pointer;color:#1C1A17}
+.ins-tabs button[aria-pressed="true"]{background:#1C1A17;color:#fff;border-color:#1C1A17}
+.ins-list{list-style:none;margin:6px 0 0;padding:0}
+.ins-list a{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:13px 6px;border-bottom:1px solid #E7DFD2;text-decoration:none;color:#1C1A17}
+.ins-list .nm{font-weight:700}
+.ins-list .nm small{display:block;font-weight:500;font-size:12.5px;color:#6B6458}
+.ins-list .tel{font-weight:900;color:#7A5A22;display:flex;align-items:center;gap:6px}
+.ins-list .tel svg{width:15px;height:15px}
+.ins-list .me a{background:#F6EAD3;border-radius:10px;border-bottom:0;margin-bottom:4px;padding-inline:10px}
+.note{font-size:12.5px;color:#6B6458;margin:12px 0 0}
+.how ol{margin:6px 0 0;padding-left:22px;display:grid;gap:10px;font-size:15.5px}
+.how p{font-size:15px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-phone" viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></symbol>
+  <symbol id="i-msg" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1.1-4.6A8 8 0 1 1 21 12z"/><path d="M8.5 12h.01M12 12h.01M15.5 12h.01"/></symbol>
+  <symbol id="i-doc" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3 2 20h20z"/><path d="M12 10v4M12 17h.01"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5M9 7h6"/></symbol>
+  <symbol id="i-car" viewBox="0 0 24 24"><path d="M5 17h14v-5l-2-5H7l-2 5z"/><path d="M5 12h14"/><circle cx="8" cy="17" r="2"/><circle cx="16" cy="17" r="2"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s7-6 7-12a7 7 0 0 0-14 0c0 6 7 12 7 12z"/><circle cx="12" cy="9" r="2.5"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></symbol>
+  <symbol id="i-blog" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13 7 4 4"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-in" viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M12 8v8M8 12h8"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></symbol>
+</svg>
+
+<header class="hd">
+  <div class="in">
+    <a class="who" href="#top" aria-label="처음으로">
+      <img src="card-park.jpg" alt="" width="38" height="38">
+      <span><b>박문철</b><small>현대해상 박문철보험대리점 대표</small></span>
+    </a>
+    <nav class="gnb" aria-label="주 메뉴">
+      <a href="#profile">소개</a>
+      <a href="#team">전문가</a>
+      <a href="#help">사고·보상</a>
+      <a href="#contact">오시는 길</a>
+      <button type="button" data-open="consult">상담 신청</button>
+      <a class="staff" href="../portal/" rel="nofollow"><svg><use href="#i-in"/></svg>직원 로그인</a>
+    </nav>
+    <button class="mbtn" id="mbtn" type="button" aria-expanded="false" aria-controls="mmenu">메뉴 <svg><use href="#i-down"/></svg></button>
+  </div>
+  <nav class="mmenu" id="mmenu" hidden aria-label="모바일 메뉴">
+    <div class="in">
+      <a href="#profile">소개 · 경력</a>
+      
+      <a href="#team">함께하는 전문가</a>
+      <a href="#help">사고접수 · 보험사 전화번호</a>
+      <a href="#links">주요 바로가기</a>
+      <a href="#contact">오시는 길</a>
+      <a href="full.html#booking">상담 날짜 예약</a>
+      <a class="staff" href="../portal/" rel="nofollow">직원 로그인</a>
+    </div>
+  </nav>
+</header>
+
+<main id="top">
+  <section class="hero" aria-labelledby="heroName">
+    <div class="hero-photo"><img src="hero-park2.jpg" alt="박문철 대표" width="1000" height="1361" fetchpriority="high"></div>
+    <div class="hero-txt">
+      <div class="brand"><span class="hm"><img src="h-mark.png" alt="" width="85" height="90"></span><b>현대해상</b>박문철보험대리점</div>
+      <h1 class="name" id="heroName">박문철</h1>
+      <p class="role">현대해상 박문철보험대리점 대표</p>
+      <div class="bar" aria-hidden="true"></div>
+      <p class="slogan"><em>설계</em>부터 <em>보상</em>까지,<br>끝까지 책임지는 보험.</p>
+      <button class="save" type="button" id="installBtn"><i><svg><use href="#i-plus"/></svg></i><span><b>휴대폰 홈 화면에 저장</b><small>필요하면 언제든 찾아주세요</small></span></button>
+      <ul class="awards">
+        <li>현대해상 우수인증대리점 2018 ~ 현재</li>
+        <li>2024 연도대상 동상 · 2025 10년 근속 연도대상</li>
+      </ul>
+      <div class="acts">
+        <a class="act num" href="tel:1588-5656"><i class="ic-red"><svg><use href="#i-alert"/></svg></i><span>고장출동/사고접수</span></a>
+        <a class="act num" href="tel:010-8796-3959"><i class="ic-line"><svg><use href="#i-phone"/></svg></i><span>전화하기</span></a>
+        <a class="act" href="sms:01087963959" data-chat><i class="ic-kakao"><svg><use href="#i-msg"/></svg></i><span data-chat-lbl>카카오톡</span></a>
+        <button class="act" type="button" data-open="consult"><i class="ic-gold"><svg><use href="#i-doc"/></svg></i><span>상담 신청</span></button>
+      </div>
+    </div>
+    <span class="scroll" aria-hidden="true">SCROLL</span>
+  </section>
+
+  <section class="sec alt" id="profile" aria-labelledby="profTitle">
+    <div class="in prof">
+      <div class="prof-card">
+        <img src="hero-park2.jpg" alt="" width="1000" height="1361" loading="lazy">
+        <div class="tag bkt"><img src="book-cover.jpg" alt="좋은 보험 백과사전 표지" width="600" height="855" loading="lazy"><span><b>『좋은 보험 백과사전』</b><q>가장 필요한 보장을, 가장 필요한 시기에 준비하는 것이 현명한 컨설팅입니다.</q></span></div>
+      </div>
+      <div>
+        <span class="eyebrow">PROFILE</span>
+        <h2 id="profTitle">10년 동안 한 회사에서,<br>고객 곁을 지켜왔습니다</h2>
+        <p class="lead">가입할 때보다 사고 났을 때 더 필요한 사람이 되겠습니다.</p>
+        <ul class="tl">
+          <li><span class="y">2015</span><b>현대해상화재보험 입사</b></li>
+          <li class="hl"><span class="y">2018~</span><b>현대해상 우수인증대리점 (현재)</b></li>
+          <li><span class="y">2018</span><span>현대해상 강사 1기</span></li>
+          <li><span class="y">2019</span><span>Wealth-MBA 15기</span></li>
+          <li><span class="y">2023</span><span>『좋은보험백과사전』 집필</span></li>
+          <li class="hl"><span class="y">2024</span><b>연도대상 동상 · 신인도입 금상</b></li>
+          <li><span class="y">2024</span><span>Core-MBA 1기</span></li>
+          <li class="hl"><span class="y">2025</span><b>현대해상 10년 근속 연도대상</b></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+
+  <section class="sec" id="team" aria-labelledby="teamTitle">
+    <div class="in">
+      <div class="head"><span class="eyebrow">TEAM</span><h2 id="teamTitle">사고가 나면, 손해사정사가 함께 봅니다</h2></div>
+      <div class="team">
+        <div class="mem"><img src="team-park.jpg" alt="" width="490" height="515" loading="lazy"><div><small>대표 · 보험설계</small><b>박문철</b></div><p>보험 설계와 점검, 자동차보험 갱신</p><a class="num" href="tel:010-8796-3959"><svg><use href="#i-phone"/></svg>010-8796-3959</a></div>
+        <div class="mem"><img src="team-cho.jpg" alt="" width="490" height="515" loading="lazy"><div><small>교통사고 전문 손해사정사</small><b>조민규</b></div><p>교통사고 보상, 처음부터 끝까지 상담</p><a class="num" href="tel:010-9584-9762"><svg><use href="#i-phone"/></svg>010-9584-9762</a></div>
+        <div class="mem"><img src="team-hanjin.jpg" alt="" width="490" height="515" loading="lazy"><div><small>질병·상해 전문 손해사정사</small><b>박한진</b></div><p>후유장해, 진단비 분쟁 검토</p><a class="num" href="tel:010-4819-8711"><svg><use href="#i-phone"/></svg>010-4819-8711</a></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec alt" id="help" aria-labelledby="helpTitle">
+    <div class="in">
+      <div class="head"><span class="eyebrow">HELP</span><h2 id="helpTitle">사고가 났을 때, 여기부터 누르세요</h2></div>
+      <div class="help">
+        <a class="tile" href="https://hd979796.github.io/hd979796/pmc/claim.html" target="_blank" rel="noopener"><i class="ic-red"><svg><use href="#i-alert"/></svg></i><b>사고접수 · 보상청구</b><small>휴대폰으로 바로 작성해서 보내기</small></a>
+        <a class="tile" href="tel:1588-5656"><i class="ic-red"><svg><use href="#i-car"/></svg></i><b>현대해상 긴급출동</b><small class="num">1588-5656 · 견인 · 배터리 · 타이어</small></a>
+        <button class="tile" type="button" data-open="ins"><i class="ic-gold"><svg><use href="#i-search"/></svg></i><b>보험사 전화번호</b><small>모든 보험사 · 누르면 바로 전화</small></button>
+        <a class="tile" href="full.html#booking"><i class="ic-line"><svg><use href="#i-cal"/></svg></i><b>상담 날짜 예약</b><small>달력에서 편한 날 고르기</small></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec alt" id="links" aria-labelledby="linksTitle">
+    <div class="in">
+      <div class="head"><span class="eyebrow">QUICK LINKS</span><h2 id="linksTitle">주요 바로가기</h2></div>
+      <div class="ql">
+        <div class="qlc"><h3>정부 · 공공기관</h3>
+          <a href="https://www.credit4u.or.kr" target="_blank" rel="noopener">내보험 다보여 (신용정보원)</a>
+          <a href="https://cont.insure.or.kr" target="_blank" rel="noopener">내보험 찾아줌 (보험협회)</a>
+          <a href="https://www.silson24.or.kr" target="_blank" rel="noopener">실손24</a>
+          <a href="https://www.hira.or.kr" target="_blank" rel="noopener">비급여 진료비 정보 (심평원)</a>
+        </div>
+        <div class="qlc"><h3>의료기관 정보</h3>
+          <a href="https://insurdesignlab.com/tools/c_hospital_info_search.html" target="_blank" rel="noopener">의료기관 찾기</a>
+          <a href="https://insurdesignlab.com/tools/c_hospital_search.html" target="_blank" rel="noopener">간호간병 병원 찾기</a>
+          <a href="https://insurdesignlab.com/tools/c_body_map.html" target="_blank" rel="noopener">KCD 질병코드 찾기</a>
+        </div>
+        <div class="qlc"><h3>보험회사</h3>
+          <a href="https://www.hi.co.kr/serviceAction.do?view=bin/SP/08/HHSP0801M" target="_blank" rel="noopener">현대해상 공시실</a>
+          <a href="https://www.hi.co.kr" target="_blank" rel="noopener">현대해상 홈페이지</a>
+          <a href="tel:1588-5656">현대해상 고장출동 · 사고접수 1588-5656</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="contact" aria-labelledby="contactTitle">
+    <div class="in">
+      <div class="head"><span class="eyebrow">CONTACT</span><h2 id="contactTitle">편하실 때 연락 주세요</h2></div>
+      <div class="contact">
+        <ul class="ci">
+          <li><a class="num" href="tel:010-8796-3959"><svg><use href="#i-phone"/></svg><span>휴대폰</span><b>010-8796-3959</b></a></li>
+          <li><a class="num" href="tel:1588-8353"><svg><use href="#i-phone"/></svg><span>대표전화</span><b>1588-8353</b></a></li>
+          <li><a href="mailto:HD979796@naver.com"><svg><use href="#i-mail"/></svg><span>이메일</span><b>HD979796@naver.com</b></a></li>
+          <li><a href="https://map.naver.com/p/search/%EA%B2%BD%EA%B8%B0%EB%8F%84%20%EC%9D%98%EC%A0%95%EB%B6%80%EC%8B%9C%20%EC%8B%A0%ED%9D%A5%EB%A1%9C239%EB%B2%88%EA%B8%B8%2020" target="_blank" rel="noopener"><svg><use href="#i-pin"/></svg><span>사무실</span><b>경기도 의정부시 신흥로239번길 20, 2층</b></a></li>
+          <li><a href="https://blog.naver.com/pmcblog" target="_blank" rel="noopener"><svg><use href="#i-blog"/></svg><span>블로그</span><b>네이버 블로그</b></a></li>
+        </ul>
+        <div class="cta">
+          <h3>보험, 가입보다<br>점검이 먼저입니다.</h3>
+          <p>지금 가진 보험으로 충분하면 그대로 두시라고 말씀드립니다. 상담은 무료입니다.</p>
+          <div class="row">
+            <button class="btn" type="button" data-open="consult"><svg><use href="#i-doc"/></svg>상담 신청</button>
+            <button class="btn ghost" type="button" id="vcardBtn"><svg><use href="#i-plus"/></svg>연락처 저장</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="ft">
+  <div class="in">
+    <div class="links"><a href="#privacy" onclick="document.getElementById('privacy').open=true">개인정보 처리 안내</a><a href="https://blog.naver.com/pmcblog" target="_blank" rel="noopener">블로그</a><a href="../portal/" rel="nofollow">직원 로그인</a></div>
+    <p>상호 현대해상 박문철보험대리점 · 대표 박문철 · 경기도 의정부시 신흥로239번길 20, 2층 · <span class="num">대표전화 1588-8353</span></p>
+    <details id="privacy"><summary>개인정보 처리 안내</summary>
+      <p>상담 신청서는 서버에 저장하지 않고, 고객님 휴대폰의 문자로 만들어져 직접 전송하실 때만 대리점에 전달됩니다. 전달받은 이름·연락처·상담 내용은 상담에만 사용하고 상담 완료 후 1년이 지나면 파기합니다. 개인정보 보호책임자: 박문철 (010-8796-3959)</p>
+    </details>
+    <p>보험계약 체결 전 상품설명서 및 약관을 반드시 읽어보시기 바랍니다. 기존 보험계약을 해지하고 다른 보험계약을 체결하면 보험인수가 거절되거나 보험료가 인상되거나 보장내용이 달라질 수 있습니다.</p>
+    <p>© 2026 현대해상 박문철보험대리점</p>
+  </div>
+</footer>
+
+<nav class="dock" aria-label="빠른 연락">
+  <a class="num" href="tel:1588-5656"><i class="ic-red"><svg><use href="#i-alert"/></svg></i><span>고장출동<br>사고접수</span></a>
+  <a href="tel:010-8796-3959"><i class="ic-line"><svg><use href="#i-phone"/></svg></i><span>전화하기</span></a>
+  <a href="sms:01087963959" data-chat><i class="ic-kakao"><svg><use href="#i-msg"/></svg></i><span data-chat-lbl>카카오톡</span></a>
+  <button type="button" data-open="consult"><i class="ic-gold"><svg><use href="#i-doc"/></svg></i><span>상담신청</span></button>
+</nav>
+
+<dialog class="dlg" id="dlg-consult" aria-labelledby="cTitle">
+  <form class="dlg-in" id="cForm" method="dialog" novalidate>
+    <div class="dlg-top"><span class="pill">✦ 상담 신청</span><button class="x" type="button" data-close aria-label="닫기"><svg><use href="#i-x"/></svg></button></div>
+    <h3 id="cTitle">무엇이 궁금하세요?</h3>
+    <p class="sub">남겨주시면 확인하고 빠르게 연락드리겠습니다.</p>
+    <div class="f"><label for="cName">성함 <i>*</i></label><input id="cName" autocomplete="name" placeholder="홍길동"></div>
+    <div class="f"><label for="cPhone">연락처 <i>*</i></label><input id="cPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="010-0000-0000"></div>
+    <div class="f"><span class="lb" id="cTopicLb">상담 분야</span>
+      <div class="chips" role="group" aria-labelledby="cTopicLb">
+        <label><input type="checkbox" name="topic" value="자동차보험" checked><span>자동차보험</span></label>
+        <label><input type="checkbox" name="topic" value="사고 보상"><span>사고 보상</span></label>
+        <label><input type="checkbox" name="topic" value="보험금 청구"><span>보험금 청구</span></label>
+        <label><input type="checkbox" name="topic" value="보장 점검"><span>보장 점검</span></label>
+        <label><input type="checkbox" name="topic" value="실손·건강"><span>실손·건강</span></label>
+        <label><input type="checkbox" name="topic" value="화재·사업장"><span>화재·사업장</span></label>
+      </div>
+    </div>
+    <div class="f"><label for="cTime">연락 받기 편한 시간</label><select id="cTime"><option>언제든 괜찮아요</option><option>오전 (9–12시)</option><option>점심 (12–14시)</option><option>오후 (14–18시)</option><option>저녁 (18시 이후)</option></select></div>
+    <div class="f"><label for="cMemo">질문 요약</label><textarea id="cMemo" placeholder="예) 다음 달 자동차보험 만기인데 보험료를 줄이고 싶어요"></textarea></div>
+    <label class="agree"><input type="checkbox" id="cAgree"><span>[필수] 상담을 위해 성함·연락처·상담 내용을 박문철보험대리점에 보내는 데 동의합니다.</span></label>
+    <p class="err" id="cErr" hidden></p>
+    <button class="submit" type="submit"><svg><use href="#i-msg"/></svg>문자로 상담 신청 보내기</button>
+    <a class="alt-link" href="full.html#booking">달력에서 상담 날짜 예약하기 →</a>
+  </form>
+</dialog>
+
+<dialog class="dlg" id="dlg-ins" aria-labelledby="insTitle">
+  <div class="dlg-in">
+    <div class="dlg-top"><span class="pill">☎ 보험사 전화번호</span><button class="x" type="button" data-close aria-label="닫기"><svg><use href="#i-x"/></svg></button></div>
+    <h3 id="insTitle">누르면 바로 전화됩니다</h3>
+    <div class="f" style="margin:10px 0 0"><input type="search" id="insQ" placeholder="보험사 이름 검색 (예: 삼성)" aria-label="보험사 검색" autocomplete="off"></div>
+    <div class="ins-tabs" role="group" aria-label="구분"><button type="button" data-t="all" aria-pressed="true">전체</button><button type="button" data-t="손해" aria-pressed="false">손해보험</button><button type="button" data-t="생명" aria-pressed="false">생명보험</button><button type="button" data-t="긴급" aria-pressed="false">긴급·기관</button></div>
+    <ul class="ins-list" id="insList"></ul>
+    <p class="note">손해보험사 번호로 자동차 긴급출동·사고접수도 됩니다. 어디로 걸지 모르겠으면 박문철 대표에게 먼저 전화 주세요.</p>
+  </div>
+</dialog>
+
+<dialog class="dlg" id="dlg-how" aria-labelledby="howTitle">
+  <div class="dlg-in how">
+    <div class="dlg-top"><span class="pill">＋ 홈 화면에 추가</span><button class="x" type="button" data-close aria-label="닫기"><svg><use href="#i-x"/></svg></button></div>
+    <h3 id="howTitle">휴대폰에 바로가기 만들기</h3>
+    <div id="howBody"></div>
+  </div>
+</dialog>
+
+<script>
+(function(){
+  var OPENCHAT='https://open.kakao.com/o/sCLX4JXi'; /* 카카오 오픈채팅 주소(https://open.kakao.com/o/...)를 넣으면 '오픈채팅' 버튼이 그 방으로 열립니다. 비어 있으면 문자로 연결 */
+  var TO='01087963959';
+  var $=function(s){return document.querySelector(s)}, $$=function(s){return Array.prototype.slice.call(document.querySelectorAll(s))};
+  function esc(x){return String(x).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+  function open(d){ if(d.showModal) d.showModal(); else d.setAttribute('open',''); }
+  function shut(d){ if(d.close) d.close(); else d.removeAttribute('open'); }
+
+  /* 오픈채팅 */
+  $$('[data-chat]').forEach(function(a){ if(OPENCHAT){a.href=OPENCHAT;a.target='_blank';a.rel='noopener';} });
+  if(!OPENCHAT) $$('[data-chat-lbl]').forEach(function(s){s.textContent='문자하기';});
+
+  /* 모바일 메뉴 */
+  var mb=$('#mbtn'), mm=$('#mmenu');
+  mb.addEventListener('click',function(){var o=mm.hidden;mm.hidden=!o;mb.setAttribute('aria-expanded',String(o));});
+  $$('#mmenu a').forEach(function(a){a.addEventListener('click',function(){mm.hidden=true;mb.setAttribute('aria-expanded','false');});});
+  document.addEventListener('click',function(e){if(!mm.hidden&&!mm.contains(e.target)&&!mb.contains(e.target)){mm.hidden=true;mb.setAttribute('aria-expanded','false');}});
+
+  /* 창 열기·닫기 */
+  $$('[data-open]').forEach(function(b){b.addEventListener('click',function(){var d=$('#dlg-'+b.dataset.open); if(b.dataset.open==='ins'){$('#insQ').value='';draw();} open(d);});});
+  $$('[data-close]').forEach(function(b){b.addEventListener('click',function(){shut(b.closest('dialog'));});});
+  $$('dialog').forEach(function(d){d.addEventListener('click',function(e){if(e.target===d)shut(d);});});
+
+  /* 상담 신청 → 문자 */
+  $('#cForm').addEventListener('submit',function(e){
+    e.preventDefault();
+    var name=$('#cName').value.trim(), phone=$('#cPhone').value.trim(), er=$('#cErr');
+    var topics=$$('#cForm input[name="topic"]:checked').map(function(c){return c.value});
+    var msg=!name?'성함을 적어 주세요.':!/^0\d{1,2}-?\d{3,4}-?\d{4}$/.test(phone.replace(/\s/g,''))?'연락처를 확인해 주세요. (예: 010-1234-5678)':!$('#cAgree').checked?'개인정보 전달에 동의해 주세요.':'';
+    if(msg){er.textContent=msg;er.hidden=false;return;}
+    er.hidden=true;
+    var body='[홈페이지 상담 신청]\n성함: '+name+'\n연락처: '+phone+'\n분야: '+(topics.join(', ')||'-')+'\n연락 시간: '+$('#cTime').value+($('#cMemo').value.trim()?'\n질문: '+$('#cMemo').value.trim():'');
+    var ios=/iPhone|iPad|iPod/.test(navigator.userAgent);
+    location.href='sms:'+TO+(ios?'&':'?')+'body='+encodeURIComponent(body);
+  });
+
+  /* 보험사 전화번호 */
+  var INS=[
+    ['박문철보험대리점 (먼저 전화 주세요)','010-8796-3959','me','대표 휴대폰'],
+    ['현대해상','1588-5656','손해','긴급출동 · 사고접수'],['삼성화재','1588-5114','손해',''],['DB손해보험','1588-0100','손해',''],['KB손해보험','1544-0114','손해',''],
+    ['메리츠화재','1566-7711','손해',''],['한화손해보험','1566-8000','손해',''],['롯데손해보험','1588-3344','손해',''],['흥국화재','1688-1688','손해',''],
+    ['AXA손해보험','1566-1566','손해',''],['하나손해보험','1566-3000','손해',''],['NH농협손해보험','1644-9000','손해',''],['캐롯손해보험','1566-0300','손해','퍼마일'],
+    ['삼성생명','1588-3114','생명',''],['한화생명','1588-6363','생명',''],['교보생명','1588-1001','생명',''],['신한라이프','1588-5580','생명',''],
+    ['NH농협생명','1544-4000','생명',''],['동양생명','1577-1004','생명',''],['미래에셋생명','1588-0220','생명',''],['흥국생명','1588-2288','생명',''],
+    ['ABL생명','1588-6500','생명',''],['KB라이프','1588-3374','생명',''],['DB생명','1588-3131','생명',''],['메트라이프생명','1588-9600','생명',''],
+    ['라이나생명','1588-0058','생명',''],['AIA생명','1588-9898','생명',''],['푸본현대생명','1577-3311','생명',''],['하나생명','1577-1112','생명',''],
+    ['KDB생명','1588-4040','생명',''],['처브라이프','1599-4600','생명',''],['BNP파리바카디프생명','1688-1118','생명',''],['iM라이프','1588-4770','생명','구 DGB생명'],['IBK연금보험','1577-4117','생명',''],
+    ['경찰 (교통사고 신고)','112','긴급',''],['소방 · 구급','119','긴급',''],['금융감독원 (보험 민원)','1332','긴급',''],['도로공사 (고속도로 긴급견인)','1588-2504','긴급','2km 무료 견인']
+  ];
+  var tab='all', q=$('#insQ'), list=$('#insList');
+  function draw(){
+    var k=(q.value||'').replace(/\s/g,'').toLowerCase();
+    list.innerHTML=INS.filter(function(r){return (tab==='all'||r[2]===tab||r[2]==='me')&&(!k||r[0].replace(/\s/g,'').toLowerCase().indexOf(k)>=0||r[1].indexOf(k)>=0)})
+      .map(function(r){return '<li'+(r[2]==='me'?' class="me"':'')+'><a href="tel:'+r[1]+'"><span class="nm">'+esc(r[0])+(r[3]?'<small>'+esc(r[3])+'</small>':'')+'</span><span class="tel num"><svg><use href="#i-phone"/></svg>'+r[1]+'</span></a></li>'}).join('')||'<li class="note">찾는 보험사가 없습니다.</li>';
+  }
+  q.addEventListener('input',draw);
+  $$('.ins-tabs button').forEach(function(b){b.addEventListener('click',function(){tab=b.dataset.t;$$('.ins-tabs button').forEach(function(x){x.setAttribute('aria-pressed',String(x===b))});draw();});});
+  if(/[?&]ins=1/.test(location.search)){draw();open($('#dlg-ins'));}
+
+  /* 연락처 저장 */
+  $('#vcardBtn').addEventListener('click',function(){
+    var t=['BEGIN:VCARD','VERSION:3.0','N:박;문철;;;','FN:박문철','ORG:현대해상 박문철보험대리점','TITLE:대표','TEL;TYPE=CELL:010-8796-3959','TEL;TYPE=WORK:1588-8353','EMAIL:HD979796@naver.com','ADR;TYPE=WORK:;;경기도 의정부시 신흥로239번길 20, 2층;;;;','URL:https://hd979796.github.io/hd979796/pmc/','END:VCARD'].join('\r\n');
+    var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:'text/vcard;charset=utf-8'}));a.download='박문철_현대해상.vcf';document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},1500);
+  });
+
+  /* 홈 화면에 추가 */
+  var deferred=null, ib=$('#installBtn');
+  if(window.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true) $('#installBtn').hidden=true;
+  window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferred=e;});
+  function getBip(){return deferred||window.__bip||null;}
+  function promptInstall(d){window.__bip=null;deferred=null;d.prompt();(d.userChoice||Promise.resolve()).then(function(r){if(r&&r.outcome==='accepted')ib.hidden=true;});}
+  window.addEventListener('appinstalled',function(){$('#installBtn').hidden=true;});
+  var ua=navigator.userAgent, ios=/iPhone|iPad|iPod/.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1), kakao=/KAKAOTALK/i.test(ua), naver=/NAVER\(inapp/i.test(ua), samsung=/SamsungBrowser/i.test(ua);
+  /* 카카오톡·네이버 앱 안의 화면이면 휴대폰 기본 브라우저(삼성인터넷·크롬·사파리)로 넘긴다 */
+  function openOutside(){
+    var u=location.origin+location.pathname+'?install=1';
+    if(kakao){ location.href='kakaotalk://web/openExternal?url='+encodeURIComponent(u); return true; }
+    if(naver&&/Android/i.test(ua)){ location.href='intent://'+u.replace(/^https?:\/\//,'')+'#Intent;scheme=https;end'; return true; }
+    return false;
+  }
+  /* 외부 브라우저로 넘어온 경우: 버튼을 한 번 더 누르라고 알려 준다 */
+  if(/[?&]install=1/.test(location.search)&&!ib.hidden){
+    var tip=document.createElement('span'); tip.className='save-tip'; tip.textContent='👆 이 버튼을 한 번 더 누르면 설치됩니다';
+    ib.insertAdjacentElement('afterend',tip); setTimeout(function(){ib.scrollIntoView({block:'center',behavior:'smooth'});},300);
+    ib.style.animation='glow 1.6s ease-out 0s infinite';
+  }
+  ib.addEventListener('click',function(){
+    var d=getBip(); if(d){promptInstall(d);return;}
+    if((kakao||naver)&&openOutside()){ setTimeout(guide,1800); return; }
+    /* 설치 창 준비가 몇 초 늦을 수 있어 잠깐 기다렸다가, 끝내 없으면 안내를 보여 준다 */
+    var t0=Date.now(); ib.disabled=true;
+    (function wait(){ var d=getBip(); if(d){ib.disabled=false;promptInstall(d);return;} if(Date.now()-t0<1500){setTimeout(wait,150);return;} ib.disabled=false; guide(); })();
+  });
+  function guide(){
+    var h;
+    if(kakao||naver) h='<p>'+(kakao?'카카오톡':'네이버')+' 안에서는 설치가 안 돼서 <b>'+(ios?'사파리':'인터넷 앱')+'로 넘겨 드렸습니다.</b> 자동으로 안 넘어갔다면:</p><ol><li>오른쪽 <b>⋮ 또는 공유</b> 버튼을 누르세요.</li><li><b>'+(ios?'Safari로 열기':'다른 브라우저로 열기')+'</b>를 누르세요.</li><li>열린 화면에서 <b>바로가기 만들기</b>를 한 번 더 누르세요.</li></ol>';
+    else if(ios) h='<ol><li>화면 아래 <b>공유 버튼(□↑)</b>을 누르세요.</li><li>아래로 내려 <b>‘홈 화면에 추가’</b>를 누르세요.</li><li>오른쪽 위 <b>‘추가’</b>를 누르면 끝입니다.</li></ol><p>홈 화면의 <b>박문철보험</b> 아이콘으로 언제든 여실 수 있습니다.</p>';
+    else if(samsung) h='<ol><li>주소창 오른쪽의 <b>H 아이콘</b>을 누르고 <b>‘설치’</b>를 누르세요.</li><li>아이콘이 안 보이면: 오른쪽 아래 <b>⋮</b> → <b>‘현재 페이지 추가’</b> → <b>‘홈 화면’</b></li></ol><p>홈 화면의 <b>박문철보험</b> 아이콘으로 언제든 여실 수 있습니다.</p>';
+    else h='<ol><li>오른쪽 위 <b>⋮ 메뉴</b>를 누르세요.</li><li><b>‘홈 화면에 추가’</b> 또는 <b>‘앱 설치’</b>를 누르세요.</li></ol><p>홈 화면의 <b>박문철보험</b> 아이콘으로 언제든 여실 수 있습니다.</p>';
+    $('#howBody').innerHTML=h; open($('#dlg-how'));
+  }
+  if('serviceWorker' in navigator) window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});
+})();
+</script>
+</body>
+</html>
